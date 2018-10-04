@@ -40,7 +40,8 @@
                 "webpack:///*": "${workspaceRoot}/app/*"
             },
             "tnsArgs": [
-                "--bundle"
+                "--bundle",
+                "--clean"
             ]
         },
         {

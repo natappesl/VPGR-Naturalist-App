@@ -1,8 +1,9 @@
 <Page navigatingTo="onNavigatingTo" class="page" xmlns="http://schemas.nativescript.org/tns.xsd">
     <ActionBar class="action-bar">
-        <Label class="action-bar-title" text="Home"></Label>
+        <Label class="action-bar-title" text="Catalog"></Label>
     </ActionBar>
 
-    <StackLayout>
+    <StackLayout class="body">
+        <Label text="SEARCH" />
     </StackLayout>
 </Page>
