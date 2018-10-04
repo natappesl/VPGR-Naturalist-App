@@ -1,4 +1,4 @@
-<TabView androidTabsPosition="bottom" class="body" tabBackgroundColor="brown">
+<TabView androidTabsPosition="bottom" class="body" tabBackgroundColor="#F2D7CD">
     <TabViewItem title="Home">
         <Frame defaultPage="pages/home/home-page"></Frame>
     </TabViewItem>
