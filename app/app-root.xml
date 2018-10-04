@@ -1,0 +1,9 @@
+<TabView androidTabsPosition="bottom">
+    <TabViewItem title="Home">
+        <Frame defaultPage="pages/home/home-page"></Frame>
+    </TabViewItem>
+
+    <TabViewItem title="Catalog">
+        <Frame defaultPage="pages/catalog/catalog-page"></Frame>
+    </TabViewItem>
+</TabView>
