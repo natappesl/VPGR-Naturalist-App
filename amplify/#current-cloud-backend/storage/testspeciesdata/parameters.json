@@ -1,0 +1,9 @@
+{
+    "bucketName": "vpgrnaturalistapp800eaa5eeca94bbcbc500b393d90fb46",
+    "authPolicyName": "s3_amplify_30bcbe50",
+    "unauthPolicyName": "s3_amplify_30bcbe50",
+    "authRoleName": "aturalistpp-20181014131017-authRole",
+    "unauthRoleName": "aturalistpp-20181014131017-unauthRole",
+    "authPermissions": "rw",
+    "unauthPermissions": "r"
+}
