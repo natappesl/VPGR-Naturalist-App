@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { TouchableOpacity, Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import Amplify, { Storage } from 'aws-amplify';
+import Amplify, { Storage, Auth } from 'aws-amplify';
 import aws_exports from './aws-exports';
 Amplify.configure(aws_exports);
 
@@ -14,6 +14,16 @@ class App extends Component<Props> {
     this.state = {
       text: 'default',
     }
+  }
+
+  signOut () {
+    Auth.signOut()
+      .then( result =>
+        console.log('Sign out successful. ', result)
+        )
+      .catch( err =>
+        console.log('Sign out failed??', err)
+        )
   }
 
   submit () {
@@ -38,6 +48,13 @@ class App extends Component<Props> {
           onPress={() => this.submit()}
         >
           <Text>Submit</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => this.signOut()}
+        >
+          <Text>Sign out</Text>
         </TouchableOpacity>
       </View>
     );
