@@ -2,9 +2,12 @@ import React, { Component } from 'react';
 import { TouchableOpacity, Button, StyleSheet, Text, TextInput, View } from 'react-native';
 import Amplify, { Storage, Auth } from 'aws-amplify';
 import aws_exports from './aws-exports';
-Amplify.configure(aws_exports);
-
 import { withAuthenticator } from 'aws-amplify-react-native';
+import  SQLite  from 'react-native-sqlite-storage';
+SQLite.DEBUG(true);
+SQLite.enablePromise(false);
+
+Amplify.configure(aws_exports);
 
 type Props = {};
 class App extends Component<Props> {
@@ -14,6 +17,10 @@ class App extends Component<Props> {
     this.state = {
       text: 'default',
     }
+  }
+
+  errorCallback (err) {
+    console.log('DB Open fail. ', err)
   }
 
   signOut () {
@@ -27,10 +34,7 @@ class App extends Component<Props> {
   }
 
   submit () {
-    Storage.put(this.state.text + '.txt', 'Hello')
-    .then (result => console.log(result))
-    .catch(err => console.log(err));
-
+    SQLite.openDatabase({name: "TPCH.db", location: 'default' }, () => {} , this.errorCallback);
   }
 
   render() {
@@ -50,12 +54,6 @@ class App extends Component<Props> {
           <Text>Submit</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => this.signOut()}
-        >
-          <Text>Sign out</Text>
-        </TouchableOpacity>
       </View>
     );
   }
