@@ -1,13 +1,25 @@
-import React, { Component } from 'react';
-import { TouchableOpacity, Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import Amplify, { Storage, Auth } from 'aws-amplify';
-import aws_exports from './aws-exports';
-import { withAuthenticator } from 'aws-amplify-react-native';
-import  SQLite  from 'react-native-sqlite-storage';
+import React, { Component } from "react";
+import {
+  FlatList,
+  TouchableOpacity,
+  Button,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  ScrollView,
+  StatusBar,
+  Dimensions
+} from "react-native";
+import Amplify, { Storage, Auth } from "aws-amplify";
+import aws_exports from "./aws-exports";
+import { withAuthenticator } from "aws-amplify-react-native";
+import SQLite from "react-native-sqlite-storage";
 SQLite.DEBUG(true);
 SQLite.enablePromise(false);
 
 Amplify.configure(aws_exports);
+const { width, height } = Dimensions.get("window");
 
 type Props = {};
 class App extends Component<Props> {
@@ -15,85 +27,69 @@ class App extends Component<Props> {
     super(props);
 
     this.state = {
-      text: 'default',
-    }
+      text: "default"
+    };
   }
 
-  errorCallback (err) {
-    console.log('DB Open fail. ', err)
+  errorCallback(err) {
+    console.log("DB Open fail. ", err);
   }
 
-  signOut () {
+  signOut() {
     Auth.signOut()
-      .then( result =>
-        console.log('Sign out successful. ', result)
-        )
-      .catch( err =>
-        console.log('Sign out failed??', err)
-        )
+      .then(result => console.log("Sign out successful. ", result))
+      .catch(err => console.log("Sign out failed??", err));
   }
 
-  submit () {
-    SQLite.openDatabase({name: "TPCH.db", location: 'default' }, () => {} , this.errorCallback);
+  submit() {
+    SQLite.openDatabase(
+      { name: "TPCH.db", location: "default" },
+      () => {},
+      this.errorCallback
+    );
   }
 
   render() {
     return (
-      <View style={styles.container}>
-
-        <Text style={styles.inputLabel}> text: </Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={(text) => this.setState({ text: text })}
-        />
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => this.submit()}
-        >
-          <Text>Submit</Text>
-        </TouchableOpacity>
-
+      <View style={styles.containerContainer}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerTitle}>VERNAL POOLS NATURALIST</Text>
+          <TouchableOpacity style={styles.headerButton}>
+            <Text> Sign In </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.contentContainer}></View>
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
+  containerContainer: {
+    height: '100%',
+    width: '100%',
+  },
+  contentContainer: {
+    flex: 10,
+    alignItems: "center",
+    justifyContent: "flex-start",
+    backgroundColor: "skyblue",
+  },
+  headerContainer: {
     flex: 1,
-    justifyContent: 'center',
+    alignItems:'center',
+    justifyContent:'center',
+    backgroundColor: 'brown',
+  },
+  headerTitle: {
+    flex:5,
+  },
+  headerButton: {
+    flex: 1,
+    alignSelf:'flex-end',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#DDDDDD',
+    padding: 10
   },
-  buttonContainer: {
-    flexDirection: 'row'
-  },
-  input: {
-    height: '10%',
-    width: '90%',
-    padding: '1%',
-    margin: '1%',
-    backgroundColor: 'skyblue'
-  },
-  passwordInput: {
-    height: '10%',
-    width: '90%',
-    padding: '1%',
-    margin: '1%',
-    backgroundColor: 'steelblue'
-  },
-  button: {
-    backgroundColor: 'green',
-    padding: '1%',
-    margin: '10%',
-  },
-  inputLabel: {
-    padding: '1%',
-    alignSelf: 'flex-start'
-  },
-  passwordInputLabel: {
-    alignSelf: 'flex-start'
-  }
 });
 export default withAuthenticator(App);
