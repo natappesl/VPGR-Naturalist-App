@@ -1,10 +1,8 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { Icon } from "react-native-elements";
 import { Authenticator } from "aws-amplify-react-native";
-import Amplify, { Storage, Auth } from "aws-amplify";
 
-export default class CatalogScreen extends Component {
+export default class LoginScreen extends Component {
   constructor(props) {
     super(props);
 
@@ -12,21 +10,9 @@ export default class CatalogScreen extends Component {
       text: "default"
     };
   }
+
   render() {
-    return (
-      <View style={styles.containerContainer}>
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerTitle}>CATALOG</Text>
-          <Icon
-            iconStyle={styles.headerButton}
-            name="search"
-            color="#fff"
-            onPress={() => this.signOut()}
-          />
-        </View>
-        <View style={styles.contentContainer} />
-      </View>
-    );
+    return <Authenticator />;
   }
 }
 
