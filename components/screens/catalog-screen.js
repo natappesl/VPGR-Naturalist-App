@@ -1,13 +1,26 @@
+const species = [
+  {
+    name: 'American Avocet',
+    avatar: 'https://d1ia71hq4oe7pn.cloudfront.net/photo/64807071-480px.jpg'
+  },
+  {
+    name: 'American Avocet',
+    avatar: 'https://d1ia71hq4oe7pn.cloudfront.net/photo/64807071-480px.jpg'
+  },
+  
+];
+
 import React, { Component } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { Icon, FormValidationMessage } from "react-native-elements";
+import { Text, View } from "react-native";
+import { Icon, FormValidationMessage, Card, ListItem, Button} from "react-native-elements";
 import { Authenticator } from "aws-amplify-react-native";
 import Amplify, { Storage, Auth } from "aws-amplify";
+import {Theme} from '../../constants/theme';
 
-class Search extends Component {
+export class Search extends Component {
   render () {
     return (
-      <View style={styles.searchContainer}><Text>SEARCH</Text></View>
+      <View style={Theme.searchContainer}><Text>SEARCH</Text></View>
     );
   }
 }
@@ -17,66 +30,47 @@ export default class CatalogScreen extends Component {
     super(props);
 
     this.state = {
-      text: "default",
       showSearch: false,
     };
   }
   render() {
     return (
-      <View style={styles.containerContainer}>
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerTitle}>CATALOG</Text>
+      <View style={Theme.containerContainer}>
+        <View style={Theme.headerContainer}>
+          <Text style={Theme.headerTitle}>CATALOG</Text>
           <Icon
-            iconStyle={styles.headerButton}
+            iconStyle={Theme.headerButton}
             name="search"
             color="#fff"
             onPress={() => this.toggleSearch()}
           />
         </View>
-        <View style={styles.contentContainer}>
-          {!this.state.showSearch && <Search/>}
+        <View style={Theme.contentContainer}>
+          {this.state.showSearch && <Search/>}
+          <View style={Theme.listContainer}>
+            <Card containerStyle={{padding: 0}} >
+              {
+                species.map((s, i) => {
+                  return (
+                    <ListItem
+                      key={i}
+                      title={s.name}
+                      avatar={{uri:s.avatar}}
+                      onPress={() => console.log("NAVIGATE TO " + s.name)}
+                    />
+                  );
+                })
+              }
+            </Card>
+          </View>
         </View>
       </View>
     );
   }
 
   toggleSearch() {
-    this.setState( () => {showSearch: !this.state.showSearch});
+    this.setState({
+      showSearch: !this.state.showSearch
+    });
   }
 }
-
-const styles = StyleSheet.create({
-  containerContainer: {
-    height: "100%",
-    width: "100%"
-  },
-  contentContainer: {
-    flex: 10,
-    alignItems: "center",
-    justifyContent: "flex-start",
-    backgroundColor: "skyblue"
-  },
-  headerContainer: {
-    flex: 1,
-    flexDirection: "row",
-    flexWrap: "nowrap",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "brown"
-  },
-  searchContainer: {
-    flex: 10,
-    alignItems: "center",
-    justifyContent: "flex-start",
-    backgroundColor: "green"
-  },
-  headerTitle: {
-    flex: 5,
-    textAlign: "center"
-  },
-  headerButton: {
-    flex: 1,
-    marginTop: 10,
-    padding: 10
-  }
-});
