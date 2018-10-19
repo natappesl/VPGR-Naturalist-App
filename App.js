@@ -11,13 +11,14 @@ import { withAuthenticator } from "aws-amplify-react-native";
 import SQLite from "react-native-sqlite-storage";
 import { createStackNavigator } from 'react-navigation';
 
-import HomeScreen from './screens/home-screen';
-import CatalogScreen from './screens/catalog-screen';
+import HomeScreen from './components/screens/home-screen';
+import CatalogScreen from './components/screens/catalog-screen';
 
 SQLite.DEBUG(true);
 SQLite.enablePromise(false);
 
 Amplify.configure(aws_exports);
+
 
 const RootStack = createStackNavigator({
   Home: {
