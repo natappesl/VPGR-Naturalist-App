@@ -13,22 +13,10 @@ export default class HomeScreen extends Component {
     };
   }
 
-  errorCallback(err) {
-    console.log("DB Open fail. ", err);
-  }
-
   signOut() {
     Auth.signOut()
       .then(() => console.log("Sign out successful. "))
       .catch(err => console.log("Sign out failed??", err));
-  }
-
-  submit() {
-    SQLite.openDatabase(
-      { name: "TPCH.db", location: "default" },
-      () => {},
-      this.errorCallback
-    );
   }
 
   render() {

@@ -1,18 +1,13 @@
 import React, { Component } from "react";
-import Amplify from "aws-amplify";
-import aws_exports from "./aws-exports";
-import SQLite from "react-native-sqlite-storage";
 import { createStackNavigator } from 'react-navigation';
+
+import DatabaseService from './services/database';
 
 import HomeScreen from './components/screens/home-screen';
 import CatalogScreen from './components/screens/catalog-screen';
 import LoginScreen from './components/screens/login-screen';
 
-SQLite.DEBUG(true);
-SQLite.enablePromise(false);
-
-Amplify.configure(aws_exports);
-
+DatabaseService.search('');
 
 const RootStack = createStackNavigator({
   Home: {
