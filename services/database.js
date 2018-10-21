@@ -11,9 +11,6 @@ Amplify.configure(aws_exports);
 SQLite.DEBUG(true);
 SQLite.enablePromise(false);
 
-//var AWS = require('aws-sdk');
-var s3;
-
 const SEARCH_TYPE = {
     BY_NAME: 'name',
     BY_SCI_NAME: 'scientificName',
@@ -39,19 +36,7 @@ class DatabaseService {
     constructor () {
         if (!DatabaseService.instance) {
             DatabaseService.instance = this;
-            s3 = new AWS.S3({apiVersion: '2006-03-01'});
         }
-        // Storage.put('test.txt', 'Hello')
-        //     .then (result => console.log(result))
-        //     .catch(err => console.log(err));
-
-        // Storage.get('public/')
-        //     .then((res) => {
-        //         console.log (res)
-        //     })
-        //     .catch((err) => {
-        //         console.error (err)
-        //     });
 
         this._db = SQLite.openDatabase({ name: "TPCH.db", location: "default" }, () => {}, this.errorCallback);
 
@@ -83,6 +68,15 @@ class DatabaseService {
         //         }
         //     });
         // });
+
+        Auth.currentCredentials()
+        .then(credentials => {
+            AWS.config.update(Auth.essentialCredentials(credentials));
+            const s3 = new AWS.S3();
+
+            s3.listObjects({Bucket: 'natappdata'}, (err, data) => {
+            });
+        });
     }
 }
 
