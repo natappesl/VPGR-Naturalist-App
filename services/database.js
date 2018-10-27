@@ -1,11 +1,13 @@
 // Singleton Reference: https://www.sitepoint.com/javascript-design-patterns-singleton/
 // Enumeration Reference: https://www.sohamkamani.com/blog/2017/08/21/enums-in-javascript/
 
+import {AsyncStorage } from 'react-native';
 import SQLite from "react-native-sqlite-storage";
 import { Search } from "../components/screens/catalog-screen";
 import Amplify, { Storage, Auth } from 'aws-amplify';
 import aws_exports from '../aws-exports';
 import AWS from 'aws-sdk';
+import RNFS from 'react-native-fs';
 
 Amplify.configure(aws_exports);
 SQLite.DEBUG(true);
@@ -38,18 +40,12 @@ class DatabaseService {
             DatabaseService.instance = this;
         }
 
-        this._db = SQLite.openDatabase({ name: "TPCH.db", location: "default" }, () => {}, this.errorCallback);
-
-
         return DatabaseService.instance;
     }
-
-    errorCallback (error) {
-        console.log ("Open DB Error:", error);
-    }
     
-    async search (query: string, type= SEARCH_TYPE.BY_TAG) {
-        console.log("HELLO FROM DATABASE :heart:")
+    search (query: string, type= SEARCH_TYPE.BY_TAG) {
+
+
         // if (typeof query != "string"){
 
         // }
@@ -71,11 +67,47 @@ class DatabaseService {
 
         Auth.currentCredentials()
         .then(credentials => {
+            // Update aws credentials through Cognito to verify IAM Role 
             AWS.config.update(Auth.essentialCredentials(credentials));
             const s3 = new AWS.S3();
-
-            s3.listObjects({Bucket: 'natappdata'}, (err, data) => {
+            // List all json files in bucket
+            s3.listObjects({Bucket: 'natappdata', Prefix: 'json/'}, (err, data) => {
+                if (err) console.log(err);
+                else{
+                    // Loop through all json files
+                    for (let i in data.Contents) {
+                        // Get the object
+                        s3.getObject({Bucket: 'natappdata', Key: data.Contents[i].Key}, (err, jsonData) => {
+                            if (err) console.log(err);
+                            else{
+                                if (jsonData.ContentType = 'application/json') {
+                                    let jsonDataString = jsonData.Body.toString('utf-8');
+                                    try {
+                                        let species = JSON.parse(jsonDataString);
+                                        AsyncStorage.setItem(species.name, JSON.stringify(species)).then(() =>{
+                                            AsyncStorage.getItem(species.name).then((val) => {
+                                                let savedSpecies = JSON.parse(val);
+                                                console.log(savedSpecies);
+                                            });
+                                        });
+                                    }
+                                    catch (err) {
+                                        console.log(err, jsonDataString);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
             });
+
+            // s3.getObject({Bucket: 'natappdata', Key: 'natappdata.db',  ResponseContentType: 'application/x-sqlite3'}, (err,data) =>{
+            //     if (err) console.log('Failed to getObject: ', err); // an error occurred
+            //     else{
+            //         console.log(data.Body.toString('utf-8'));
+            //         AsyncStorage.setItem('speciesDatabase', data);
+            //     }
+            // });
         });
     }
 }
