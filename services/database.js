@@ -55,7 +55,12 @@ class DatabaseService {
             // Update aws credentials through Cognito to verify IAM Role 
             AWS.config.update(Auth.essentialCredentials(credentials));
             s3 = new AWS.S3();
-            DatabaseService.instance.getObjectList();
+            s3.getObject({Bucket:'natappdata', Key: 'natappDatabase.db', ResponseContentType: 'application/x-sqlite3'}).promise()
+            .then ((data) => {
+                RNFS.writeFile('/data/data/com.vpgrnaturalistapp/databases/vv.db', data.Body.toString('base64'), 'base64');
+                DatabaseService.instance.composeDatabase();
+            });
+
         });
     }
 
@@ -63,17 +68,14 @@ class DatabaseService {
         let s3Promise = s3.listObjects({Bucket: 'natappdata', Prefix: 'json/'}).promise();
         await s3Promise
         .catch((error) => console.warn(error))
-        .then( data => {
-            objectList = data.Contents;
-        });
+        .then( data => { objectList = data.Contents; });
 
         DatabaseService.instance.composeDatabase ();
         
     }
 
     async composeDatabase () {
-
-        let db = SQLite.openDatabase({name : "k.db", createFromLocation : "~speciesDatabase.db", location: 'Library'});
+        let db = SQLite.openDatabase({name: "vv.db"});
         db.transaction((tx) => {
             tx.executeSql('SELECT * FROM species', [], (tx, results) => {
                 var len = results.rows.length;
