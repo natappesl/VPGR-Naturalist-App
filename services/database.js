@@ -1,6 +1,9 @@
 // Singleton Reference: https://www.sitepoint.com/javascript-design-patterns-singleton/
 // Enumeration Reference: https://www.sohamkamani.com/blog/2017/08/21/enums-in-javascript/
 
+//TODO: Update databse from S3 using ifModifiedSince param in getObject
+
+
 import {AsyncStorage } from 'react-native';
 import SQLite from "react-native-sqlite-storage";
 import { Search } from "../components/screens/catalog-screen";
@@ -81,11 +84,35 @@ class DatabaseService {
     }
 
     async populateDatabase () {
-        let response = await s3.listObjects({Bucket: 'natappdata', Prefix: 'json/'}).promise();
-        let objectList = response.Contents;
+        let listResponse = await s3.listObjects({Bucket: 'natappdata', Prefix: 'json/'}).promise();
+        let objectList = listResponse.Contents;
         for (let i = 0; i < objectList.length; i++) {
-            // s3.getObject({Bucket: 'natappadata', Key: objectList[i]}).promise();
+            let speciesResponse = await s3.getObject({Bucket: 'natappdata', Key: objectList[i].Key}).promise();
+            try {
+                let speciesString = speciesResponse.Body.toString();
+                let speciesData = JSON.parse(speciesString);
+                let resp = await DatabaseService.instance.addToDatabase(speciesData);
+            }
+            catch (err) {
+                console.log("Species parse error:", err, speciesResponse);
+            }
         }
+    }
+
+    async addToDatabase (speciesData) {
+        db.transaction((tx) => {
+            let alreadyExists;
+            if (!speciesData.scientificName) return;
+            tx.executeSql('SELECT * FROM species WHERE sciname = "' + speciesData.scientificName + '"', [],
+            (tx, resultSet) => {
+                alreadyExists = resultSet.rows.length > 0 ? true : false;
+                console.log(speciesData, alreadyExists);
+            },
+            (err) => {
+                console.log(err.message);
+            }
+            );    
+        });
     }
 
     search (query: string, type= SEARCH_TYPE.BY_TAG) {
