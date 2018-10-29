@@ -13,8 +13,8 @@ Amplify.configure(aws_exports);
 SQLite.DEBUG(true);
 SQLite.enablePromise(false);
 
-let objectList;
 let s3;
+let db;
 
 const SEARCH_TYPE = {
     BY_NAME: 'name',
@@ -38,18 +38,16 @@ const CONSERVATION_STATUS = {
 Object.freeze(CONSERVATION_STATUS);
 
 class DatabaseService {
+
     constructor () {
         if (!DatabaseService.instance) {
-            this.db = null;
             DatabaseService.instance = this;
+            DatabaseService.instance.initAWS();
         }
-
-        DatabaseService.instance.initAWS();
-
         return DatabaseService.instance;
     }
     
-    initAWS () {
+    async initAWS () {
         Auth.currentCredentials()
         .then(credentials => {
             // Update aws credentials through Cognito to verify IAM Role 
@@ -57,25 +55,30 @@ class DatabaseService {
             s3 = new AWS.S3();
             s3.getObject({Bucket:'natappdata', Key: 'natappDatabase.db', ResponseContentType: 'application/x-sqlite3'}).promise()
             .then ((data) => {
-                RNFS.writeFile('/data/data/com.vpgrnaturalistapp/databases/vv.db', data.Body.toString('base64'), 'base64');
-                DatabaseService.instance.composeDatabase();
+                RNFS.writeFile('/data/data/com.vpgrnaturalistapp/databases/vv.db', data.Body.toString('base64'), 'base64')
+                .then(() => {
+                    DatabaseService.instance.initDatabase();
+                });
             });
-
         });
     }
 
     async getObjectList () {
-        let s3Promise = s3.listObjects({Bucket: 'natappdata', Prefix: 'json/'}).promise();
-        await s3Promise
-        .catch((error) => console.warn(error))
-        .then( data => { objectList = data.Contents; });
-
-        DatabaseService.instance.composeDatabase ();
-        
+        let response = await s3.listObjects({Bucket: 'natappdata', Prefix: 'json/'}).promise();
+        let objectList = response.Contents;
+        return objectList;
     }
 
-    async composeDatabase () {
-        let db = SQLite.openDatabase({name: "vv.db"});
+    async populateDatabase () {
+        let objectList = await this.getObjectList();
+        for (let i = 0; i < objectList.length; i++) {
+            await s3.getObject({Bucket: 'natappadata', Key: objectList[i]}).promise();
+        }
+    }
+
+    async initDatabase () {
+        db = await SQLite.openDatabase({name: "vv.db"});
+
         db.transaction((tx) => {
             tx.executeSql('SELECT * FROM species', [], (tx, results) => {
                 var len = results.rows.length;
@@ -86,9 +89,16 @@ class DatabaseService {
                 }
             });
         });
-        // for (let i=0; i < objectList.length; i++) {
-        //     await s3.getObject({Bucket: 'natappadata', Key: objectList[i]}).promise();
-        // }
+
+        DatabaseService.instance.populateDatabase();
+    }
+
+    async populateDatabase () {
+        let response = await s3.listObjects({Bucket: 'natappdata', Prefix: 'json/'}).promise();
+        let objectList = response.Contents;
+        for (let i = 0; i < objectList.length; i++) {
+            await s3.getObject({Bucket: 'natappadata', Key: objectList[i]}).promise();
+        }
     }
 
     search (query: string, type= SEARCH_TYPE.BY_TAG) {
