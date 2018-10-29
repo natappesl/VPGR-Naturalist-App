@@ -63,19 +63,6 @@ class DatabaseService {
         });
     }
 
-    async getObjectList () {
-        let response = await s3.listObjects({Bucket: 'natappdata', Prefix: 'json/'}).promise();
-        let objectList = response.Contents;
-        return objectList;
-    }
-
-    async populateDatabase () {
-        let objectList = await this.getObjectList();
-        for (let i = 0; i < objectList.length; i++) {
-            await s3.getObject({Bucket: 'natappadata', Key: objectList[i]}).promise();
-        }
-    }
-
     async initDatabase () {
         db = await SQLite.openDatabase({name: "vv.db"});
 
@@ -97,7 +84,7 @@ class DatabaseService {
         let response = await s3.listObjects({Bucket: 'natappdata', Prefix: 'json/'}).promise();
         let objectList = response.Contents;
         for (let i = 0; i < objectList.length; i++) {
-            await s3.getObject({Bucket: 'natappadata', Key: objectList[i]}).promise();
+            // s3.getObject({Bucket: 'natappadata', Key: objectList[i]}).promise();
         }
     }
 
