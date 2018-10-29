@@ -16,7 +16,7 @@ SQLite.DEBUG(true);
 SQLite.enablePromise(false);
 
 const dbFolderPath = '/data/data/com.vpgrnaturalistapp/databases/';
-const dbFileName = 'speciesDatabase.db';
+const dbFileName = 'sp.db';
 
 let s3;
 let db;
@@ -54,19 +54,24 @@ class DatabaseService {
     
     async initAWS () {
         Auth.currentCredentials()
-        .then(credentials => {
+        .then( async credentials => {
             // Update aws credentials through Cognito to verify IAM Role 
             AWS.config.update(Auth.essentialCredentials(credentials));
             s3 = new AWS.S3();
-            if (RNFS.exists(dbFolderPath + dbFileName)) {
-                console.log ("DB already exists.");
+            let dbExists = await RNFS.exists(dbFolderPath + dbFileName);
+            if (dbExists) {
+                console.log ("DB already exists." + dbFolderPath + dbFileName);
+                RNFS.readDir(dbFolderPath)
+                .then((val) => {
+                    console.log(val);
+                });
                 DatabaseService.instance.initDatabase();
             }
             else {
                 console.log ("Downloading DB.");
                 s3.getObject({Bucket:'natappdata', Key: 'natappDatabase.db', ResponseContentType: 'application/x-sqlite3'}).promise()
                 .then ((data) => {
-                    RNFS.writeFile(dbFolderPath, data.Body.toString('base64'), 'base64')
+                    RNFS.writeFile(dbFolderPath + dbFileName, data.Body.toString('base64'), 'base64')
                     .then(() => {
                         DatabaseService.instance.initDatabase();
                     });
