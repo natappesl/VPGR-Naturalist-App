@@ -2,7 +2,7 @@
 // Enumeration Reference: https://www.sohamkamani.com/blog/2017/08/21/enums-in-javascript/
 
 //TODO: Update databse from S3 using ifModifiedSince param in getObject
-
+// TODO: Refactor paths into variables
 
 import {AsyncStorage } from 'react-native';
 import SQLite from "react-native-sqlite-storage";
@@ -56,13 +56,20 @@ class DatabaseService {
             // Update aws credentials through Cognito to verify IAM Role 
             AWS.config.update(Auth.essentialCredentials(credentials));
             s3 = new AWS.S3();
-            s3.getObject({Bucket:'natappdata', Key: 'natappDatabase.db', ResponseContentType: 'application/x-sqlite3'}).promise()
-            .then ((data) => {
-                RNFS.writeFile('/data/data/com.vpgrnaturalistapp/databases/vv.db', data.Body.toString('base64'), 'base64')
-                .then(() => {
-                    DatabaseService.instance.initDatabase();
+            if (RNFS.exists('/data/data/com.vpgrnaturalistapp/databases/vv.db')) {
+                console.log ("DB already exists.");
+                DatabaseService.instance.initDatabase();
+            }
+            else {
+                console.log ("Downloading DB.");
+                s3.getObject({Bucket:'natappdata', Key: 'natappDatabase.db', ResponseContentType: 'application/x-sqlite3'}).promise()
+                .then ((data) => {
+                    RNFS.writeFile('/data/data/com.vpgrnaturalistapp/databases/vv.db', data.Body.toString('base64'), 'base64')
+                    .then(() => {
+                        DatabaseService.instance.initDatabase();
+                    });
                 });
-            });
+            }
         });
     }
 
@@ -94,24 +101,66 @@ class DatabaseService {
                 let resp = await DatabaseService.instance.addToDatabase(speciesData);
             }
             catch (err) {
-                console.log("Species parse error:", err, speciesResponse);
+                //console.warn("Species parse error:", err, speciesResponse);
             }
         }
     }
 
     async addToDatabase (speciesData) {
         db.transaction((tx) => {
-            let alreadyExists;
             if (!speciesData.scientificName) return;
+
             tx.executeSql('SELECT * FROM species WHERE sciname = "' + speciesData.scientificName + '"', [],
             (tx, resultSet) => {
-                alreadyExists = resultSet.rows.length > 0 ? true : false;
-                console.log(speciesData, alreadyExists);
+                let alreadyExists = resultSet.rows.length > 0 ? true : false;
+                if (alreadyExists) {
+                    console.log (speciesData.scientificName + " already exists, bro.");
+                    return;
+                }
+                tx.executeSql(
+                    `INSERT INTO species (
+                        sciname,
+                        overview,
+                        behavior,
+                        habitat,
+                        size,
+                        conservationstatus,
+                        stype
+                    ) VALUES (
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?
+                    )`,
+                    [
+                        speciesData.scientificName,
+                        speciesData.overview,
+                        speciesData.behavior,
+                        speciesData.habitat,
+                        speciesData.size,
+                        speciesData.conservationStatus,
+                        speciesData.type
+                    ],
+                    (tx, resultSet) => {
+                        // console.log ("INSERT COMPLETE", resultSet)
+                });
             },
             (err) => {
-                console.log(err.message);
-            }
-            );    
+                console.warn(err.message);
+            });
+        });
+
+        db.transaction((tx) => {
+            tx.executeSql('SELECT * FROM species', [],
+            (tx, resultSet) => {
+                console.log("SPECIES", resultSet);
+            },
+            (err) => {
+                // console.warn(err.message);
+            });
         });
     }
 
