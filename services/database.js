@@ -2,7 +2,6 @@
 // Enumeration Reference: https://www.sohamkamani.com/blog/2017/08/21/enums-in-javascript/
 
 //TODO: Update databse from S3 using ifModifiedSince param in getObject
-// TODO: Refactor paths into variables
 
 import {AsyncStorage } from 'react-native';
 import SQLite from "react-native-sqlite-storage";
@@ -15,6 +14,9 @@ import RNFS from 'react-native-fs';
 Amplify.configure(aws_exports);
 SQLite.DEBUG(true);
 SQLite.enablePromise(false);
+
+const dbFolderPath = '/data/data/com.vpgrnaturalistapp/databases/';
+const dbFileName = 'speciesDatabase.db';
 
 let s3;
 let db;
@@ -56,7 +58,7 @@ class DatabaseService {
             // Update aws credentials through Cognito to verify IAM Role 
             AWS.config.update(Auth.essentialCredentials(credentials));
             s3 = new AWS.S3();
-            if (RNFS.exists('/data/data/com.vpgrnaturalistapp/databases/vv.db')) {
+            if (RNFS.exists(dbFolderPath + dbFileName)) {
                 console.log ("DB already exists.");
                 DatabaseService.instance.initDatabase();
             }
@@ -64,7 +66,7 @@ class DatabaseService {
                 console.log ("Downloading DB.");
                 s3.getObject({Bucket:'natappdata', Key: 'natappDatabase.db', ResponseContentType: 'application/x-sqlite3'}).promise()
                 .then ((data) => {
-                    RNFS.writeFile('/data/data/com.vpgrnaturalistapp/databases/vv.db', data.Body.toString('base64'), 'base64')
+                    RNFS.writeFile(dbFolderPath, data.Body.toString('base64'), 'base64')
                     .then(() => {
                         DatabaseService.instance.initDatabase();
                     });
@@ -74,7 +76,7 @@ class DatabaseService {
     }
 
     async initDatabase () {
-        db = await SQLite.openDatabase({name: "vv.db"});
+        db = await SQLite.openDatabase({name: dbFileName});
 
         db.transaction((tx) => {
             tx.executeSql('SELECT * FROM species', [], (tx, results) => {
