@@ -60,16 +60,16 @@ class DatabaseService {
             // Update aws credentials through Cognito to verify IAM Role 
             AWS.config.update(Auth.essentialCredentials(credentials));
             s3 = new AWS.S3();
-            // let dbExists = await RNFS.exists(dbFolderPath + dbFileName);
-            // if (dbExists) {
-            //     console.log ("DB already exists." + dbFolderPath + dbFileName);
-            //     RNFS.readDir(dbFolderPath)
-            //     .then((val) => {
-            //         console.log(val);
-            //     });
-            //     DatabaseService.instance.initDatabase();
-            // }
-            // else {
+            let dbExists = await RNFS.exists(dbFolderPath + dbFileName);
+            if (dbExists) {
+                console.log ("DB already exists." + dbFolderPath + dbFileName);
+                RNFS.readDir(dbFolderPath)
+                .then((val) => {
+                    console.log(val);
+                });
+                DatabaseService.instance.initDatabase();
+            }
+            else {
                 console.log ("Downloading DB.");
                 s3.getObject({Bucket:'natappdata', Key: 'natappDatabase.db', ResponseContentType: 'application/x-sqlite3'}).promise()
                 .then ((data) => {
@@ -87,14 +87,7 @@ class DatabaseService {
 
         await DatabaseService.instance.populateDatabase();
 
-        db.transaction ( async (tx) => {
-            let [t, res] = await tx.executeSql (`SELECT * FROM traits`);
-            let len = res.rows.length;
-            for (let i = 0; i < len; i++) {
-                let row = res.rows.item(i);
-                console.log(row);
-            }
-        });
+        DatabaseService.instance.uploadDatabase();
     }
 
     async dropSpeciesTable () {
@@ -104,8 +97,19 @@ class DatabaseService {
         });
     }
 
+    async uploadDatabase() {
+        let uploadDBFile = await RNFS.readFile(dbFolderPath + dbFileName, 'base64');
+        let buf = Buffer.from(uploadDBFile, 'base64');
+        s3.upload({Bucket: 'natappdata', Key: 'newnatappReturnDatabase.db', Body: buf, ContentType: 'application/x-sqlite3'}).promise()
+        .then ( data => {
+            Alert("Database upload complete");
+        })
+        .catch ( error => {
+            Alert("Database upload failed!");
+            Console.error(error);
+        });
+    }
     async populateDatabase() {
-        let speciesId = -1;
         let listResponse = await s3.listObjects({Bucket: 'natappdata', Prefix: 'json/'}).promise();
         let objectList = listResponse.Contents;
 
@@ -114,11 +118,11 @@ class DatabaseService {
             try {
                 let speciesString = speciesResponse.Body.toString();
                 let speciesData = JSON.parse(speciesString);
-                let id = await DatabaseService.instance.insertSpecies(speciesData);
-                if (id != -1) {
-                    DatabaseService.instance.insertAliases(speciesData, id);
-                    DatabaseService.instance.insertLinks(speciesData, id);
-                    DatabaseService.instance.insertTraits(speciesData, id);
+                let speciesId = await DatabaseService.instance.insertSpecies(speciesData);
+                if (speciesId != -1) {
+                    DatabaseService.instance.insertAliases(speciesData, speciesId);
+                    DatabaseService.instance.insertLinks(speciesData, speciesId);
+                    DatabaseService.instance.insertTraits(speciesData, speciesId);
                 }
             }
             catch (err) {
@@ -217,7 +221,7 @@ class DatabaseService {
                         [id, ref]
                     );
                 }).catch ( (error) => {
-                    alert(speciesData.scientificName + " insert ref failed!");
+                    //alert(speciesData.scientificName + " insert ref failed!");
                     console.error(error);
                 });
             }
@@ -233,7 +237,7 @@ class DatabaseService {
                     [id, tag]
                 );
             }).catch ( (error) => {
-                alert(speciesData.scientificName + " insert trait failed!");
+                //alert(speciesData.scientificName + " insert trait failed!");
                 console.error(error);
             });
         }
