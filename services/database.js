@@ -12,7 +12,7 @@ import AWS from 'aws-sdk';
 import RNFS from 'react-native-fs';
 
 Amplify.configure(aws_exports);
-SQLite.DEBUG(true);
+SQLite.DEBUG(false);
 SQLite.enablePromise(true);
 
 const dbFolderPath = '/data/data/com.vpgrnaturalistapp/databases/';
@@ -20,6 +20,8 @@ const dbFileName = 'sp.db';
 
 let s3;
 let db;
+
+//todo: clean up tables
 
 const SEARCH_TYPE = {
     BY_NAME: 'name',
@@ -83,19 +85,16 @@ class DatabaseService {
     async initDatabase () {
         db = await SQLite.openDatabase({name: dbFileName});
 
-        db.transaction((tx) => {
-            tx.executeSql('SELECT * FROM species', [], (tx, results) => {
-                var len = results.rows.length;
-                for (let i = 0; i < len; i++) {
-                  let row = results.rows.item(i);
-                  
-                  console.log(`Record: ${row.sciname}`);
-                }
-            });
-        });
-
         await DatabaseService.instance.populateDatabase();
 
+        db.transaction ( async (tx) => {
+            let [t, res] = await tx.executeSql (`SELECT * FROM traits`);
+            let len = res.rows.length;
+            for (let i = 0; i < len; i++) {
+                let row = res.rows.item(i);
+                console.log(row);
+            }
+        });
     }
 
     async dropSpeciesTable () {
@@ -117,9 +116,9 @@ class DatabaseService {
                 let speciesData = JSON.parse(speciesString);
                 let id = await DatabaseService.instance.insertSpecies(speciesData);
                 if (id != -1) {
-                    // DatabaseService.instance.insertAliases(speciesData);
-                    // DatabaseService.instance.insertLinks(speciesData);
-                    // DatabaseService.instance.insertTraits(speciesData);
+                    DatabaseService.instance.insertAliases(speciesData, id);
+                    DatabaseService.instance.insertLinks(speciesData, id);
+                    DatabaseService.instance.insertTraits(speciesData, id);
                 }
             }
             catch (err) {
@@ -127,6 +126,7 @@ class DatabaseService {
             }
         }
     }
+
 
     async insertSpecies (speciesData) {
         let speciesId = -1;
@@ -180,6 +180,64 @@ class DatabaseService {
         return speciesId;
     }
 
+    async insertAliases (speciesData, id) {
+        let names = speciesData.name.split(',');
+
+        for (name of names) {
+            db.transaction ((tx) => {
+                tx.executeSql(
+                    `INSERT INTO aliases (id, alias) VALUES (?,?);`,
+                    [id, name]
+                );
+            }).catch ( (error) => {
+                alert(speciesData.scientificName + " insert Alias failed!");
+                console.error(error);
+            });
+        }
+    }
+
+    async insertLinks (speciesData, id) {
+        if (speciesData.imageURL) {
+            db.transaction ((tx) => {
+                tx.executeSql(
+                    `INSERT INTO links (id, url, type) VALUES (?,?, 'image');`,
+                    [id, ref]
+                );
+            }).catch ( (error) => {
+                alert(speciesData.scientificName + " insert imageURL failed!");
+                console.error(error);
+            });
+        }
+        if (speciesData.references) {
+            let refs = speciesData.references.split(' ');
+            for (ref of refs) {
+                db.transaction ((tx) => {
+                    tx.executeSql(
+                        `INSERT INTO links (id, url, type) VALUES (?,?, 'reference');`,
+                        [id, ref]
+                    );
+                }).catch ( (error) => {
+                    alert(speciesData.scientificName + " insert ref failed!");
+                    console.error(error);
+                });
+            }
+        }
+    }
+
+    async insertTraits (speciesData, id) {
+        let traits = speciesData.tags.split (' ');
+        for (tag of traits) {
+            db.transaction ((tx) => {
+                tx.executeSql(
+                    `INSERT INTO traits (id, tag) VALUES (?,?);`,
+                    [id, tag]
+                );
+            }).catch ( (error) => {
+                alert(speciesData.scientificName + " insert trait failed!");
+                console.error(error);
+            });
+        }
+    }
 
     async _addToDatabase (speciesData) {
         db.transaction((tx) => {
