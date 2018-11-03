@@ -3,7 +3,7 @@
 
 //TODO: Update databse from S3 using ifModifiedSince param in getObject
 
-import {AsyncStorage } from 'react-native';
+
 import SQLite from "react-native-sqlite-storage";
 import { Search } from "../components/screens/catalog-screen";
 import Amplify, { Storage, Auth } from 'aws-amplify';
@@ -13,7 +13,7 @@ import RNFS from 'react-native-fs';
 
 Amplify.configure(aws_exports);
 SQLite.DEBUG(true);
-SQLite.enablePromise(false);
+SQLite.enablePromise(true);
 
 const dbFolderPath = '/data/data/com.vpgrnaturalistapp/databases/';
 const dbFileName = 'sp.db';
@@ -58,16 +58,16 @@ class DatabaseService {
             // Update aws credentials through Cognito to verify IAM Role 
             AWS.config.update(Auth.essentialCredentials(credentials));
             s3 = new AWS.S3();
-            let dbExists = await RNFS.exists(dbFolderPath + dbFileName);
-            if (dbExists) {
-                console.log ("DB already exists." + dbFolderPath + dbFileName);
-                RNFS.readDir(dbFolderPath)
-                .then((val) => {
-                    console.log(val);
-                });
-                DatabaseService.instance.initDatabase();
-            }
-            else {
+            // let dbExists = await RNFS.exists(dbFolderPath + dbFileName);
+            // if (dbExists) {
+            //     console.log ("DB already exists." + dbFolderPath + dbFileName);
+            //     RNFS.readDir(dbFolderPath)
+            //     .then((val) => {
+            //         console.log(val);
+            //     });
+            //     DatabaseService.instance.initDatabase();
+            // }
+            // else {
                 console.log ("Downloading DB.");
                 s3.getObject({Bucket:'natappdata', Key: 'natappDatabase.db', ResponseContentType: 'application/x-sqlite3'}).promise()
                 .then ((data) => {
@@ -76,7 +76,7 @@ class DatabaseService {
                         DatabaseService.instance.initDatabase();
                     });
                 });
-            }
+            // }
         });
     }
 
@@ -94,26 +94,94 @@ class DatabaseService {
             });
         });
 
-        DatabaseService.instance.populateDatabase();
+        await DatabaseService.instance.populateDatabase();
+
     }
 
-    async populateDatabase () {
+    async dropSpeciesTable () {
+        await db.transaction ((tx) => {
+            tx.exequteSql('DROP TABLE IF EXISTS species');
+            tx.executeSql(`CREATE TABLE species (id INTEGER PRIMARY KEY AUTOINCREMENT, sciname STRING, overview STRING, behavior STRING, habitat STRING, size STRING, conservationstatus STRING, stype STRING); `);
+        });
+    }
+
+    async populateDatabase() {
+        let speciesId = -1;
         let listResponse = await s3.listObjects({Bucket: 'natappdata', Prefix: 'json/'}).promise();
         let objectList = listResponse.Contents;
-        for (let i = 0; i < objectList.length; i++) {
-            let speciesResponse = await s3.getObject({Bucket: 'natappdata', Key: objectList[i].Key}).promise();
+
+        for (const item of objectList) {
+            let speciesResponse = await s3.getObject({Bucket: 'natappdata', Key: item.Key}).promise();
             try {
                 let speciesString = speciesResponse.Body.toString();
                 let speciesData = JSON.parse(speciesString);
-                let resp = await DatabaseService.instance.addToDatabase(speciesData);
+                let id = await DatabaseService.instance.insertSpecies(speciesData);
+                if (id != -1) {
+                    // DatabaseService.instance.insertAliases(speciesData);
+                    // DatabaseService.instance.insertLinks(speciesData);
+                    // DatabaseService.instance.insertTraits(speciesData);
+                }
             }
             catch (err) {
-                //console.warn("Species parse error:", err, speciesResponse);
+                console.warn("Species parse error:", err, speciesResponse);
             }
         }
     }
 
-    async addToDatabase (speciesData) {
+    async insertSpecies (speciesData) {
+        let speciesId = -1;
+        if (!speciesData.scientificName) return speciesId;
+
+        await db.transaction(async (tx) => {
+
+            let [t, existsResult] = await tx.executeSql('SELECT * FROM species WHERE sciname = "' + speciesData.scientificName + '"');
+
+            let alreadyExists = existsResult.rows.length > 0 ? true : false;
+            if (alreadyExists) {
+                console.warn (speciesData.scientificName + " already exists, bro.");
+                return speciesId;
+            }
+        });
+
+        await db.transaction( async (tx) => {
+            let [t, insertResult] = await tx.executeSql(
+                `INSERT INTO species (
+                    sciname,
+                    overview,
+                    behavior,
+                    habitat,
+                    size,
+                    conservationstatus,
+                    stype
+                ) VALUES (
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?
+                )`,
+                [
+                    speciesData.scientificName,
+                    speciesData.overview,
+                    speciesData.behavior,
+                    speciesData.habitat,
+                    speciesData.size,
+                    speciesData.conservationStatus,
+                    speciesData.type
+                ]
+            );
+            return speciesId = insertResult.insertId;
+        }).catch ( (error) => {
+            alert(speciesData.scientificName + " insert failed!");
+            console.error(error);
+        });
+        return speciesId;
+    }
+
+
+    async _addToDatabase (speciesData) {
         db.transaction((tx) => {
             if (!speciesData.scientificName) return;
 
