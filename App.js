@@ -7,7 +7,7 @@ import HomeScreen from './components/screens/home-screen';
 import CatalogScreen from './components/screens/catalog-screen';
 import LoginScreen from './components/screens/login-screen';
 
-DatabaseService.search('');
+
 
 const RootStack = createStackNavigator({
   Home: {
@@ -31,6 +31,9 @@ const RootStack = createStackNavigator({
 });
 
 export default class App extends Component {
+  constructor () {
+    super();
+  }
   render() {
     return <RootStack />;
   }

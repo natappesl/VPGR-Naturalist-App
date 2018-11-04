@@ -5,7 +5,6 @@
 
 
 import SQLite from "react-native-sqlite-storage";
-import { Search } from "../components/screens/catalog-screen";
 import Amplify, { Storage, Auth } from 'aws-amplify';
 import aws_exports from '../aws-exports';
 import AWS from 'aws-sdk';
@@ -56,7 +55,7 @@ class DatabaseService {
     
     async initAWS () {
         Auth.currentCredentials()
-        .then( async credentials => {
+        .then( async (credentials) => {
             // Update aws credentials through Cognito to verify IAM Role 
             AWS.config.update(Auth.essentialCredentials(credentials));
             s3 = new AWS.S3();
@@ -78,16 +77,16 @@ class DatabaseService {
                         DatabaseService.instance.initDatabase();
                     });
                 });
-            // }
+            }
         });
     }
 
     async initDatabase () {
         db = await SQLite.openDatabase({name: dbFileName});
 
-        await DatabaseService.instance.populateDatabase();
+        //await DatabaseService.instance.populateDatabase();
 
-        DatabaseService.instance.uploadDatabase();
+        //DatabaseService.instance.uploadDatabase();
     }
 
     async dropSpeciesTable () {
@@ -102,11 +101,11 @@ class DatabaseService {
         let buf = Buffer.from(uploadDBFile, 'base64');
         s3.upload({Bucket: 'natappdata', Key: 'newnatappReturnDatabase.db', Body: buf, ContentType: 'application/x-sqlite3'}).promise()
         .then ( data => {
-            Alert("Database upload complete");
+            alert("Database upload complete");
         })
         .catch ( error => {
-            Alert("Database upload failed!");
-            Console.error(error);
+            alert("Database upload failed!");
+            console.error(error);
         });
     }
     async populateDatabase() {
@@ -194,7 +193,7 @@ class DatabaseService {
                     [id, name]
                 );
             }).catch ( (error) => {
-                alert(speciesData.scientificName + " insert Alias failed!");
+                //alert(speciesData.scientificName + " insert Alias failed!");
                 console.error(error);
             });
         }
@@ -208,7 +207,7 @@ class DatabaseService {
                     [id, ref]
                 );
             }).catch ( (error) => {
-                alert(speciesData.scientificName + " insert imageURL failed!");
+                //alert(speciesData.scientificName + " insert imageURL failed!");
                 console.error(error);
             });
         }
@@ -301,23 +300,37 @@ class DatabaseService {
         });
     }
 
-    search (query: string, type= SEARCH_TYPE.BY_TAG) {
-        // db.transaction((tx) => {
-        //     let queryString = 'SELECT * FROM species WHERE ' + type + ' LIKE ' + '%' + query + '%';
+    async getAllSpecies () {
+        let allSpecies;
 
-        //     tx.executeSql(queryString, [], (tx, results) => {
-        //         console.log("Query completed ", tx);
-
-        //         var len = results.rows.length;
-
-        //         for (let i = 0; i < len; i++) {
-        //           let row = results.rows.item(i);
-        //           console.log(`Record: ${row.name}`);
-        //           this.setState({record: row});
-        //         }
-        //     });
-        // });
+        await db.transaction ( async (tx) => {
+            let [t, results] = await tx.executeSql (`SELECT * FROM species NATURAL JOIN aliases`);
+            allSpecies = results.rows.raw();
+        }).catch ( (error) => {
+                alert(speciesData.scientificName + " insert trait failed!");
+                console.error(error);
+        });
+        
+        return allSpecies;
     }
+
+    // search (query: string, type) {
+    //     db.transaction( async (tx) => {
+    //         let queryString = 'SELECT * FROM species WHERE ' + type + ' LIKE ' + '%' + query + '%';
+
+    //         tx.executeSql(queryString, [], (tx, results) => {
+    //             console.log("Query completed ", tx);
+
+    //             var len = results.rows.length;
+
+    //             for (let i = 0; i < len; i++) {
+    //               let row = results.rows.item(i);
+    //               console.log(`Record: ${row.name}`);
+    //               this.setState({record: row});
+    //             }
+    //         });
+    //     });
+    // }
 }
 
 const instance = new DatabaseService();
