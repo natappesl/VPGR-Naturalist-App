@@ -61,20 +61,22 @@ class DatabaseService {
         await DatabaseService.instance.downloadDatabase();
       }
       await DatabaseService.instance.openDatabase();
-      // await DatabaseService.instance.populateDatabase();
-      // DatabaseService.instance.uploadDatabase();
     });
   }
 
   async openDatabase() {
     db = await SQLite.openDatabase({ name: dbFileName });
+    await DatabaseService.instance.downloadDatabase();
+    await DatabaseService.instance.populateDatabase();
+    await DatabaseService.instance.uploadDatabase();
+
   }
 
   async downloadDatabase() {
     console.log('Downloading database file ' + dbFileName + ' ...');
     s3.getObject({
       Bucket: "natappdata",
-      Key: dbFileName,
+      Key: 'emptySpeciesDatabase.db',
       ResponseContentType: "application/x-sqlite3"
     })
       .promise()
@@ -96,7 +98,7 @@ class DatabaseService {
     let buf = Buffer.from(uploadDBFile, "base64");
     s3.upload({
       Bucket: "natappdata",
-      Key: dbFileName,
+      Key: 'updatedSpeciesDatabase.db',
       Body: buf,
       ContentType: "application/x-sqlite3"
     })
@@ -144,6 +146,46 @@ class DatabaseService {
         console.warn("Species parse error:", err, speciesResponse);
       }
     }
+  }
+
+  async updateSpecies() {
+    let listResponse = await s3
+      .listObjects({ Bucket: "natappdata", Prefix: "json/" })
+      .promise();
+    let objectList = listResponse.Contents;
+
+    for (const item of objectList) {
+      let speciesResponse = await s3
+        .getObject({ Bucket: "natappdata", Key: item.Key })
+        .promise();
+
+      try {
+        
+        let speciesString = speciesResponse.Body.toString();
+        let speciesData = JSON.parse(speciesString);
+
+        if (!speciesData.scientificName || !speciesData.tags) {
+          console.log("Found nonspecies: ", speciesData)
+          return;
+        }
+
+        let speciesQuery = await DatabaseService.instance.getSpecies(speciesData);
+        if (speciesQuery.id) {
+          DatabaseService.instance.insertTraits(speciesData, speciesQuery.id);
+        }
+      } catch (err) {
+        console.warn("Species TRAIT error:", err, speciesResponse);
+      }
+    }
+  }
+
+  async getSpecies(speciesData) {
+    let speciesQuery;
+    await db.transaction( async (tx) => {
+      let [t, resp] = await tx.executeSql(`SELECT * FROM species WHERE sciname = ?;`, [speciesData.scientificName]);
+      speciesQuery = resp.rows.item(0);
+    });
+    return speciesQuery;
   }
 
   async insertSpecies(speciesData) {
@@ -206,8 +248,8 @@ class DatabaseService {
   async insertAliases(speciesData, id) {
     let names = speciesData.name.split(",");
 
-    for (name of names) {
-      db.transaction(tx => {
+    for (const name of names) {
+      await db.transaction(tx => {
         tx.executeSql(`INSERT INTO aliases (id, alias) VALUES (?,?);`, [
           id,
           name
@@ -221,10 +263,10 @@ class DatabaseService {
 
   async insertLinks(speciesData, id) {
     if (speciesData.imageURL) {
-      db.transaction(tx => {
+      await db.transaction(tx => {
         tx.executeSql(
           `INSERT INTO links (id, url, type) VALUES (?,?, 'image');`,
-          [id, ref]
+          [id, speciesData.imageURL]
         );
       }).catch(error => {
         //alert(speciesData.scientificName + " insert imageURL failed!");
@@ -233,8 +275,8 @@ class DatabaseService {
     }
     if (speciesData.references) {
       let refs = speciesData.references.split(" ");
-      for (ref of refs) {
-        db.transaction(tx => {
+      for (const ref of refs) {
+        await db.transaction(tx => {
           tx.executeSql(
             `INSERT INTO links (id, url, type) VALUES (?,?, 'reference');`,
             [id, ref]
@@ -249,8 +291,8 @@ class DatabaseService {
 
   async insertTraits(speciesData, id) {
     let traits = speciesData.tags.split(" ");
-    for (tag of traits) {
-      db.transaction(tx => {
+    for (const tag of traits) {
+      await db.transaction(tx => {
         tx.executeSql(`INSERT INTO traits (id, tag) VALUES (?,?);`, [id, tag]);
       }).catch(error => {
         //alert(speciesData.scientificName + " insert trait failed!");
