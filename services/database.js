@@ -54,21 +54,24 @@ class DatabaseService {
       // Update aws credentials through Cognito to verify IAM Role
       AWS.config.update(Auth.essentialCredentials(credentials));
       s3 = new AWS.S3();
+
       let dbExists = await RNFS.exists(dbFolderPath + dbFileName);
       if (dbExists) {
         console.log("Found DB file: " + dbFolderPath + dbFileName);
       } else {
         await DatabaseService.instance.downloadDatabase();
       }
+
       await DatabaseService.instance.openDatabase();
     });
   }
 
   async openDatabase() {
+    // await DatabaseService.instance.downloadDatabase();
+    // await DatabaseService.instance.populateDatabase();
+    // await DatabaseService.instance.uploadDatabase();
+
     db = await SQLite.openDatabase({ name: dbFileName });
-    await DatabaseService.instance.downloadDatabase();
-    await DatabaseService.instance.populateDatabase();
-    await DatabaseService.instance.uploadDatabase();
 
   }
 
@@ -76,7 +79,7 @@ class DatabaseService {
     console.log('Downloading database file ' + dbFileName + ' ...');
     s3.getObject({
       Bucket: "natappdata",
-      Key: 'emptySpeciesDatabase.db',
+      Key: dbFileName,
       ResponseContentType: "application/x-sqlite3"
     })
       .promise()
@@ -98,7 +101,7 @@ class DatabaseService {
     let buf = Buffer.from(uploadDBFile, "base64");
     s3.upload({
       Bucket: "natappdata",
-      Key: 'updatedSpeciesDatabase.db',
+      Key: dbFileName,
       Body: buf,
       ContentType: "application/x-sqlite3"
     })
@@ -134,12 +137,12 @@ class DatabaseService {
       try {
         let speciesString = speciesResponse.Body.toString();
         let speciesData = JSON.parse(speciesString);
-        let speciesId = await DatabaseService.instance.insertSpecies(
-          speciesData
-        );
+        let speciesId = await DatabaseService.instance.insertSpecies(speciesData);
+
         if (speciesId != -1) {
           DatabaseService.instance.insertAliases(speciesData, speciesId);
-          DatabaseService.instance.insertLinks(speciesData, speciesId);
+          DatabaseService.instance.insertImageLinks(speciesData, speciesId);
+          DatabaseService.instance.insertReferenceLinks(speciesData, speciesId);
           DatabaseService.instance.insertTraits(speciesData, speciesId);
         }
       } catch (err) {
@@ -261,11 +264,11 @@ class DatabaseService {
     }
   }
 
-  async insertLinks(speciesData, id) {
+  async insertImageLinks(speciesData, id) {
     if (speciesData.imageURL) {
-      await db.transaction(tx => {
+      await db.transaction((tx) => {
         tx.executeSql(
-          `INSERT INTO links (id, url, type) VALUES (?,?, 'image');`,
+          `INSERT INTO images (id, url) VALUES (?,?);`,
           [id, speciesData.imageURL]
         );
       }).catch(error => {
@@ -273,13 +276,16 @@ class DatabaseService {
         console.error(error);
       });
     }
+  }
+
+  async insertReferenceLinks(speciesData, id) {
     if (speciesData.references) {
       let refs = speciesData.references.split(" ");
-      for (const ref of refs) {
-        await db.transaction(tx => {
+      for (reference of refs) {
+        await db.transaction((tx) => {
           tx.executeSql(
-            `INSERT INTO links (id, url, type) VALUES (?,?, 'reference');`,
-            [id, ref]
+            'INSERT INTO links (id,url) VALUES (?,?);',
+            [id, reference]
           );
         }).catch(error => {
           //alert(speciesData.scientificName + " insert ref failed!");
@@ -288,6 +294,34 @@ class DatabaseService {
       }
     }
   }
+
+  // async insertLinks(speciesData, id) {
+  //   if (speciesData.imageURL) {
+  //     await db.transaction(tx => {
+  //       tx.executeSql(
+  //         `INSERT INTO links (id, url, type) VALUES (?,?, 'image');`,
+  //         [id, speciesData.imageURL]
+  //       );
+  //     }).catch(error => {
+  //       //alert(speciesData.scientificName + " insert imageURL failed!");
+  //       console.error(error);
+  //     });
+  //   }
+  //   if (speciesData.references) {
+  //     let refs = speciesData.references.split(" ");
+  //     for (const ref of refs) {
+  //       await db.transaction(tx => {
+  //         tx.executeSql(
+  //           `INSERT INTO links (id, url, type) VALUES (?,?, 'reference');`,
+  //           [id, ref]
+  //         );
+  //       }).catch(error => {
+  //         //alert(speciesData.scientificName + " insert ref failed!");
+  //         console.error(error);
+  //       });
+  //     }
+  //   }
+  // }
 
   async insertTraits(speciesData, id) {
     let traits = speciesData.tags.split(" ");
@@ -368,7 +402,7 @@ class DatabaseService {
     });
   }
 
-  async getAllSpecies() {
+  async getAllDistinctSpecies() {
     let allSpecies;
 
     await db
