@@ -60,7 +60,6 @@ export default class CatalogScreen extends Component {
         </View>
         <View style={Theme.contentContainer}>
         {this.state.showSearch && <Search/>}
-        {!this.state.speciesLoaded && <LoadSpeciesIndicator/>}
           <View style={Theme.listContainer}>
             <ScrollView >
               {

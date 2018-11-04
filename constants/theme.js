@@ -34,7 +34,7 @@ export const Theme = StyleSheet.create({
     flex: 1,
     width: '100%',
     alignItems: "center",
-    justifyContent: "flex-start",
+    justifyContent: "center",
     backgroundColor: backgroundColor
   },
   headerTitle: {

@@ -14,7 +14,7 @@ SQLite.DEBUG(false);
 SQLite.enablePromise(true);
 
 const dbFolderPath = "/data/data/com.vpgrnaturalistapp/databases/";
-const dbFileName = "sp.db";
+const dbFileName = "speciesDatabase.db";
 
 let s3;
 let db;
@@ -60,21 +60,21 @@ class DatabaseService {
       } else {
         await DatabaseService.instance.downloadDatabase();
       }
-
-      await DatabaseService.instance.initDatabase();
+      await DatabaseService.instance.openDatabase();
       // await DatabaseService.instance.populateDatabase();
       // DatabaseService.instance.uploadDatabase();
     });
   }
 
-  async initDatabase() {
+  async openDatabase() {
     db = await SQLite.openDatabase({ name: dbFileName });
   }
 
   async downloadDatabase() {
+    console.log('Downloading database file ' + dbFileName + ' ...');
     s3.getObject({
       Bucket: "natappdata",
-      Key: "natappDatabase.db",
+      Key: dbFileName,
       ResponseContentType: "application/x-sqlite3"
     })
       .promise()
@@ -91,17 +91,18 @@ class DatabaseService {
   }
 
   async uploadDatabase() {
+    console.log('Uploading database file ' + dbFileName + ' ...');
     let uploadDBFile = await RNFS.readFile(dbFolderPath + dbFileName, "base64");
     let buf = Buffer.from(uploadDBFile, "base64");
     s3.upload({
       Bucket: "natappdata",
-      Key: "newnatappReturnDatabase.db",
+      Key: dbFileName,
       Body: buf,
       ContentType: "application/x-sqlite3"
     })
       .promise()
       .then(data => {
-        alert("Database upload complete!");
+        alert("Database upload SUCCESS!");
       })
       .catch(error => {
         alert("Database upload FAILED!");

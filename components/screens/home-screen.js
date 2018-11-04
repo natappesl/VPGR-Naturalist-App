@@ -5,7 +5,6 @@ import SQLite from "react-native-sqlite-storage";
 import Amplify, { Storage, Auth } from "aws-amplify";
 import { Theme } from "../../constants/theme";
 
-
 export default class HomeScreen extends Component {
   constructor(props) {
     super(props);
