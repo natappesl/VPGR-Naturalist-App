@@ -30,6 +30,11 @@ export const Theme = StyleSheet.create({
     width: '100%',
     backgroundColor: backgroundColor,
   },
+  loadingContainer: {
+    flex: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   searchContainer: {
     flex: 1,
     width: '100%',

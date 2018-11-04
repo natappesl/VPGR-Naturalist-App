@@ -332,7 +332,7 @@ class DatabaseService {
     await db
       .transaction(async tx => {
         let [t, results] = await tx.executeSql(
-          `SELECT * FROM species NATURAL JOIN aliases`
+          `SELECT * FROM (species NATURAL JOIN links) NATURAL JOIN aliases`
         );
         allSpecies = results.rows.raw();
       })
