@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { ActivityIndicator, Text, View, ScrollView } from "react-native";
+import { ActivityIndicator, Text, View, ScrollView, TextInput } from "react-native";
 import {
   Icon,
   FormValidationMessage,
@@ -11,16 +11,6 @@ import { Authenticator } from "aws-amplify-react-native";
 import Amplify, { Storage, Auth } from "aws-amplify";
 import { Theme } from "../../constants/theme";
 import DatabaseService from "../../services/database";
-
-export class Search extends Component {
-  render() {
-    return (
-      <View style={Theme.searchContainer}>
-        <Text>SEARCH</Text>
-      </View>
-    );
-  }
-}
 
 export class LoadingSpeciesIndicator extends Component {
   render() {
@@ -39,14 +29,15 @@ export default class CatalogScreen extends Component {
     this.state = {
       showSearch: false,
       species: [],
-      speciesLoaded: false
+      speciesLoaded: false,
+      searchInput: "",
     };
 
     this.initCatalog();
   }
 
   async initCatalog() {
-    let allSpecies = await DatabaseService.getAllSpecies();
+    let allSpecies = await DatabaseService.getAllDistinctSpecies();
     if (allSpecies) {
       this.setState({ species: allSpecies, speciesLoaded: true });
     }
@@ -71,7 +62,16 @@ export default class CatalogScreen extends Component {
         {!this.state.speciesLoaded && <LoadingSpeciesIndicator />}
         {this.state.speciesLoaded && 
           <View style={Theme.contentContainer}>
-          {this.state.showSearch && <Search />}
+          {this.state.showSearch &&
+            <View style={Theme.searchContainer}>
+            <TextInput
+              onChangeText={(text) => {
+                  this.setState({searchInput: text});
+                  console.log(this.state.searchInput);
+                }
+              }
+            />
+      </View>}
           <View style={Theme.listContainer}>
             {this.state.speciesLoaded && 
               <ScrollView>

@@ -67,7 +67,7 @@ class DatabaseService {
   }
 
   async openDatabase() {
-    // await DatabaseService.instance.downloadDatabase();
+     await DatabaseService.instance.downloadDatabase();
     // await DatabaseService.instance.populateDatabase();
     // await DatabaseService.instance.uploadDatabase();
 
@@ -408,12 +408,11 @@ class DatabaseService {
     await db
       .transaction(async tx => {
         let [t, results] = await tx.executeSql(
-          `SELECT * FROM (species NATURAL JOIN links) NATURAL JOIN aliases`
+          `SELECT * FROM species s, (aliases NATURAL JOIN links) a, images i WHERE a.id = i.id AND i.id = s.id GROUP BY s.id`
         );
         allSpecies = results.rows.raw();
       })
       .catch(error => {
-        alert(speciesData.scientificName + " insert trait failed!");
         console.error(error);
       });
 

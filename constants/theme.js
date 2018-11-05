@@ -9,7 +9,8 @@ const headingTextColor = "white";
 export const Theme = StyleSheet.create({
   containerContainer: {
     height: "100%",
-    width: "100%"
+    width: "100%",
+    backgroundColor: backgroundColor
   },
   contentContainer: {
     flex: 10,
@@ -41,6 +42,9 @@ export const Theme = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: backgroundColor
+  },
+  searchInput: {
+
   },
   headerTitle: {
     color: headingTextColor,
