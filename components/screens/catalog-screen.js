@@ -84,10 +84,6 @@ export default class CatalogScreen extends Component {
       this.setState({ speciesList: updatedList, speciesLoaded: true});
   }
 
-  navigateTo(species) {
-    console.log(species);
-  }
-
   render() {
     return (
       <View style={Theme.containerContainer}>
@@ -115,7 +111,7 @@ export default class CatalogScreen extends Component {
                     renderItem={(species, index) => (
                       <TouchableOpacity
                         style={Theme.listContent}
-                        onPress={this.navigateTo.bind(this, species)}
+                        onPress={() => {this.props.navigation.navigate('Species', {species: species.item})}}
                       >
                         <Image
                           style={Theme.listContentImage}

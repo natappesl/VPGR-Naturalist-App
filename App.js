@@ -6,7 +6,7 @@ import DatabaseService from './services/database';
 import HomeScreen from './components/screens/home-screen';
 import CatalogScreen from './components/screens/catalog-screen';
 import LoginScreen from './components/screens/login-screen';
-
+import SpeciesScreen from './components/screens/species-screen';
 
 
 const RootStack = createStackNavigator({
@@ -24,6 +24,12 @@ const RootStack = createStackNavigator({
   },
   Login: {
     screen: LoginScreen,
+    navigationOptions: ({ navigation }) => ({
+      header: null
+    }),
+  },
+  Species: {
+    screen: SpeciesScreen,
     navigationOptions: ({ navigation }) => ({
       header: null
     }),
