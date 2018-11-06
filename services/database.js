@@ -425,7 +425,7 @@ class DatabaseService {
   async search (text) {
     let searchResult;
     await db.transaction( async (tx) => {
-        let query = `SELECT DISTINCT * FROM species WHERE ( id IN ( SELECT id FROM traits WHERE tag LIKE ? )) OR ( id IN ( SELECT id FROM aliases WHERE alias LIKE ? ));`;
+        let query = `SELECT DISTINCT * FROM species s, (aliases NATURAL JOIN links) a, images i WHERE a.id = i.id AND i.id = s.id AND ( a.id IN ( SELECT id FROM traits WHERE tag LIKE ? )) OR ( a.id IN ( SELECT id FROM aliases WHERE alias LIKE ? ));`;
         let [t, results] = await tx.executeSql(query, [text]);
         searchResult = results.rows.raw();
     });

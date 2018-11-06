@@ -27,8 +27,8 @@ export class SearchBar extends Component {
     return (
       <View style={Theme.searchContainer}>
         <TextInput
-          onChangeText={text => {
-            this.props.onTextInput(text);
+          onSubmitEditing={(event) => {
+            this.props.onTextInput(event.nativeEvent.text);
           }}
         />
       </View>
@@ -69,7 +69,6 @@ export default class CatalogScreen extends Component {
     else {
       let allSpecies = await DatabaseService.getAllDistinctSpecies();
       if (allSpecies) {
-        console.log(allSpecies);
         this.setState({ speciesList: allSpecies, speciesLoaded: true });
       }
     }
@@ -80,10 +79,9 @@ export default class CatalogScreen extends Component {
   }
 
   async searchUpdated(text) {
-    if (text.length >= minSearchTextLength) {
+      this.setState({ speciesLoaded: false});
       let updatedList = await DatabaseService.search(text);
-      this.setState({ speciesList: updatedList });
-    }
+      this.setState({ speciesList: updatedList, speciesLoaded: true});
   }
 
   navigateTo(species) {
