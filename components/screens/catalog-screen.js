@@ -13,7 +13,8 @@ import {
   FormValidationMessage,
   Card,
   ListItem,
-  Button
+  Button,
+  SearchBar
 } from "react-native-elements";
 import { Authenticator } from "aws-amplify-react-native";
 import Amplify, { Storage, Auth } from "aws-amplify";
@@ -22,16 +23,17 @@ import DatabaseService from "../../services/database";
 
 const minSearchTextLength = 5;
 
-export class SearchBar extends Component {
+export class Search extends Component {
   render() {
     return (
-      <View style={Theme.searchContainer}>
-        <TextInput
-          onSubmitEditing={(event) => {
-            this.props.onTextInput(event.nativeEvent.text);
+        <SearchBar
+          containerStyle= {Theme.searchContainer}
+          noIcon={true}
+          inputStyle= {Theme.searchInput}
+          onChangeText={(text) => {
+            this.props.onTextInput(text);
           }}
         />
-      </View>
     );
   }
 }
@@ -79,9 +81,10 @@ export default class CatalogScreen extends Component {
   }
 
   async searchUpdated(text) {
-      this.setState({ speciesLoaded: false});
+    if (text.length >= minSearchTextLength) {
       let updatedList = await DatabaseService.search(text);
       this.setState({ speciesList: updatedList, speciesLoaded: true});
+    }
   }
 
   render() {
@@ -100,7 +103,7 @@ export default class CatalogScreen extends Component {
         {this.state.speciesLoaded && (
           <View style={Theme.contentContainer}>
             {this.state.showSearch && (
-              <SearchBar onTextInput={this.searchUpdated.bind(this)} />
+              <Search onTextInput={this.searchUpdated.bind(this)} />
             )}
             <View style={Theme.listContainer}>
               {this.state.speciesLoaded &&

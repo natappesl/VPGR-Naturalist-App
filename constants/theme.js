@@ -14,12 +14,13 @@ export const Theme = StyleSheet.create({
   },
   contentContainer: {
     flex: 10,
+    width: "100%",
     alignItems: "center",
     justifyContent: "flex-start",
     backgroundColor: backgroundColor
   },
   headerContainer: {
-    flex: 1,
+    height: 50,
     flexDirection: "row",
     flexWrap: "nowrap",
     alignItems: "center",
@@ -56,14 +57,18 @@ export const Theme = StyleSheet.create({
     justifyContent: "center",
   },
   searchContainer: {
-    flex: 1,
+    height: 100,
     width: '100%',
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: backgroundColor
+    backgroundColor: primaryColor,
+    borderTopWidth: 0,
+    borderColor: primaryColor,
   },
   searchInput: {
-
+    flex: 1,
+    width: '90%',
+    backgroundColor: backgroundColor,
   },
   headerTitle: {
     color: headingTextColor,
@@ -73,7 +78,6 @@ export const Theme = StyleSheet.create({
   },
   headerButton: {
     flex: 1,
-    marginTop: 10,
     padding: 10
   },
 });
