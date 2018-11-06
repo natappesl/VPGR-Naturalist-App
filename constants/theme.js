@@ -31,6 +31,25 @@ export const Theme = StyleSheet.create({
     width: '100%',
     backgroundColor: backgroundColor,
   },
+  listContent: {
+    flex:1,
+    flexDirection: 'row',
+    padding: 5,
+    borderBottomWidth: 1,
+  },
+  listContentImage: {
+    flex: 1,
+  },
+  listContentView: {
+    flex: 10,
+    paddingLeft: 5,
+  },
+  listContentTitle: {
+    fontWeight: 'bold',
+  },
+  listContentSubtitle: {
+    fontStyle: 'italic'
+  },
   loadingContainer: {
     flex: 10,
     alignItems: "center",

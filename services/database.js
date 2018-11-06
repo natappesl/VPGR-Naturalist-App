@@ -18,8 +18,7 @@ const dbFileName = "speciesDatabase.db";
 
 let s3;
 let db;
-
-//todo: clean up tables
+let dbLoaded;
 
 const SEARCH_TYPE = {
   BY_NAME: "name",
@@ -44,6 +43,7 @@ class DatabaseService {
   constructor() {
     if (!DatabaseService.instance) {
       DatabaseService.instance = this;
+      dbLoaded = false;
       DatabaseService.instance.initAWS();
     }
     return DatabaseService.instance;
@@ -67,12 +67,16 @@ class DatabaseService {
   }
 
   async openDatabase() {
-     await DatabaseService.instance.downloadDatabase();
     // await DatabaseService.instance.populateDatabase();
     // await DatabaseService.instance.uploadDatabase();
 
     db = await SQLite.openDatabase({ name: dbFileName });
+    dbLoaded = true;
 
+  }
+
+  dbLoaded() {
+    return dbLoaded;
   }
 
   async downloadDatabase() {
@@ -405,37 +409,28 @@ class DatabaseService {
   async getAllDistinctSpecies() {
     let allSpecies;
 
-    await db
-      .transaction(async tx => {
-        let [t, results] = await tx.executeSql(
-          `SELECT * FROM species s, (aliases NATURAL JOIN links) a, images i WHERE a.id = i.id AND i.id = s.id GROUP BY s.id`
-        );
-        allSpecies = results.rows.raw();
-      })
-      .catch(error => {
-        console.error(error);
-      });
+    await db.transaction(async tx => {
+      let [t, results] = await tx.executeSql(
+        `SELECT * FROM species s, (aliases NATURAL JOIN links) a, images i WHERE a.id = i.id AND i.id = s.id GROUP BY s.id`
+      );
+      allSpecies = results.rows.raw();
+    })
+    .catch(error => {
+      console.error(error);
+    });
 
     return allSpecies;
   }
 
-  // search (query: string, type) {
-  //     db.transaction( async (tx) => {
-  //         let queryString = 'SELECT * FROM species WHERE ' + type + ' LIKE ' + '%' + query + '%';
-
-  //         tx.executeSql(queryString, [], (tx, results) => {
-  //             console.log("Query completed ", tx);
-
-  //             var len = results.rows.length;
-
-  //             for (let i = 0; i < len; i++) {
-  //               let row = results.rows.item(i);
-  //               console.log(`Record: ${row.name}`);
-  //               this.setState({record: row});
-  //             }
-  //         });
-  //     });
-  // }
+  async search (text) {
+    let searchResult;
+    await db.transaction( async (tx) => {
+        let query = `SELECT DISTINCT * FROM species WHERE ( id IN ( SELECT id FROM traits WHERE tag LIKE ? )) OR ( id IN ( SELECT id FROM aliases WHERE alias LIKE ? ));`;
+        let [t, results] = await tx.executeSql(query, [text]);
+        searchResult = results.rows.raw();
+    });
+    return searchResult;
+  }
 }
 
 const instance = new DatabaseService();
