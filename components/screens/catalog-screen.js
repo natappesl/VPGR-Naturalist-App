@@ -20,6 +20,7 @@ import { Authenticator } from "aws-amplify-react-native";
 import Amplify, { Storage, Auth } from "aws-amplify";
 import { Theme } from "../../constants/theme";
 import DatabaseService from "../../services/database";
+import MediaService from '../../services/media'
 
 const minSearchTextLength = 5;
 
@@ -113,10 +114,7 @@ export default class CatalogScreen extends Component {
                       >
                         <Image
                           style={Theme.listContentImage}
-                          source={{
-                            uri:
-                              "https://facebook.github.io/react-native/docs/assets/favicon.png"
-                          }}
+                          source={{ uri: MediaService.getImageURI(species.item.url)}}
                         />
                         <View style={Theme.listContentView}>
                           <Text style={Theme.listContentTitle}>{species.item.alias}</Text>
