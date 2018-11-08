@@ -6,4 +6,16 @@ export const COLOR_TRAITS = [
   'blue',
   'green',
   'red'
+];
+
+export const SIZE_TRAITS = [
+  'small',
+  'medium',
+  'large'
+];
+
+export const SPECIES_TYPES = [
+  'plant',
+  'animal',
+  'branchiopoda'
 ]
