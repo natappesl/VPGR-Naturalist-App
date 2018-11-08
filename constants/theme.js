@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 
-const backgroundColor = "#fcf7f0";
-const primaryColor = "#001964"
-const transparentBackground = "rgba(52, 52, 52, 0.0)";
+export const backgroundColor = "#fcf7f0";
+export const primaryColor = "#001964";
+export const transparentBackground = "rgba(52, 52, 52, 0.0)";
 
-const headingTextColor = "white";
+export const headingTextColor = "white";
 
 export const Theme = StyleSheet.create({
   containerContainer: {
@@ -57,7 +57,7 @@ export const Theme = StyleSheet.create({
     justifyContent: "center",
   },
   searchContainer: {
-    height: 100,
+    height: 60,
     width: '100%',
     alignItems: "center",
     justifyContent: "center",

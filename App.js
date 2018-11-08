@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { createStackNavigator } from 'react-navigation';
 
 import DatabaseService from './services/database';
+import MediaService from './services/media';
 
 import HomeScreen from './components/screens/home-screen';
 import CatalogScreen from './components/screens/catalog-screen';
@@ -36,12 +37,20 @@ const RootStack = createStackNavigator({
   }
 },
 {
-  initialRouteName: 'Catalog',
+  initialRouteName: 'Home',
 });
 
 export default class App extends Component {
   constructor () {
     super();
+    DatabaseService.getS3().then(
+      S3 => {
+        console.log(S3);
+      }
+    )
+    .catch(error => {
+      console.log(error);
+    });
   }
   render() {
     return <RootStack />;

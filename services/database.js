@@ -1,7 +1,8 @@
 // Singleton Reference: https://www.sitepoint.com/javascript-design-patterns-singleton/
 // Enumeration Reference: https://www.sohamkamani.com/blog/2017/08/21/enums-in-javascript/
 
-//TODO: Update databse from S3 using ifModifiedSince param in getObject
+//TODO: Update database from S3 using ifModifiedSince param in getObject
+//TODO: Refactor into component?
 
 import SQLite from "react-native-sqlite-storage";
 import Amplify, { Storage, Auth } from "aws-amplify";
@@ -16,9 +17,8 @@ SQLite.enablePromise(true);
 const dbFolderPath = "/data/data/com.vpgrnaturalistapp/databases/";
 const dbFileName = "speciesDatabase.db";
 
-let s3;
-let db;
-let dbLoaded;
+let S3;
+let _db;
 
 const SEARCH_TYPE = {
   BY_NAME: "name",
@@ -43,17 +43,20 @@ class DatabaseService {
   constructor() {
     if (!DatabaseService.instance) {
       DatabaseService.instance = this;
-      dbLoaded = false;
-      DatabaseService.instance.initAWS();
+      DatabaseService.instance.getS3();
     }
     return DatabaseService.instance;
   }
 
-  async initAWS() {
-    Auth.currentCredentials().then(async credentials => {
+  async getS3() {
+    if (S3) {
+      return S3;
+    }
+
+    await Auth.currentCredentials().then(async credentials => {
       // Update aws credentials through Cognito to verify IAM Role
       AWS.config.update(Auth.essentialCredentials(credentials));
-      s3 = new AWS.S3();
+      S3 = new AWS.S3();
 
       let dbExists = await RNFS.exists(dbFolderPath + dbFileName);
       if (dbExists) {
@@ -62,26 +65,31 @@ class DatabaseService {
         await DatabaseService.instance.downloadDatabase();
       }
 
-      await DatabaseService.instance.openDatabase();
+      await DatabaseService.instance.getDB();
+    })
+    .catch(async error => {
+      throw error;
     });
+    return S3;
   }
+  //TODO: Make into getter
+  async getDB() {
+    if (_db) {
+      return _db;
+    }
 
-  async openDatabase() {
     // await DatabaseService.instance.populateDatabase();
     // await DatabaseService.instance.uploadDatabase();
 
-    db = await SQLite.openDatabase({ name: dbFileName });
-    dbLoaded = true;
+    _db = await SQLite.openDatabase({ name: dbFileName });
 
-  }
+    return _db;
 
-  dbLoaded() {
-    return dbLoaded;
   }
 
   async downloadDatabase() {
     console.log('Downloading database file ' + dbFileName + ' ...');
-    s3.getObject({
+    S3.getObject({
       Bucket: "natappdata",
       Key: dbFileName,
       ResponseContentType: "application/x-sqlite3"
@@ -103,7 +111,7 @@ class DatabaseService {
     console.log('Uploading database file ' + dbFileName + ' ...');
     let uploadDBFile = await RNFS.readFile(dbFolderPath + dbFileName, "base64");
     let buf = Buffer.from(uploadDBFile, "base64");
-    s3.upload({
+    S3.upload({
       Bucket: "natappdata",
       Key: dbFileName,
       Body: buf,
@@ -129,13 +137,13 @@ class DatabaseService {
   }
 
   async populateDatabase() {
-    let listResponse = await s3
+    let listResponse = await S3
       .listObjects({ Bucket: "natappdata", Prefix: "json/" })
       .promise();
     let objectList = listResponse.Contents;
 
     for (const item of objectList) {
-      let speciesResponse = await s3
+      let speciesResponse = await S3
         .getObject({ Bucket: "natappdata", Key: item.Key })
         .promise();
       try {
@@ -156,13 +164,13 @@ class DatabaseService {
   }
 
   async updateSpecies() {
-    let listResponse = await s3
+    let listResponse = await S3
       .listObjects({ Bucket: "natappdata", Prefix: "json/" })
       .promise();
     let objectList = listResponse.Contents;
 
     for (const item of objectList) {
-      let speciesResponse = await s3
+      let speciesResponse = await S3
         .getObject({ Bucket: "natappdata", Key: item.Key })
         .promise();
 
@@ -299,33 +307,33 @@ class DatabaseService {
     }
   }
 
-  // async insertLinks(speciesData, id) {
-  //   if (speciesData.imageURL) {
-  //     await db.transaction(tx => {
-  //       tx.executeSql(
-  //         `INSERT INTO links (id, url, type) VALUES (?,?, 'image');`,
-  //         [id, speciesData.imageURL]
-  //       );
-  //     }).catch(error => {
-  //       //alert(speciesData.scientificName + " insert imageURL failed!");
-  //       console.error(error);
-  //     });
-  //   }
-  //   if (speciesData.references) {
-  //     let refs = speciesData.references.split(" ");
-  //     for (const ref of refs) {
-  //       await db.transaction(tx => {
-  //         tx.executeSql(
-  //           `INSERT INTO links (id, url, type) VALUES (?,?, 'reference');`,
-  //           [id, ref]
-  //         );
-  //       }).catch(error => {
-  //         //alert(speciesData.scientificName + " insert ref failed!");
-  //         console.error(error);
-  //       });
-  //     }
-  //   }
-  // }
+  async _insertLinks(speciesData, id) {
+    if (speciesData.imageURL) {
+      await db.transaction(tx => {
+        tx.executeSql(
+          `INSERT INTO links (id, url, type) VALUES (?,?, 'image');`,
+          [id, speciesData.imageURL]
+        );
+      }).catch(error => {
+        //alert(speciesData.scientificName + " insert imageURL failed!");
+        console.error(error);
+      });
+    }
+    if (speciesData.references) {
+      let refs = speciesData.references.split(" ");
+      for (const ref of refs) {
+        await db.transaction(tx => {
+          tx.executeSql(
+            `INSERT INTO links (id, url, type) VALUES (?,?, 'reference');`,
+            [id, ref]
+          );
+        }).catch(error => {
+          //alert(speciesData.scientificName + " insert ref failed!");
+          console.error(error);
+        });
+      }
+    }
+  }
 
   async insertTraits(speciesData, id) {
     let traits = speciesData.tags.split(" ");
@@ -408,7 +416,8 @@ class DatabaseService {
 
   async getAllDistinctSpecies() {
     let allSpecies;
-
+    let db = await DatabaseService.instance.getDB();
+    
     await db.transaction(async tx => {
       let [t, results] = await tx.executeSql(
         `SELECT * FROM species s, (aliases NATURAL JOIN links) a, images i WHERE a.id = i.id AND i.id = s.id GROUP BY s.id`
@@ -424,6 +433,8 @@ class DatabaseService {
 
   async search (text) {
     let searchResult;
+    let db = await DatabaseService.instance.getDB();
+
     await db.transaction( async (tx) => {
         let query = `SELECT DISTINCT * FROM species s, (aliases NATURAL JOIN links) a, images i WHERE a.id = i.id AND i.id = s.id AND ( a.id IN ( SELECT id FROM traits WHERE tag LIKE ? )) OR ( a.id IN ( SELECT id FROM aliases WHERE alias LIKE ? ));`;
         let [t, results] = await tx.executeSql(query, [text]);

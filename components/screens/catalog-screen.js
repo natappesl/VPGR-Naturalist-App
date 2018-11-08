@@ -65,14 +65,9 @@ export default class CatalogScreen extends Component {
   }
 
   async initCatalog() {
-    if (!DatabaseService.dbLoaded()) {
-      setTimeout(() => {this.initCatalog()}, 1000);
-    }
-    else {
-      let allSpecies = await DatabaseService.getAllDistinctSpecies();
-      if (allSpecies) {
-        this.setState({ speciesList: allSpecies, speciesLoaded: true });
-      }
+    let allSpecies = await DatabaseService.getAllDistinctSpecies();
+    if (allSpecies) {
+      this.setState({ speciesList: allSpecies, speciesLoaded: true });
     }
   }
 
