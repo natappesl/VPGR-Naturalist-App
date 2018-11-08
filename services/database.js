@@ -45,7 +45,7 @@ class DatabaseService {
     if (!DatabaseService.instance) {
       DatabaseService.instance = this;
 
-      DatabaseService.instance.updateDatabase();
+      // DatabaseService.instance.updateDatabase();
     }
     return DatabaseService.instance;
   }
@@ -449,7 +449,7 @@ class DatabaseService {
     });
   }
 
-  async getAllDistinctSpecies() {
+  async getSpeciesByAlias() {
     let allSpecies;
     let db = await DatabaseService.instance.getDB();
     

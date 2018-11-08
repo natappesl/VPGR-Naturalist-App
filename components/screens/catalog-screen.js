@@ -66,7 +66,7 @@ export default class CatalogScreen extends Component {
   }
 
   async initCatalog() {
-    let allSpecies = await DatabaseService.getAllDistinctSpecies();
+    let allSpecies = await DatabaseService.getSpeciesByAlias();
     if (allSpecies) {
       this.setState({ speciesList: allSpecies, speciesLoaded: true });
     }
