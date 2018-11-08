@@ -53,7 +53,7 @@ class MediaService {
     try {
       let uri;
       if (Platform.OS == 'android' || Platform.OS == 'ios'){
-        uri = 'file://' + imagesPath;
+        uri = 'file://' + imagesPath + imageString;
       }
       return uri;
     } catch (error) {
