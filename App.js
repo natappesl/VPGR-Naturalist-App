@@ -8,6 +8,7 @@ import HomeScreen from './components/screens/home-screen';
 import CatalogScreen from './components/screens/catalog-screen';
 import LoginScreen from './components/screens/login-screen';
 import SpeciesScreen from './components/screens/species-screen';
+import CategoriesScreen from "./components/screens/categories-screen";
 
 
 const RootStack = createStackNavigator({
@@ -19,6 +20,12 @@ const RootStack = createStackNavigator({
   },
   Catalog: {
     screen: CatalogScreen,
+    navigationOptions: ({ navigation }) => ({
+      header: null
+    }),
+  },
+  Categories: {
+    screen: CategoriesScreen,
     navigationOptions: ({ navigation }) => ({
       header: null
     }),
@@ -37,7 +44,7 @@ const RootStack = createStackNavigator({
   }
 },
 {
-  initialRouteName: 'Home',
+  initialRouteName: 'Categories',
 });
 
 export default class App extends Component {
