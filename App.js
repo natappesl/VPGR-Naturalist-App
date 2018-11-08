@@ -43,14 +43,6 @@ const RootStack = createStackNavigator({
 export default class App extends Component {
   constructor () {
     super();
-    DatabaseService.getS3().then(
-      S3 => {
-        console.log(S3);
-      }
-    )
-    .catch(error => {
-      console.log(error);
-    });
   }
   render() {
     return <RootStack />;

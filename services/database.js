@@ -3,21 +3,22 @@
 
 //TODO: Update database from S3 using ifModifiedSince param in getObject
 //TODO: Refactor into component?
-
-import SQLite from "react-native-sqlite-storage";
-import Amplify, { Storage, Auth } from "aws-amplify";
-import aws_exports from "../aws-exports";
-import AWS from "aws-sdk";
-import RNFS from "react-native-fs";
+//TODO: DB, S3 into This.
+//TODO: Make S3, DB into getter
+import SQLite from 'react-native-sqlite-storage';
+import Amplify, { Storage, Auth } from 'aws-amplify';
+import aws_exports from '../aws-exports';
+import AWS from 'aws-sdk';
+import RNFS from 'react-native-fs';
 
 Amplify.configure(aws_exports);
 SQLite.DEBUG(false);
 SQLite.enablePromise(true);
 
-const dbFolderPath = "/data/data/com.vpgrnaturalistapp/databases/";
-const dbFileName = "speciesDatabase.db";
+const dbFolderPath = '/data/data/com.vpgrnaturalistapp/databases/';
+const dbFileName = 'speciesDatabase.db';
 
-let S3;
+let _S3;
 let _db;
 
 const SEARCH_TYPE = {
@@ -43,20 +44,21 @@ class DatabaseService {
   constructor() {
     if (!DatabaseService.instance) {
       DatabaseService.instance = this;
-      DatabaseService.instance.getS3();
+
+      DatabaseService.instance.updateDatabase();
     }
     return DatabaseService.instance;
   }
 
   async getS3() {
-    if (S3) {
-      return S3;
+    if (_S3) {
+      return _S3;
     }
 
     await Auth.currentCredentials().then(async credentials => {
       // Update aws credentials through Cognito to verify IAM Role
       AWS.config.update(Auth.essentialCredentials(credentials));
-      S3 = new AWS.S3();
+      _S3 = new AWS.S3();
 
       let dbExists = await RNFS.exists(dbFolderPath + dbFileName);
       if (dbExists) {
@@ -70,16 +72,14 @@ class DatabaseService {
     .catch(async error => {
       throw error;
     });
-    return S3;
+
+    return _S3;
   }
-  //TODO: Make into getter
+
   async getDB() {
     if (_db) {
       return _db;
     }
-
-    // await DatabaseService.instance.populateDatabase();
-    // await DatabaseService.instance.uploadDatabase();
 
     _db = await SQLite.openDatabase({ name: dbFileName });
 
@@ -87,21 +87,29 @@ class DatabaseService {
 
   }
 
+  async updateDatabase() {
+    await DatabaseService.instance.downloadDatabase();
+    await DatabaseService.instance.updateImageURLs();
+    await DatabaseService.instance.uploadDatabase();
+  }
+
   async downloadDatabase() {
     console.log('Downloading database file ' + dbFileName + ' ...');
+    let S3 = await DatabaseService.instance.getS3();
+
     S3.getObject({
-      Bucket: "natappdata",
+      Bucket: 'natappdata',
       Key: dbFileName,
-      ResponseContentType: "application/x-sqlite3"
+      ResponseContentType: 'application/x-sqlite3'
     })
       .promise()
       .then(data => {
         RNFS.writeFile(
           dbFolderPath + dbFileName,
-          data.Body.toString("base64"),
-          "base64"
+          data.Body.toString('base64'),
+          'base64'
         ).catch(error => {
-          alert("Database download FAILED!");
+          alert('Database download FAILED!');
           console.error(error);
         });
       });
@@ -111,6 +119,8 @@ class DatabaseService {
     console.log('Uploading database file ' + dbFileName + ' ...');
     let uploadDBFile = await RNFS.readFile(dbFolderPath + dbFileName, "base64");
     let buf = Buffer.from(uploadDBFile, "base64");
+
+    let S3 = await DatabaseService.instance.getS3();
     S3.upload({
       Bucket: "natappdata",
       Key: dbFileName,
@@ -128,6 +138,7 @@ class DatabaseService {
   }
 
   async dropSpeciesTable() {
+    let db = await DatabaseService.instance.getDB();
     await db.transaction(tx => {
       tx.exequteSql("DROP TABLE IF EXISTS species");
       tx.executeSql(
@@ -137,6 +148,8 @@ class DatabaseService {
   }
 
   async populateDatabase() {
+    let S3 = await DatabaseService.instance.getS3();
+
     let listResponse = await S3
       .listObjects({ Bucket: "natappdata", Prefix: "json/" })
       .promise();
@@ -164,6 +177,7 @@ class DatabaseService {
   }
 
   async updateSpecies() {
+    let S3 = await DatabaseService.instance.getS3();
     let listResponse = await S3
       .listObjects({ Bucket: "natappdata", Prefix: "json/" })
       .promise();
@@ -194,8 +208,22 @@ class DatabaseService {
     }
   }
 
+  async updateImageURLs() {
+    let db = await DatabaseService.instance.getDB();
+    await db.transaction (async tx => {
+      let [txtwo, result] = await tx.executeSql(
+        `
+        UPDATE images
+        SET url = substr(url, 14)
+        WHERE substr(url, 1, 13) = '~/data/files/';
+        `
+        );
+      console.log(result);
+    });
+  }
   async getSpecies(speciesData) {
     let speciesQuery;
+    let db = await DatabaseService.instance.getDB();
     await db.transaction( async (tx) => {
       let [t, resp] = await tx.executeSql(`SELECT * FROM species WHERE sciname = ?;`, [speciesData.scientificName]);
       speciesQuery = resp.rows.item(0);
@@ -207,6 +235,7 @@ class DatabaseService {
     let speciesId = -1;
     if (!speciesData.scientificName) return speciesId;
 
+    let db = await DatabaseService.instance.getDB();
     await db.transaction(async tx => {
       let [t, existsResult] = await tx.executeSql(
         'SELECT * FROM species WHERE sciname = "' +
@@ -262,6 +291,7 @@ class DatabaseService {
 
   async insertAliases(speciesData, id) {
     let names = speciesData.name.split(",");
+    let db = await DatabaseService.instance.getDB();
 
     for (const name of names) {
       await db.transaction(tx => {
@@ -278,6 +308,7 @@ class DatabaseService {
 
   async insertImageLinks(speciesData, id) {
     if (speciesData.imageURL) {
+      let db = await DatabaseService.instance.getDB();
       await db.transaction((tx) => {
         tx.executeSql(
           `INSERT INTO images (id, url) VALUES (?,?);`,
@@ -292,6 +323,7 @@ class DatabaseService {
 
   async insertReferenceLinks(speciesData, id) {
     if (speciesData.references) {
+      let db = await DatabaseService.instance.getDB();
       let refs = speciesData.references.split(" ");
       for (reference of refs) {
         await db.transaction((tx) => {
@@ -309,6 +341,7 @@ class DatabaseService {
 
   async _insertLinks(speciesData, id) {
     if (speciesData.imageURL) {
+      let db = await DatabaseService.instance.getDB();
       await db.transaction(tx => {
         tx.executeSql(
           `INSERT INTO links (id, url, type) VALUES (?,?, 'image');`,
@@ -337,6 +370,7 @@ class DatabaseService {
 
   async insertTraits(speciesData, id) {
     let traits = speciesData.tags.split(" ");
+    let db = await DatabaseService.instance.getDB();
     for (const tag of traits) {
       await db.transaction(tx => {
         tx.executeSql(`INSERT INTO traits (id, tag) VALUES (?,?);`, [id, tag]);
@@ -348,6 +382,7 @@ class DatabaseService {
   }
 
   async _addToDatabase(speciesData) {
+    let db = await DatabaseService.instance.getDB();
     db.transaction(tx => {
       if (!speciesData.scientificName) return;
 
