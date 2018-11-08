@@ -8,8 +8,7 @@ export const headingTextColor = "white";
 
 export const Theme = StyleSheet.create({
   containerContainer: {
-    height: "100%",
-    width: "100%",
+    flex:1,
     backgroundColor: backgroundColor
   },
   contentContainer: {
@@ -20,7 +19,8 @@ export const Theme = StyleSheet.create({
     backgroundColor: backgroundColor
   },
   headerContainer: {
-    height: 50,
+    height: 80,
+    width: '100%',
     flexDirection: "row",
     flexWrap: "nowrap",
     alignItems: "center",
