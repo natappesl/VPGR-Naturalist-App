@@ -9,7 +9,7 @@ import {
   ButtonGroup
 } from "react-native-elements";
 import {Catalog} from './catalog-screen';
-import { Theme, headingTextColor, primaryColor } from "../constants/theme";
+import { Theme, THEME_COLORS } from "../constants/theme";
 import {
   COLOR_TRAITS,
   SIZE_TRAITS,
@@ -20,7 +20,6 @@ import DatabaseService from '../services/database';
 class FilterGroup extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       selectedIndex: -1,
       showFilters: false,
@@ -41,7 +40,7 @@ class FilterGroup extends Component {
             iconStyle={LocalTheme.filterLabel}
             name={this.state.showFilters ? 'chevron-down' : 'chevron-right'}
             type='font-awesome'
-            color={headingTextColor}
+            color={THEME_COLORS.HEADING_TEXT}
             onPress={() => this.toggleFilters()}
           />
         </View>
@@ -78,15 +77,19 @@ export default class CategoriesScreen extends Component {
         'stypes': -1,
       },
     }
-    this.searchCategories();
+    this.initList();
   }
 
-  async searchCategories() {
-    let allSpecies = await DatabaseService.getSpeciesByAlias();
+  async initList() {
+    let allSpecies = await DatabaseService.getAliasedSpecies();
     if (allSpecies) {
-      console.log(allSpecies);
       this.setState({ list: allSpecies, listLoaded: true});
     }
+  }
+
+  async updateList () {
+    let newList = await DatabaseService.getSpeciesByCategory(this.state.indexes);
+    this.setState({list: newList});
   }
 
   onIndexUpdated(group, selectedIndex) {
@@ -98,6 +101,7 @@ export default class CategoriesScreen extends Component {
       else {
         newIndexes[group] = selectedIndex;
       }
+      this.updateList();
       return {indexes: newIndexes};
     });
   }
@@ -112,6 +116,12 @@ export default class CategoriesScreen extends Component {
       <View style={Theme.containerContainer}>
         <View style={Theme.headerContainer}>
           <Text style={Theme.headerTitle}>CATEGORIES</Text>
+          <Icon
+            iconStyle={Theme.headerButton}
+            name="home"
+            color={THEME_COLORS.HEADING_TEXT}
+            onPress={() => {this.props.navigation.navigate('Home')}}
+          />
         </View>
 
           <FilterGroup filterName="COLORS"
@@ -127,7 +137,7 @@ export default class CategoriesScreen extends Component {
           <FilterGroup filterName="TYPES"
           filters={SPECIES_TYPES}
           selectedIndex={this.state.indexes['stypes']}
-          onUpdateIndex={(selectedIndex) => {this.onSTypeUpdated('stypes', selectedIndex)}}/>
+          onUpdateIndex={(selectedIndex) => {this.onIndexUpdated('stypes', selectedIndex)}}/>
 
           <Catalog list={this.state.list} listLoaded={this.state.listLoaded} onRowPress={(species) => this.onRowPressed(species)}/>
       </View>
@@ -137,13 +147,13 @@ export default class CategoriesScreen extends Component {
 
 const LocalTheme = StyleSheet.create({
   groupContainer: {
-    borderColor: primaryColor,
+    borderColor: THEME_COLORS.PRIMARY,
     borderWidth: 0
   },
   filterContainer: {
     maxHeight: 100,
     flexDirection: "column",
-    backgroundColor: primaryColor
+    backgroundColor: THEME_COLORS.PRIMARY
   },
   filterLabelContainer: {
     flexDirection: 'row',
@@ -151,18 +161,18 @@ const LocalTheme = StyleSheet.create({
     justifyContent: 'space-between',
   },
   filterButton: {
-    backgroundColor: primaryColor,
-    borderColor: primaryColor
+    backgroundColor: THEME_COLORS.PRIMARY,
+    borderColor: THEME_COLORS.PRIMARY
   },
   innerBorder: {
-    color: primaryColor
+    color: THEME_COLORS.PRIMARY
   },
   selectedFilterButton: {},
   selectedText: {
-    color: headingTextColor
+    color: THEME_COLORS.HEADING_TEXT
   },
   filterLabel: {
-    color: headingTextColor,
+    color: THEME_COLORS.HEADING_TEXT,
     fontWeight: "bold",
     fontSize: 18
   }

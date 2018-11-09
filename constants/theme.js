@@ -1,36 +1,38 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from 'react-native';
 
-export const backgroundColor = "#fcf7f0";
-export const primaryColor = "#001964";
-export const transparentBackground = "rgba(52, 52, 52, 0.0)";
-
-export const headingTextColor = 'white';
-
+export const THEME_COLORS = {
+  BG: '#fcf7f0',
+  PRIMARY: '#001964',
+  TRANSPARENT_BACKGROUND: 'rgba(52, 52, 52, 0.0)',
+  
+  HEADING_TEXT: 'white',
+  
+}
 export const Theme = StyleSheet.create({
   containerContainer: {
     flex:1,
-    backgroundColor: backgroundColor
+    backgroundColor: THEME_COLORS.BG
   },
   contentContainer: {
     flex: 10,
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    backgroundColor: backgroundColor
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    backgroundColor: THEME_COLORS.BG
   },
   headerContainer: {
     height: 80,
     width: '100%',
-    flexDirection: "row",
-    flexWrap: "nowrap",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: primaryColor
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: THEME_COLORS.PRIMARY
   },
   listContainer: {
     flex: 10,
     width: '100%',
-    backgroundColor: backgroundColor,
+    backgroundColor: THEME_COLORS.BG,
   },
   listContent: {
     flex:1,
@@ -53,32 +55,34 @@ export const Theme = StyleSheet.create({
   },
   loadingContainer: {
     flex: 10,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   searchContainer: {
     height: 60,
     width: '100%',
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: primaryColor,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: THEME_COLORS.PRIMARY,
     borderTopWidth: 0,
-    borderColor: primaryColor,
+    borderColor: THEME_COLORS.PRIMARY,
   },
   searchInput: {
     flex: 1,
     width: '90%',
-    backgroundColor: backgroundColor,
+    backgroundColor: THEME_COLORS.BG,
   },
   headerTitle: {
-    color: headingTextColor,
+    color: THEME_COLORS.HEADING_TEXT,
     fontSize: 24,
     flex: 5,
-    textAlign: "left",
+    textAlign: 'left',
     marginLeft: 10,
   },
   headerButton: {
     flex: 1,
-    padding: 10
+    padding: 10,
+    textAlign: 'center',
+    textAlignVertical:'center'
   },
 });

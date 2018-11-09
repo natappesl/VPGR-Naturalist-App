@@ -18,7 +18,7 @@ import {
 } from "react-native-elements"; 
 import { Authenticator } from "aws-amplify-react-native";
 import Amplify, { Storage, Auth } from "aws-amplify";
-import { Theme } from "../constants/theme";
+import { Theme, THEME_COLORS } from "../constants/theme";
 import DatabaseService from "../services/database";
 import MediaService from '../services/media';
 
@@ -65,7 +65,7 @@ export default class CatalogScreen extends Component {
   }
 
   async initCatalog() {
-    let allSpecies = await DatabaseService.getSpeciesByAlias();
+    let allSpecies = await DatabaseService.getAliasedSpecies();
     if (allSpecies) {
       this.setState({ list: allSpecies, listLoaded: true});
     }
@@ -94,7 +94,7 @@ export default class CatalogScreen extends Component {
           <Icon
             iconStyle={Theme.headerButton}
             name="search"
-            color="#fff"
+            color={THEME_COLORS.HEADING_TEXT}
             onPress={() => this.toggleSearch()}
           />
         </View>

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
-import { Theme, primaryColor } from "../constants/theme";
+import { Theme, THEME_COLORS } from "../constants/theme";
 
 export default class SpeciesScreen extends Component {
   constructor(props) {
@@ -89,7 +89,7 @@ const LocalTheme = StyleSheet.create({
   titleView: {
     flex: 1,
     flexDirection: "row",
-    backgroundColor: primaryColor,
+    backgroundColor: THEME_COLORS.PRIMARY,
   },
   mainImage: {
     flex: 1,
