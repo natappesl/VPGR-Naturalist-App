@@ -4,11 +4,11 @@ import { createStackNavigator } from 'react-navigation';
 import DatabaseService from './services/database';
 import MediaService from './services/media';
 
-import HomeScreen from './components/screens/home-screen';
-import CatalogScreen from './components/screens/catalog-screen';
-import LoginScreen from './components/screens/login-screen';
-import SpeciesScreen from './components/screens/species-screen';
-import CategoriesScreen from "./components/screens/categories-screen";
+import HomeScreen from './components/home-screen';
+import CatalogScreen from './components/catalog-screen';
+import LoginScreen from './components/login-screen';
+import SpeciesScreen from './components/species-screen';
+import CategoriesScreen from "./components/categories-screen";
 
 
 const RootStack = createStackNavigator({

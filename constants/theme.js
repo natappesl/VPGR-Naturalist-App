@@ -4,7 +4,7 @@ export const backgroundColor = "#fcf7f0";
 export const primaryColor = "#001964";
 export const transparentBackground = "rgba(52, 52, 52, 0.0)";
 
-export const headingTextColor = "white";
+export const headingTextColor = 'white';
 
 export const Theme = StyleSheet.create({
   containerContainer: {
@@ -72,6 +72,7 @@ export const Theme = StyleSheet.create({
   },
   headerTitle: {
     color: headingTextColor,
+    fontSize: 24,
     flex: 5,
     textAlign: "left",
     marginLeft: 10,

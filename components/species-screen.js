@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
-import { Theme, primaryColor } from "../../constants/theme";
+import { Theme, primaryColor } from "../constants/theme";
 
 export default class SpeciesScreen extends Component {
   constructor(props) {

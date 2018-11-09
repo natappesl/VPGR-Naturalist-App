@@ -1,3 +1,5 @@
+// Anti-switch reference: https://toddmotto.com/deprecating-the-switch-statement-for-object-literals/
+
 import React, { Component } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import {
@@ -6,12 +8,14 @@ import {
   ListItem,
   ButtonGroup
 } from "react-native-elements";
-import { Theme, headingTextColor, primaryColor } from "../../constants/theme";
+import {Catalog} from './catalog-screen';
+import { Theme, headingTextColor, primaryColor } from "../constants/theme";
 import {
   COLOR_TRAITS,
   SIZE_TRAITS,
   SPECIES_TYPES
-} from "../../constants/trait-categories";
+} from "../constants/trait-categories";
+import DatabaseService from '../services/database';
 
 class FilterGroup extends Component {
   constructor(props) {
@@ -19,25 +23,15 @@ class FilterGroup extends Component {
 
     this.state = {
       selectedIndex: -1,
-      showFilters: true,
+      showFilters: false,
     };
-
-    this.updateIndex = this.updateIndex.bind(this);
-  }
-  updateIndex(selectedIndex) {
-    if (selectedIndex == this.state.selectedIndex) {
-      this.setState({ selectedIndex: -1 });
-    } else {
-      this.setState({ selectedIndex: selectedIndex });
-    }
   }
 
   toggleFilters() {
     this.setState(state => ({showFilters: !state.showFilters}));
   }
+
   render() {
-    const { selectedIndex } = this.state;
-    const colors = COLOR_TRAITS;
 
     return (
       <View style={LocalTheme.filterContainer}>
@@ -54,15 +48,15 @@ class FilterGroup extends Component {
         {this.state.showFilters && (
           <ButtonGroup
             style={{ margin: 0 }}
-            onPress={this.updateIndex}
-            selectedIndex={selectedIndex}
+            selectedIndex={this.props.selectedIndex}
             buttons={this.props.filters}
+            onPress= {this.props.onUpdateIndex}
             activeOpacity={255}
             containerStyle={LocalTheme.groupContainer}
             containerBorderRadius={1}
             innerBorderStyle={LocalTheme.innerBorder}
             buttonStyle={LocalTheme.filterButton}
-            selectedTextStyle={LocalTheme.selectyedText}
+            selectedTextStyle={LocalTheme.selectedText}
             selectedButtonStyle={LocalTheme.selectedFilterButton}
           />
         )}
@@ -74,27 +68,68 @@ class FilterGroup extends Component {
 export default class CategoriesScreen extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      list: [],
+      listLoaded: false,
+      indexes: {
+        'colors': -1,
+        'sizes': -1,
+        'stypes': -1,
+      },
+    }
+    this.searchCategories();
   }
 
   async searchCategories() {
-    console.log("object");
+    let allSpecies = await DatabaseService.getSpeciesByAlias();
+    if (allSpecies) {
+      console.log(allSpecies);
+      this.setState({ list: allSpecies, listLoaded: true});
+    }
+  }
+
+  onIndexUpdated(group, selectedIndex) {
+    this.setState ( (state) => {
+      let newIndexes = state.indexes;
+      if (selectedIndex == newIndexes[group]){
+        newIndexes[group] = -1;
+      }
+      else {
+        newIndexes[group] = selectedIndex;
+      }
+      return {indexes: newIndexes};
+    });
+  }
+
+  onRowPressed (species) {
+    this.props.navigation.navigate('Species', {species: species});
   }
 
   render() {
+
     return (
       <View style={Theme.containerContainer}>
         <View style={Theme.headerContainer}>
           <Text style={Theme.headerTitle}>CATEGORIES</Text>
-          <Icon
-            iconStyle={LocalTheme.filterLabel}
-            name="search"
-            color={headingTextColor}
-            onPress={() => this.searchCategories()}
-          />
         </View>
-          <FilterGroup filterName="COLORS" filters={COLOR_TRAITS} />
-          <FilterGroup filterName="SIZES" filters={SIZE_TRAITS} />
-          <FilterGroup filterName="TYPES" filters={SPECIES_TYPES} />
+
+          <FilterGroup filterName="COLORS"
+          filters={COLOR_TRAITS}
+          selectedIndex={this.state.indexes['colors']}
+          onUpdateIndex={(selectedIndex) => {this.onIndexUpdated('colors', selectedIndex)}} />
+
+          <FilterGroup filterName="SIZES"
+          filters={SIZE_TRAITS}
+          selectedIndex={this.state.indexes['sizes']}
+          onUpdateIndex={(selectedIndex) => {this.onIndexUpdated('sizes', selectedIndex)}}/>
+
+          <FilterGroup filterName="TYPES"
+          filters={SPECIES_TYPES}
+          selectedIndex={this.state.indexes['stypes']}
+          onUpdateIndex={(selectedIndex) => {this.onSTypeUpdated('stypes', selectedIndex)}}/>
+
+          <Catalog list={this.state.list} listLoaded={this.state.listLoaded} onRowPress={(species) => this.onRowPressed(species)}/>
       </View>
     );
   }
@@ -123,12 +158,12 @@ const LocalTheme = StyleSheet.create({
     color: primaryColor
   },
   selectedFilterButton: {},
-  selectyedText: {
+  selectedText: {
     color: headingTextColor
   },
   filterLabel: {
     color: headingTextColor,
     fontWeight: "bold",
-    fontSize: 24
+    fontSize: 18
   }
 });

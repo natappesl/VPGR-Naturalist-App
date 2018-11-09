@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { Icon } from "react-native-elements";
 import SQLite from "react-native-sqlite-storage";
 import Amplify, { Storage, Auth } from "aws-amplify";
-import { Theme } from "../../constants/theme";
+import { Theme } from "../constants/theme";
 
 export default class HomeScreen extends Component {
   constructor(props) {
