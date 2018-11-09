@@ -68,6 +68,7 @@ class DatabaseService {
       }
 
       await DatabaseService.instance.getDB();
+      await DatabaseService.instance.updateDatabase();
     })
     .catch(async error => {
       throw error;
@@ -89,7 +90,7 @@ class DatabaseService {
 
   async updateDatabase() {
     await DatabaseService.instance.downloadDatabase();
-    await DatabaseService.instance.updateImageURLs();
+    await DatabaseService.instance.createAliasedSpeciesView();
     await DatabaseService.instance.uploadDatabase();
   }
 
@@ -471,11 +472,63 @@ class DatabaseService {
     let db = await DatabaseService.instance.getDB();
 
     await db.transaction( async (tx) => {
-        let query = `SELECT DISTINCT * FROM species s, (aliases NATURAL JOIN links) a, images i WHERE a.id = i.id AND i.id = s.id AND ( a.id IN ( SELECT id FROM traits WHERE tag LIKE ? )) OR ( a.id IN ( SELECT id FROM aliases WHERE alias LIKE ? ));`;
-        let [t, results] = await tx.executeSql(query, [text]);
+        let query = `
+          SELECT DISTINCT *
+          FROM aliasedSpecies
+          WHERE ( id IN ( SELECT id FROM traits WHERE tag LIKE '%` + text + `%' ))
+            OR ( id IN ( SELECT id FROM aliases WHERE alias LIKE '%` + text + `%' ));`;
+        let [t, results] = await tx.executeSql(query);
         searchResult = results.rows.raw();
     });
     return searchResult;
+  }
+
+  async createAliasedSpeciesView () {
+    let db = await DatabaseService.instance.getDB();
+    await db.transaction ( async tx => {
+      tx.executeSql(`DROP VIEW IF EXISTS aliasedSpecies;`);
+      tx.executeSql(
+        `CREATE VIEW aliasedSpecies (
+          id,
+          sciname,
+          alias,
+          aliases,
+          overview,
+          behavior,
+          habitat,
+          size,
+          conservationstatus,
+          stype,
+          url
+      )
+      AS
+          SELECT s.id,
+                sciname,
+                alias,
+                aliases,
+                overview,
+                behavior,
+                habitat,
+                size,
+                conservationstatus,
+                stype,
+                url
+            FROM species s,
+                aliases a,
+                images i,
+                (
+                    SELECT id,
+                          GROUP_CONCAT(alias) AS aliases
+                      FROM aliases
+                    GROUP BY id
+                )
+                aa
+          WHERE a.id = i.id AND 
+                i.id = s.id AND 
+                aa.id = s.id
+          GROUP BY s.id;`
+      )
+    });
   }
 }
 

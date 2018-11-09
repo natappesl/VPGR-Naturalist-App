@@ -44,7 +44,7 @@ const RootStack = createStackNavigator({
   }
 },
 {
-  initialRouteName: 'Categories',
+  initialRouteName: 'Catalog',
 });
 
 export default class App extends Component {
