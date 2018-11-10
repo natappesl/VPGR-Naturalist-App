@@ -67,9 +67,6 @@ export class LeftButton extends Component {
 export class RightButton extends Component {
   constructor(props) {
     super(props);
-    this.state = { 
-      pressStatus: false,
-    };
   }
 
   render() {
@@ -96,18 +93,20 @@ const BUTTON_MARGIN = 20;
 
 const LocalTheme = StyleSheet.create({
   leftButtonHighlight: {
-    height: BUTTON_HEIGHT,
+    flex: 1,
+    maxHeight: BUTTON_HEIGHT,
     backgroundColor: THEME_COLORS.SECONDARY,
-    alignSelf: 'flex-start',
     width: BUTTON_WIDTH,
+    alignSelf: 'flex-start',
     padding: 10,
     margin: BUTTON_MARGIN,
     marginLeft: 0,
   },
   leftButtonPressed: {
-    height: BUTTON_HEIGHT - 10,
-    width: BUTTON_WIDTH - 10,
+    flex: 1,
+    maxHeight: BUTTON_HEIGHT - 10,
     backgroundColor: THEME_COLORS.SECONDARY,
+    width: BUTTON_WIDTH - 10,
     alignSelf: 'flex-start',
     padding: 10,
     margin: BUTTON_MARGIN + 5,
@@ -115,7 +114,7 @@ const LocalTheme = StyleSheet.create({
   },
   leftButtonText : {
     flex: 1,
-    textAlign: 'center',
+    textAlign: 'right',
     textAlignVertical: 'center',
     fontSize: BUTTON_FONT_SIZE,
     color: THEME_COLORS.BG,
@@ -124,34 +123,36 @@ const LocalTheme = StyleSheet.create({
   },
   leftButtonTextPressed : {
     flex: 1,
-    textAlign: 'center',
+    textAlign: 'right',
     textAlignVertical: 'center',
-    fontSize: BUTTON_FONT_SIZE - 3,
+    fontSize: BUTTON_FONT_SIZE - 4,
     color: THEME_COLORS.BG,
     fontStyle: BUTTON_FONT_STYLE,
     fontWeight: BUTTON_FONT_WEIGHT,
   },
   rightButtonHighlight: {
-    height: BUTTON_HEIGHT,
+    flex: 1,
+    maxHeight: BUTTON_HEIGHT,
     backgroundColor: THEME_COLORS.SECONDARY,
-    alignSelf: 'flex-end',
     width: BUTTON_WIDTH,
     padding: 10,
+    alignSelf: 'flex-end',
     margin: BUTTON_MARGIN,
     marginRight: 0,
   },
   rightButtonPressed: {
-    height: BUTTON_HEIGHT - 10,
-    width: BUTTON_WIDTH - 10,
+    flex: 1,
+    maxHeight: BUTTON_HEIGHT - 10,
     backgroundColor: THEME_COLORS.SECONDARY,
-    alignSelf: 'flex-end',
+    width: BUTTON_WIDTH - 10,
     padding: 10,
+    alignSelf: 'flex-end',
     margin: BUTTON_MARGIN + 5,
     marginRight: 0,
   },
   rightButtonText : {
     flex: 1,
-    textAlign: 'center',
+    textAlign: 'left',
     textAlignVertical: 'center',
     fontSize: BUTTON_FONT_SIZE,
     color: THEME_COLORS.BG,
@@ -160,9 +161,9 @@ const LocalTheme = StyleSheet.create({
   },
   rightButtonTextPressed : {
     flex: 1,
-    textAlign: 'center',
+    textAlign: 'left',
     textAlignVertical: 'center',
-    fontSize: BUTTON_FONT_SIZE - 3,
+    fontSize: BUTTON_FONT_SIZE - 4,
     color: THEME_COLORS.BG,
     fontStyle: BUTTON_FONT_STYLE,
     fontWeight: BUTTON_FONT_WEIGHT,

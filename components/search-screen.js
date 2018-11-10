@@ -1,19 +1,10 @@
 import React, { Component } from "react";
-
-import {
-  Text,
-  View
-} from "react-native";
-
-import {
-  Icon
-} from "react-native-elements"; 
-
+import { Text, View } from "react-native";
+import { Icon } from "react-native-elements"; 
 import { Search } from './search';
 import { Catalog } from './catalog';
-
+import { LeftButton, RightButton } from './buttons';
 import { Theme, THEME_COLORS } from "../constants/theme";
-
 import DatabaseService from "../services/database";
 
 const minSearchTextLength = 2;
@@ -53,25 +44,23 @@ export default class SearchScreen extends Component {
     this.props.navigation.navigate('Species', {species: species});
   }
 
+  navigateHome() {
+    this.props.navigation.navigate('Home');
+  }
+
   render() {
     return (
       <View style={Theme.containerContainer}>
         <View style={Theme.headerContainer}>
-          <Text style={Theme.headerTitle}>CATALOG</Text>
-          <Icon
-            iconStyle={Theme.headerButton}
-            name="search"
-            color={THEME_COLORS.HEADING_TEXT}
-            underlayColor={THEME_COLORS.TRANSPARENT_HALF}
-            onPress={() => this.toggleSearch()}
-            delayPressIn={0}
-            delayPressOut={0}
-          />
+          <LeftButton text={'CATALOG'} onPress={() => {this.navigateHome()}}/>
+          <RightButton text={'SEARCH'} onPress={() => {this.toggleSearch()}} />
         </View>
+        <View style={Theme.contentContainer}>
         {this.state.showSearch && (
           <Search onTextInput={this.searchUpdated.bind(this)} />
         )}
         <Catalog list={this.state.list} listLoaded={this.state.listLoaded} onRowPress={(species) => this.onRowPressed(species)}/>
+        </View>
       </View>
     );
   }

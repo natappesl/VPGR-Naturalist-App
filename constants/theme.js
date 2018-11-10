@@ -30,18 +30,33 @@ export const Theme = StyleSheet.create({
   contentContainer: {
     flex: 10,
     width: '100%',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
     backgroundColor: THEME_COLORS.TRANSPARENT
   },
   headerContainer: {
-    height: 80,
-    width: '100%',
+    flex: 1,
+    minHeight: 40,
     flexDirection: 'row',
-    flexWrap: 'nowrap',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: THEME_COLORS.SECONDARY
+    justifyContent: 'space-evenly',
+    alignContent: 'flex-start',
+    alignItems: 'baseline',
+    backgroundColor: THEME_COLORS.TRANSPARENT,
+  },
+  headerTitle: {
+    color: THEME_COLORS.HEADING_TEXT,
+    fontSize: 24,
+    flex: 5,
+    textAlign: 'left',
+    marginLeft: 10,
+  },
+  headerButton: {
+    flex: 1,
+    padding: 10,
+    margin: 20,
+    marginBottom: 0,
+    marginRight: 0,
+    textAlign: 'center',
+    textAlignVertical:'center',
+    backgroundColor: THEME_COLORS.SECONDARY,
   },
   listContainer: {
     flex: 10,
@@ -85,18 +100,5 @@ export const Theme = StyleSheet.create({
     flex: 1,
     width: '90%',
     backgroundColor: THEME_COLORS.BG,
-  },
-  headerTitle: {
-    color: THEME_COLORS.HEADING_TEXT,
-    fontSize: 24,
-    flex: 5,
-    textAlign: 'left',
-    marginLeft: 10,
-  },
-  headerButton: {
-    flex: 1,
-    padding: 10,
-    textAlign: 'center',
-    textAlignVertical:'center'
   },
 });
