@@ -22,7 +22,7 @@ import { Theme, THEME_COLORS } from "../constants/theme";
 import DatabaseService from "../services/database";
 import MediaService from '../services/media';
 
-const minSearchTextLength = 5;
+const minSearchTextLength = 2;
 
 export class Search extends Component {
   render() {

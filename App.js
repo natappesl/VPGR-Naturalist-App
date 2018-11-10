@@ -4,7 +4,7 @@ import { createStackNavigator } from 'react-navigation';
 import DatabaseService from './services/database';
 import MediaService from './services/media';
 
-import HomeScreen from './components/new-home-screen';
+import HomeScreen from './components/home-screen';
 import CatalogScreen from './components/catalog-screen';
 import LoginScreen from './components/login-screen';
 import SpeciesScreen from './components/species-screen';
