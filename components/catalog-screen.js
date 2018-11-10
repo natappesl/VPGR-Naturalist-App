@@ -13,9 +13,9 @@ import {
   FormValidationMessage,
   Card,
   ListItem,
-  Button,
-  SearchBar
+  Button
 } from "react-native-elements"; 
+import {Search} from './search';
 import { Authenticator } from "aws-amplify-react-native";
 import Amplify, { Storage, Auth } from "aws-amplify";
 import { Theme, THEME_COLORS } from "../constants/theme";
@@ -24,22 +24,7 @@ import MediaService from '../services/media';
 
 const minSearchTextLength = 2;
 
-export class Search extends Component {
-  render() {
-    return (
-        <SearchBar
-          containerStyle= {Theme.searchContainer}
-          noIcon={true}
-          inputStyle= {Theme.searchInput}
-          onChangeText={(text) => {
-            this.props.onTextInput(text);
-          }}
-        />
-    );
-  }
-}
-
-export class LoadingIndicator extends Component {
+class LoadingIndicator extends Component {
   render() {
     return (
       <View style={Theme.loadingContainer}>
