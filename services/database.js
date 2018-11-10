@@ -10,6 +10,12 @@ import Amplify, { Storage, Auth } from 'aws-amplify';
 import aws_exports from '../aws-exports';
 import AWS from 'aws-sdk';
 import RNFS from 'react-native-fs';
+import {
+  COLOR_TRAITS,
+  SIZE_TRAITS,
+  SPECIES_TYPES
+} from '../constants/trait-categories';
+
 
 Amplify.configure(aws_exports);
 SQLite.DEBUG(false);
@@ -68,7 +74,7 @@ class DatabaseService {
       }
 
       await DatabaseService.instance.getDB();
-      await DatabaseService.instance.updateDatabase();
+      // await DatabaseService.instance.updateDatabase();
     })
     .catch(async error => {
       throw error;
@@ -465,6 +471,61 @@ class DatabaseService {
     });
 
     return allSpecies;
+  }
+
+  async getSpeciesByCategory(colorIndex, sizeIndex, stypeIndex) {
+    let params = [];
+    let query = `SELECT DISTINCT * FROM aliasedSpecies`;
+
+    if (colorIndex != -1) {
+      let updatedQuery = DatabaseService.instance.appendCondition(query, `id IN (SELECT id FROM traits WHERE tag = ?)`);
+      query = updatedQuery;
+      params.push(COLOR_TRAITS[colorIndex]);
+    }
+
+    if (sizeIndex != -1) {
+      let updatedQuery = DatabaseService.instance.appendCondition(query, `id IN (SELECT id FROM traits WHERE tag = ?)`);
+      query = updatedQuery;
+      params.push(SIZE_TRAITS[sizeIndex]);
+    }
+
+    if (stypeIndex != -1) {
+      let updatedQuery = DatabaseService.instance.appendCondition(query, `id IN (SELECT id FROM traits WHERE tag = ?)`);
+      query = updatedQuery;
+      params.push(SPECIES_TYPES[stypeIndex]);
+    }
+
+    query = query.concat(` GROUP BY id;`);
+    // console.log('FINISHED Query: ', query);
+    // console.log('PARAMS: ', params);
+
+    let db = await DatabaseService.instance.getDB();
+    let results;
+    await db.transaction (async tx => {
+      let [txtwo, res] = await tx.executeSql(query, params);
+      results = res.rows.raw();
+    });
+
+    return results;
+
+  }
+
+  appendCondition(query, conditionText, or = false) {
+    let newQuery = query;
+    // Chop off any trailing semicolon
+    if (query.includes(';')) {
+      console.warn ('Semicolon found in query to append!');
+      newQuery = query.slice(0, query.length-1);
+    }
+    if (!query.includes('WHERE')) {
+      newQuery = newQuery.concat(' WHERE ');
+    } else {
+      or ? (newQuery = newQuery.concat(' OR ')) : (newQuery = newQuery.concat(' AND '));
+    }
+    newQuery = newQuery.concat(' ' + conditionText);
+    // console.log("OLD Query: ", query);
+    // console.log("NEW QUERY: ", newQuery);
+    return newQuery;
   }
 
   async search (text) {

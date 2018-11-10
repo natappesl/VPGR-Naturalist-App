@@ -88,7 +88,7 @@ export default class CategoriesScreen extends Component {
   }
 
   async updateList () {
-    let newList = await DatabaseService.getSpeciesByCategory(this.state.indexes);
+    let newList = await DatabaseService.getSpeciesByCategory(this.state.indexes['colors'], this.state.indexes['sizes'], this.state.indexes['stypes']);
     this.setState({list: newList});
   }
 
