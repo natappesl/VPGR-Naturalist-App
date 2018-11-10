@@ -1,38 +1,22 @@
 import React, { Component } from "react";
+
 import {
-  Image,
-  ActivityIndicator,
   Text,
-  View,
-  FlatList,
-  TextInput,
-  TouchableOpacity
+  View
 } from "react-native";
+
 import {
-  Icon,
-  FormValidationMessage,
-  Card,
-  ListItem,
-  Button
+  Icon
 } from "react-native-elements"; 
-import {Search} from './search';
-import { Authenticator } from "aws-amplify-react-native";
-import Amplify, { Storage, Auth } from "aws-amplify";
+
+import { Search } from './search';
+import { Catalog } from './catalog';
+
 import { Theme, THEME_COLORS } from "../constants/theme";
+
 import DatabaseService from "../services/database";
-import MediaService from '../services/media';
 
 const minSearchTextLength = 2;
-
-class LoadingIndicator extends Component {
-  render() {
-    return (
-      <View style={Theme.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
-}
 
 export default class CatalogScreen extends Component {
   constructor(props) {
@@ -43,9 +27,7 @@ export default class CatalogScreen extends Component {
       list: [],
       listLoaded: false,
     };
-  }
 
-  componentDidMount () {
     this.initCatalog();
   }
 
@@ -80,7 +62,10 @@ export default class CatalogScreen extends Component {
             iconStyle={Theme.headerButton}
             name="search"
             color={THEME_COLORS.HEADING_TEXT}
+            underlayColor={THEME_COLORS.TRANSPARENT_HALF}
             onPress={() => this.toggleSearch()}
+            delayPressIn={0}
+            delayPressOut={0}
           />
         </View>
         {this.state.showSearch && (
@@ -88,45 +73,6 @@ export default class CatalogScreen extends Component {
         )}
         <Catalog list={this.state.list} listLoaded={this.state.listLoaded} onRowPress={(species) => this.onRowPressed(species)}/>
       </View>
-    );
-  }
-}
-
-export class Catalog extends Component {
-  constructor (props) {
-    super(props);
-  }
-
-
-
-  render() {
-    return (
-        <View style={Theme.contentContainer}>
-          {!this.props.listLoaded && <LoadingIndicator />}
-          <View style={Theme.listContainer}>
-            {this.props.listLoaded && (
-                <FlatList
-                  data={this.props.list}
-                  keyExtractor={item => item.id.toString()}
-                  renderItem={(species, index) => (
-                    <TouchableOpacity
-                      style={Theme.listContent}
-                      onPress={() => {this.props.onRowPress(species.item)}}
-                    >
-                      <Image
-                        style={Theme.listContentImage}
-                        source={{ uri: MediaService.getImageURI(species.item.url)}}
-                      />
-                      <View style={Theme.listContentView}>
-                        <Text style={Theme.listContentTitle}>{species.item.alias}</Text>
-                        <Text style={Theme.listContentSubtitle}>{species.item.sciname}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  )}
-                />
-              )}
-          </View>
-        </View>
     );
   }
 }

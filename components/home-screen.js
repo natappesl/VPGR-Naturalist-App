@@ -34,7 +34,7 @@ const LocalTheme = StyleSheet.create({
   buttonContainer: {
     flex: 1,
     width: '100%',
-    backgroundColor: THEME_COLORS.TRANSPARENT_BACKGROUND,
+    backgroundColor: THEME_COLORS.TRANSPARENT,
     justifyContent: 'flex-end',
     paddingBottom: 60
   },
