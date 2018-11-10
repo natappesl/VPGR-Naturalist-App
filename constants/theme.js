@@ -3,22 +3,35 @@ import { StyleSheet, Text, View } from 'react-native';
 export const THEME_COLORS = {
   BG: '#fcf7f0',
   PRIMARY: '#001964',
+  PRIMARY_HIGHLIGHT: '#0E35A8',
+  SECONDARY: '#5A4B42',
   TRANSPARENT_BACKGROUND: 'rgba(52, 52, 52, 0.0)',
   
   HEADING_TEXT: 'white',
   
 }
 export const Theme = StyleSheet.create({
+  background: {
+    height: 160,
+    width: '100%',
+    position: 'absolute',
+    top: 150,
+  },
+  backgroundLogo: {
+    resizeMode: 'contain',
+  },
   containerContainer: {
-    flex:1,
-    backgroundColor: THEME_COLORS.BG
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: THEME_COLORS.BG,
   },
   contentContainer: {
     flex: 10,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    backgroundColor: THEME_COLORS.BG
+    backgroundColor: THEME_COLORS.TRANSPARENT_BACKGROUND
   },
   headerContainer: {
     height: 80,
@@ -27,7 +40,7 @@ export const Theme = StyleSheet.create({
     flexWrap: 'nowrap',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: THEME_COLORS.PRIMARY
+    backgroundColor: THEME_COLORS.SECONDARY
   },
   listContainer: {
     flex: 10,
@@ -63,9 +76,9 @@ export const Theme = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: THEME_COLORS.PRIMARY,
+    backgroundColor: THEME_COLORS.SECONDARY,
     borderTopWidth: 0,
-    borderColor: THEME_COLORS.PRIMARY,
+    borderColor: THEME_COLORS.SECONDARY,
   },
   searchInput: {
     flex: 1,

@@ -147,13 +147,14 @@ export default class CategoriesScreen extends Component {
 
 const LocalTheme = StyleSheet.create({
   groupContainer: {
-    borderColor: THEME_COLORS.PRIMARY,
+    borderColor: THEME_COLORS.TRANSPARENT_BACKGROUND,
     borderWidth: 0
   },
   filterContainer: {
+    width: '100%',
     maxHeight: 100,
     flexDirection: "column",
-    backgroundColor: THEME_COLORS.PRIMARY
+    backgroundColor: THEME_COLORS.SECONDARY
   },
   filterLabelContainer: {
     flexDirection: 'row',
@@ -161,11 +162,11 @@ const LocalTheme = StyleSheet.create({
     justifyContent: 'space-between',
   },
   filterButton: {
-    backgroundColor: THEME_COLORS.PRIMARY,
-    borderColor: THEME_COLORS.PRIMARY
+    backgroundColor: THEME_COLORS.TRANSPARENT_BACKGROUND,
+    borderColor: THEME_COLORS.TRANSPARENT_BACKGROUND
   },
   innerBorder: {
-    color: THEME_COLORS.PRIMARY
+    color: THEME_COLORS.TRANSPARENT_BACKGROUND
   },
   selectedFilterButton: {},
   selectedText: {
