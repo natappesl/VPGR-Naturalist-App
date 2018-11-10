@@ -5,7 +5,8 @@ export const THEME_COLORS = {
   PRIMARY: '#001964',
   PRIMARY_HIGHLIGHT: '#0E35A8',
   SECONDARY: '#5A4B42',
-  TRANSPARENT_BACKGROUND: 'rgba(52, 52, 52, 0.0)',
+  TRANSPARENT: 'rgba(52, 52, 52, 0.0)',
+  TRANSPARENT_HALF: 'rgba(52, 52, 52, 0.5)',
   
   HEADING_TEXT: 'white',
   
@@ -31,7 +32,7 @@ export const Theme = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    backgroundColor: THEME_COLORS.TRANSPARENT_BACKGROUND
+    backgroundColor: THEME_COLORS.TRANSPARENT
   },
   headerContainer: {
     height: 80,
