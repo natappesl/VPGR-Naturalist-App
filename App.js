@@ -5,7 +5,7 @@ import DatabaseService from './services/database';
 import MediaService from './services/media';
 
 import HomeScreen from './components/home-screen';
-import CatalogScreen from './components/catalog-screen';
+import SearchScreen from './components/search-screen';
 import LoginScreen from './components/login-screen';
 import SpeciesScreen from './components/species-screen';
 import CategoriesScreen from "./components/categories-screen";
@@ -18,8 +18,8 @@ const RootStack = createStackNavigator({
       header: null
     }),
   },
-  Catalog: {
-    screen: CatalogScreen,
+  Search: {
+    screen: SearchScreen,
     navigationOptions: ({ navigation }) => ({
       header: null
     }),

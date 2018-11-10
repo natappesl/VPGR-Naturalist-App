@@ -22,7 +22,7 @@ class HomeScreen extends Component {
           imageStyle={Theme.backgroundLogo}/>
         <View style = {LocalTheme.buttonContainer}>
         <LeftButton text={'ABOUT'} onPress={() => {this.navigateTo('Home')}}/> 
-        <RightButton text={'SEARCH'} onPress={() => {this.navigateTo('Catalog')}}/> 
+        <RightButton text={'SEARCH'} onPress={() => {this.navigateTo('Search')}}/> 
         <LeftButton text={'CATEGORIES'} onPress={() => {this.navigateTo('Categories')}}/> 
         </View>
       </View>

@@ -18,7 +18,7 @@ import DatabaseService from "../services/database";
 
 const minSearchTextLength = 2;
 
-export default class CatalogScreen extends Component {
+export default class SearchScreen extends Component {
   constructor(props) {
     super(props);
 

@@ -8,7 +8,7 @@ import {
   ListItem,
   ButtonGroup
 } from "react-native-elements";
-import {Catalog} from './catalog-screen';
+import {Catalog} from './catalog';
 import { Theme, THEME_COLORS } from "../constants/theme";
 import {
   COLOR_TRAITS,
