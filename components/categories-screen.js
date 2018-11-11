@@ -1,7 +1,7 @@
 // Anti-switch reference: https://toddmotto.com/deprecating-the-switch-statement-for-object-literals/
 
 import React, { Component } from "react";
-import { View, ImageBackground, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import {
   Icon,
   ListItem,
@@ -17,6 +17,7 @@ import {
 } from "../constants/trait-categories";
 import { LeftButton } from './buttons'
 import DatabaseService from '../services/database';
+import Background from './background';
 
 class FilterGroup extends Component {
   constructor(props) {
@@ -120,10 +121,7 @@ export default class CategoriesScreen extends Component {
 
     return (
       <View style={Theme.containerContainer}>
-      <ImageBackground
-          source={require('../assets/splish-splash.jpg')}
-          style={Theme.background}
-          />
+      <Background/>
         <View style={Theme.headerContainer}>
           <LeftButton text={'CATEGORIES'} onPress={() => {this.props.navigation.navigate('Home')}}/>
         </View>

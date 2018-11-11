@@ -5,8 +5,8 @@ export const THEME_COLORS = {
   PRIMARY: '#001964',
   PRIMARY_HIGHLIGHT: '#0E35A8',
   SECONDARY: '#5A4B42',
-  TRANSPARENT: 'rgba(52, 52, 52, 0.0)',
-  TRANSPARENT_HALF: 'rgba(52, 52, 52, 0.5)',
+  TRANSPARENT: 'rgba(255, 255, 255, 0.0)',
+  TRANSPARENT_HALF: 'rgba(255, 255, 255, 0.4)',
   
   HEADING_TEXT: 'white',
   
@@ -38,11 +38,11 @@ export const Theme = StyleSheet.create({
   },
   headerContainer: {
     flex: 1,
-    minHeight: 40,
+    minHeight: 60,
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignContent: 'flex-start',
-    alignItems: 'center',
+    justifyContent: 'space-between',
+    alignContent: 'flex-end',
+    alignItems: 'baseline',
     backgroundColor: THEME_COLORS.TRANSPARENT,
   },
   headerTitle: {
@@ -52,10 +52,17 @@ export const Theme = StyleSheet.create({
     textAlign: 'left',
     marginLeft: 10,
   },
+  smallHeaderButtonIcon: {
+    flex:1,
+    padding: 20,
+    margin: 10,
+  },
   listContainer: {
     flex: 10,
     width: '100%',
-    backgroundColor: THEME_COLORS.TRANSPARENT,
+    borderTopWidth: 1,
+    backgroundColor: THEME_COLORS.TRANSPARENT_HALF,
+    
   },
   listContent: {
     flex:1,
@@ -86,7 +93,7 @@ export const Theme = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: THEME_COLORS.SECONDARY,
+    backgroundColor: THEME_COLORS.TRANSPARENT,
     borderTopWidth: 0,
     borderColor: THEME_COLORS.SECONDARY,
   },

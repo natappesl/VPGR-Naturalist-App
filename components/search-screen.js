@@ -3,9 +3,10 @@ import { Text, View } from "react-native";
 import { Icon } from "react-native-elements"; 
 import { Search } from './search';
 import { Catalog } from './catalog';
-import { LeftButton, RightButton } from './buttons';
+import { LeftButton, RightButton, RightIconButton } from './buttons';
 import { Theme, THEME_COLORS } from "../constants/theme";
 import DatabaseService from "../services/database";
+import Background from "./background";
 
 const minSearchTextLength = 2;
 
@@ -51,9 +52,12 @@ export default class SearchScreen extends Component {
   render() {
     return (
       <View style={Theme.containerContainer}>
+        <Background/>
         <View style={Theme.headerContainer}>
-          <LeftButton text={'CATALOG'} onPress={() => {this.navigateHome()}}/>
-          <RightButton text={'SEARCH'} onPress={() => {this.toggleSearch()}} />
+          <LeftButton text={'SEARCH'} onPress={() => {this.navigateHome()}}/>
+          <RightIconButton onPress={() => {this.toggleSearch()}}>
+            <Icon style={{flex: 1, padding: 5,}} name='search' type='font-awesome' color={THEME_COLORS.BG}/>
+          </RightIconButton>
         </View>
         <View style={Theme.contentContainer}>
         {this.state.showSearch && (

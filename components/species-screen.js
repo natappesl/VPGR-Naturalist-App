@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import { Theme, THEME_COLORS } from "../constants/theme";
+import Background from "./background";
 
 export default class SpeciesScreen extends Component {
   constructor(props) {
@@ -20,6 +21,7 @@ export default class SpeciesScreen extends Component {
 
     return (
       <View style={Theme.containerContainer}>
+        <Background/>
         <View style={Theme.contentContainer}>
           <View style={Theme.primaryBackground, LocalTheme.titleView}>
             <Image

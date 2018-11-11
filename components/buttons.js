@@ -71,13 +71,47 @@ export class RightButton extends SideButton {
         buttonStyle={LocalTheme.rightButtonHighlight}
         pressStyle={LocalTheme.rightButtonPressed}
         textPressStyle={LocalTheme.rightButtonTextPressed}>
-        <Text style={
+        {this.props.text &&(
+          <Text style={
           this.state.pressStatus ?
           LocalTheme.rightButtonTextPressed :
           LocalTheme.rightButtonText
           }>
             {this.props.text}
         </Text>
+        )}
+        {!this.props.text && (
+          this.props.children
+        )}
+      </SideButton>
+    );
+  }
+}
+
+export class RightIconButton extends SideButton {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <SideButton
+        onPress={() => {this.props.onPress()}}
+        buttonStyle={[LocalTheme.rightButtonHighlight, Theme.smallHeaderButtonIcon]}
+        pressStyle={[LocalTheme.rightButtonPressed, Theme.smallHeaderButtonIcon]}
+        textPressStyle={LocalTheme.rightButtonTextPressed}>
+        {this.props.text &&(
+          <Text style={
+          this.state.pressStatus ?
+          LocalTheme.rightButtonTextPressed :
+          LocalTheme.rightButtonText
+          }>
+            {this.props.text}
+        </Text>
+        )}
+        {!this.props.text && (
+          this.props.children
+        )}
       </SideButton>
     );
   }
@@ -94,7 +128,7 @@ const BUTTON_BORDER_RADIUS = 10;
 
 const LocalTheme = StyleSheet.create({
   leftButtonHighlight: {
-    flex: 1,
+    flex: 3,
     maxHeight: BUTTON_HEIGHT,
     backgroundColor: THEME_COLORS.SECONDARY,
     width: BUTTON_WIDTH,
@@ -112,7 +146,7 @@ const LocalTheme = StyleSheet.create({
     zIndex: 10,
   },
   leftButtonPressed: {
-    flex: 1,
+    flex: 3,
     maxHeight: BUTTON_HEIGHT - 10,
     backgroundColor: THEME_COLORS.SECONDARY,
     width: BUTTON_WIDTH - 10,
@@ -148,7 +182,7 @@ const LocalTheme = StyleSheet.create({
     fontWeight: BUTTON_FONT_WEIGHT,
   },
   rightButtonHighlight: {
-    flex: 1,
+    flex: 3,
     maxHeight: BUTTON_HEIGHT,
     backgroundColor: THEME_COLORS.SECONDARY,
     width: BUTTON_WIDTH,
@@ -166,7 +200,7 @@ const LocalTheme = StyleSheet.create({
     zIndex: 10,
   },
   rightButtonPressed: {
-    flex: 1,
+    flex: 3,
     maxHeight: BUTTON_HEIGHT - 10,
     backgroundColor: THEME_COLORS.SECONDARY,
     width: BUTTON_WIDTH - 10,

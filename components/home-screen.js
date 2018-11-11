@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, ImageBackground} from "react-native";
+import { StyleSheet, Text, View, Alert} from "react-native";
 import { Theme, THEME_COLORS } from '../constants/theme';
 import { LeftButton, RightButton } from './buttons';
+import Background from './background';
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -16,13 +17,14 @@ class HomeScreen extends Component {
   render() {
     return (
       <View style = {Theme.containerContainer}>
-        <ImageBackground
-          source={require('../assets/splish-splash.jpg')}
-          style={Theme.background}>
-          <Image style={Theme.backgroundLogo} source={require('../assets/logo.png')} resizeMode='contain'/>
-          </ImageBackground>
+        <Background showLogo={true} />
         <View style = {LocalTheme.buttonContainer}>
-          <LeftButton text={'ABOUT'} onPress={() => {this.navigateTo('Home')}}/>
+          <LeftButton text={'NEWS & EVENTS'} onPress={() => {
+            Alert.alert(
+              'NEWS & EVENTS',
+              'Coming soon! Stay tuned, mah boy!',
+              [{text: 'You got it, dude.', onPress: ()=> {}}, {text: 'Hurry up already!', onPress: ()=> {}}])
+          }}/>
           <RightButton text={'SEARCH'} onPress={() => {this.navigateTo('Search')}}/> 
           <LeftButton text={'CATEGORIES'} onPress={() => {this.navigateTo('Categories')}}/> 
         </View>
