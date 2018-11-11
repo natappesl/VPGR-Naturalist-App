@@ -35,7 +35,7 @@ export default class SearchScreen extends Component {
   }
 
   async searchUpdated(text) {
-    if (text.length >= minSearchTextLength) {
+    if (text.length >= minSearchTextLength || text.trim() == '') {
       let updatedList = await DatabaseService.search(text);
       this.setState({ list: updatedList, listLoaded: true});
     }
