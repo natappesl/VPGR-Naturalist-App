@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableHighlight } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Theme, THEME_COLORS } from '../constants/theme';
 
 class SideButton extends Component {
@@ -10,41 +10,56 @@ class SideButton extends Component {
     };
   }
 
-  onHideUnderlay() {
-    this.setState({ pressStatus: false });
-  }
-  onShowUnderlay() {
+  onPressIn() {
     this.setState({ pressStatus: true });
+  }
+  onPressOut() {
+    this.setState({ pressStatus: false });
   }
   
   render() {
     return (
-      <TouchableHighlight
+      <TouchableOpacity
         style={
           this.state.pressStatus ?
             this.props.pressStyle :
             this.props.buttonStyle
           }
-        activeOpacity={1}
-        onHideUnderlay={() => { this.onHideUnderlay()}}
-        onShowUnderlay={() => { this.onShowUnderlay()}}
+        onPressIn={() => { this.onPressIn()}}
+        onPressOut={() => { this.onPressOut()}}
         onPress={() => { this.props.onPress()}}
         delayPressIn={0}
-        delayPressOut={0}
-        >
+        delayPressOut={0}>
+        {this.props.children}
+      </TouchableOpacity>
+    );
+  }
+}
+
+export class LeftButton extends SideButton {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <SideButton
+        onPress={() => {this.props.onPress()}}
+        buttonStyle={LocalTheme.leftButtonHighlight}
+        pressStyle={LocalTheme.leftButtonPressed}>
         <Text style={
           this.state.pressStatus ?
-            this.props.textPressStyle :
-            this.props.textStyle
+          LocalTheme.leftButtonTextPressed :
+          LocalTheme.leftButtonText
           }>
             {this.props.text}
-          </Text>
-      </TouchableHighlight>
+        </Text>
+      </SideButton>
     );
   }
 }
 
-export class LeftButton extends Component {
+export class RightButton extends SideButton {
   constructor(props) {
     super(props);
   }
@@ -52,34 +67,18 @@ export class LeftButton extends Component {
   render() {
     return (
       <SideButton
-        text={this.props.text}
         onPress={() => {this.props.onPress()}}
-        textStyle={LocalTheme.leftButtonText}
-        buttonStyle={LocalTheme.leftButtonHighlight}
-        pressStyle={LocalTheme.leftButtonPressed}
-        textStyle={LocalTheme.leftButtonText}
-        textPressStyle={LocalTheme.leftButtonTextPressed}
-      />
-    );
-  }
-}
-
-export class RightButton extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return (
-      <SideButton
-        text={this.props.text}
-        onPress={() => {this.props.onPress()}}
-        textStyle={LocalTheme.rightButtonText}
         buttonStyle={LocalTheme.rightButtonHighlight}
         pressStyle={LocalTheme.rightButtonPressed}
-        textStyle={LocalTheme.rightButtonText}
-        textPressStyle={LocalTheme.rightButtonTextPressed}
-      />
+        textPressStyle={LocalTheme.rightButtonTextPressed}>
+        <Text style={
+          this.state.pressStatus ?
+          LocalTheme.rightButtonTextPressed :
+          LocalTheme.rightButtonText
+          }>
+            {this.props.text}
+        </Text>
+      </SideButton>
     );
   }
 }
@@ -90,6 +89,8 @@ const BUTTON_HEIGHT = 60;
 const BUTTON_FONT_WEIGHT = 'bold';
 const BUTTON_FONT_STYLE = 'normal';
 const BUTTON_MARGIN = 20;
+const BUTTON_PADDING = 10;
+const BUTTON_BORDER_RADIUS = 10;
 
 const LocalTheme = StyleSheet.create({
   leftButtonHighlight: {
@@ -98,9 +99,17 @@ const LocalTheme = StyleSheet.create({
     backgroundColor: THEME_COLORS.SECONDARY,
     width: BUTTON_WIDTH,
     alignSelf: 'flex-start',
-    padding: 10,
+    padding: BUTTON_PADDING,
     margin: BUTTON_MARGIN,
     marginLeft: 0,
+    borderTopRightRadius: BUTTON_BORDER_RADIUS,
+    borderBottomRightRadius: BUTTON_BORDER_RADIUS,
+    shadowColor: 'rgba(0,0,0, 0.5)', // IOS
+    shadowOffset: { height: 10, width: 10 }, // IOS
+    shadowOpacity: 0.5, // IOS
+    shadowRadius: 5, //IOS
+    elevation: 5, // Android
+    zIndex: 10,
   },
   leftButtonPressed: {
     flex: 1,
@@ -108,9 +117,17 @@ const LocalTheme = StyleSheet.create({
     backgroundColor: THEME_COLORS.SECONDARY,
     width: BUTTON_WIDTH - 10,
     alignSelf: 'flex-start',
-    padding: 10,
+    padding: BUTTON_PADDING,
     margin: BUTTON_MARGIN + 5,
+    borderTopRightRadius: BUTTON_BORDER_RADIUS,
+    borderBottomRightRadius: BUTTON_BORDER_RADIUS,
     marginLeft: 0,
+    shadowColor: 'rgba(0,0,0, 0.5)', // IOS
+    shadowOffset: { height: 10, width: 10 }, // IOS
+    shadowOpacity: 0.5, // IOS
+    shadowRadius: 5, //IOS
+    elevation: 5, // Android
+    zIndex: 10,
   },
   leftButtonText : {
     flex: 1,
@@ -126,7 +143,7 @@ const LocalTheme = StyleSheet.create({
     textAlign: 'right',
     textAlignVertical: 'center',
     fontSize: BUTTON_FONT_SIZE - 4,
-    color: THEME_COLORS.BG,
+    color: THEME_COLORS.HEADING_TEXT,
     fontStyle: BUTTON_FONT_STYLE,
     fontWeight: BUTTON_FONT_WEIGHT,
   },
@@ -135,20 +152,36 @@ const LocalTheme = StyleSheet.create({
     maxHeight: BUTTON_HEIGHT,
     backgroundColor: THEME_COLORS.SECONDARY,
     width: BUTTON_WIDTH,
-    padding: 10,
+    padding: BUTTON_PADDING,
     alignSelf: 'flex-end',
     margin: BUTTON_MARGIN,
     marginRight: 0,
+    borderTopLeftRadius: BUTTON_BORDER_RADIUS,
+    borderBottomLeftRadius: BUTTON_BORDER_RADIUS,
+    shadowColor: 'rgba(0,0,0, 0.5)', // IOS
+    shadowOffset: { height: 10, width: 10 }, // IOS
+    shadowOpacity: 0.5, // IOS
+    shadowRadius: 5, //IOS
+    elevation: 5, // Android
+    zIndex: 10,
   },
   rightButtonPressed: {
     flex: 1,
     maxHeight: BUTTON_HEIGHT - 10,
     backgroundColor: THEME_COLORS.SECONDARY,
     width: BUTTON_WIDTH - 10,
-    padding: 10,
+    padding: BUTTON_PADDING,
     alignSelf: 'flex-end',
     margin: BUTTON_MARGIN + 5,
     marginRight: 0,
+    borderTopLeftRadius: BUTTON_BORDER_RADIUS,
+    borderBottomLeftRadius: BUTTON_BORDER_RADIUS,
+    shadowColor: 'rgba(0,0,0, 0.5)', // IOS
+    shadowOffset: { height: 10, width: 10 }, // IOS
+    shadowOpacity: 0.5, // IOS
+    shadowRadius: 5, //IOS
+    elevation: 5, // Android
+    zIndex: 10,
   },
   rightButtonText : {
     flex: 1,
@@ -164,7 +197,7 @@ const LocalTheme = StyleSheet.create({
     textAlign: 'left',
     textAlignVertical: 'center',
     fontSize: BUTTON_FONT_SIZE - 4,
-    color: THEME_COLORS.BG,
+    color: THEME_COLORS.HEADING_TEXT,
     fontStyle: BUTTON_FONT_STYLE,
     fontWeight: BUTTON_FONT_WEIGHT,
   },
