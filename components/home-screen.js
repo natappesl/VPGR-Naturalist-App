@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, ImageBackground} from "react-native";
+import { StyleSheet, Text, View, Image, ImageBackground} from "react-native";
 import { Theme, THEME_COLORS } from '../constants/theme';
 import { LeftButton, RightButton } from './buttons';
 
@@ -17,13 +17,14 @@ class HomeScreen extends Component {
     return (
       <View style = {Theme.containerContainer}>
         <ImageBackground
-          source={require('../assets/logo.png')}
-          style={Theme.background}
-          imageStyle={Theme.backgroundLogo}/>
+          source={require('../assets/splish-splash.jpg')}
+          style={Theme.background}>
+          <Image style={Theme.backgroundLogo} source={require('../assets/logo.png')} resizeMode='contain'/>
+          </ImageBackground>
         <View style = {LocalTheme.buttonContainer}>
-        <LeftButton text={'ABOUT'} onPress={() => {this.navigateTo('Home')}}/> 
-        <RightButton text={'SEARCH'} onPress={() => {this.navigateTo('Search')}}/> 
-        <LeftButton text={'CATEGORIES'} onPress={() => {this.navigateTo('Categories')}}/> 
+          <LeftButton text={'ABOUT'} onPress={() => {this.navigateTo('Home')}}/>
+          <RightButton text={'SEARCH'} onPress={() => {this.navigateTo('Search')}}/> 
+          <LeftButton text={'CATEGORIES'} onPress={() => {this.navigateTo('Categories')}}/> 
         </View>
       </View>
     );

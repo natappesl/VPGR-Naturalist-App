@@ -1,20 +1,21 @@
 // Anti-switch reference: https://toddmotto.com/deprecating-the-switch-statement-for-object-literals/
 
 import React, { Component } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, ImageBackground, Text, TouchableOpacity, StyleSheet } from "react-native";
 import {
   Icon,
-  FormValidationMessage,
   ListItem,
   ButtonGroup
 } from "react-native-elements";
 import {Catalog} from './catalog';
+import { SideButton } from './buttons';
 import { Theme, THEME_COLORS } from "../constants/theme";
 import {
   COLOR_TRAITS,
   SIZE_TRAITS,
   SPECIES_TYPES
 } from "../constants/trait-categories";
+import { LeftButton } from './buttons'
 import DatabaseService from '../services/database';
 
 class FilterGroup extends Component {
@@ -34,27 +35,32 @@ class FilterGroup extends Component {
 
     return (
       <View style={LocalTheme.filterContainer}>
-        <View style= {LocalTheme.filterLabelContainer}>
-          <Text style={LocalTheme.filterLabel}>{this.props.filterName}</Text>
-          <Icon
-            iconStyle={LocalTheme.filterLabel}
-            name={this.state.showFilters ? 'chevron-down' : 'chevron-right'}
-            type='font-awesome'
-            color={THEME_COLORS.HEADING_TEXT}
-            onPress={() => this.toggleFilters()}
-          />
-        </View>
+        <TouchableOpacity
+          onPress={() => this.toggleFilters()}
+          delayPressIn={0}
+          delayPressOut={0}>
+          <View style={LocalTheme.filterLabelContainer}>
+            <Text style={LocalTheme.filterLabel}>{this.props.filterName}</Text>
+            <Icon
+              iconStyle={LocalTheme.filterIcon}
+              name={this.state.showFilters ? 'chevron-down' : 'chevron-right'}
+              type='font-awesome'
+              color={THEME_COLORS.HEADING_TEXT}
+            />
+          </View>
+        </TouchableOpacity>
         {this.state.showFilters && (
           <ButtonGroup
             style={{ margin: 0 }}
             selectedIndex={this.props.selectedIndex}
             buttons={this.props.filters}
             onPress= {this.props.onUpdateIndex}
-            activeOpacity={255}
+            delayPressOut={0}
             containerStyle={LocalTheme.groupContainer}
             containerBorderRadius={1}
             innerBorderStyle={LocalTheme.innerBorder}
             buttonStyle={LocalTheme.filterButton}
+            textStyle={LocalTheme.buttonText}
             selectedTextStyle={LocalTheme.selectedText}
             selectedButtonStyle={LocalTheme.selectedFilterButton}
           />
@@ -114,32 +120,31 @@ export default class CategoriesScreen extends Component {
 
     return (
       <View style={Theme.containerContainer}>
-        <View style={Theme.headerContainer}>
-          <Text style={Theme.headerTitle}>CATEGORIES</Text>
-          <Icon
-            iconStyle={Theme.headerButton}
-            name="home"
-            color={THEME_COLORS.HEADING_TEXT}
-            onPress={() => {this.props.navigation.navigate('Home')}}
+      <ImageBackground
+          source={require('../assets/splish-splash.jpg')}
+          style={Theme.background}
           />
+        <View style={Theme.headerContainer}>
+          <LeftButton text={'CATEGORIES'} onPress={() => {this.props.navigation.navigate('Home')}}/>
         </View>
-
+        <View style={Theme.contentContainer}>
           <FilterGroup filterName="COLORS"
-          filters={COLOR_TRAITS}
-          selectedIndex={this.state.indexes['colors']}
-          onUpdateIndex={(selectedIndex) => {this.onIndexUpdated('colors', selectedIndex)}} />
+            filters={COLOR_TRAITS}
+            selectedIndex={this.state.indexes['colors']}
+            onUpdateIndex={(selectedIndex) => {this.onIndexUpdated('colors', selectedIndex)}} />
 
-          <FilterGroup filterName="SIZES"
-          filters={SIZE_TRAITS}
-          selectedIndex={this.state.indexes['sizes']}
-          onUpdateIndex={(selectedIndex) => {this.onIndexUpdated('sizes', selectedIndex)}}/>
+            <FilterGroup filterName="SIZES"
+            filters={SIZE_TRAITS}
+            selectedIndex={this.state.indexes['sizes']}
+            onUpdateIndex={(selectedIndex) => {this.onIndexUpdated('sizes', selectedIndex)}}/>
 
-          <FilterGroup filterName="TYPES"
-          filters={SPECIES_TYPES}
-          selectedIndex={this.state.indexes['stypes']}
-          onUpdateIndex={(selectedIndex) => {this.onIndexUpdated('stypes', selectedIndex)}}/>
+            <FilterGroup filterName="TYPES"
+            filters={SPECIES_TYPES}
+            selectedIndex={this.state.indexes['stypes']}
+            onUpdateIndex={(selectedIndex) => {this.onIndexUpdated('stypes', selectedIndex)}}/>
 
-          <Catalog list={this.state.list} listLoaded={this.state.listLoaded} onRowPress={(species) => this.onRowPressed(species)}/>
+            <Catalog list={this.state.list} listLoaded={this.state.listLoaded} onRowPress={(species) => this.onRowPressed(species)}/>
+        </View>
       </View>
     );
   }
@@ -148,18 +153,31 @@ export default class CategoriesScreen extends Component {
 const LocalTheme = StyleSheet.create({
   groupContainer: {
     borderColor: THEME_COLORS.TRANSPARENT,
-    borderWidth: 0
+    borderWidth: 0,
+    backgroundColor: THEME_COLORS.TRANSPARENT,
   },
   filterContainer: {
     width: '100%',
     maxHeight: 100,
     flexDirection: "column",
-    backgroundColor: THEME_COLORS.SECONDARY
+    borderBottomWidth: 1,
+    borderBottomColor: THEME_COLORS.SECONDARY,
+    backgroundColor: THEME_COLORS.TRANSPARENT,
   },
   filterLabelContainer: {
+    width: '100%',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     flexDirection: 'row',
     alignContent: 'flex-start',
     justifyContent: 'space-between',
+    backgroundColor: THEME_COLORS.SECONDARY,
+    shadowColor: 'rgba(0,0,0, 0.5)', // IOS
+    shadowOffset: { height: 10, width: 10 }, // IOS
+    shadowOpacity: 0.5, // IOS
+    shadowRadius: 5, //IOS
+    elevation: 5, // Android
+    zIndex: 10,
   },
   filterButton: {
     backgroundColor: THEME_COLORS.TRANSPARENT,
@@ -168,13 +186,24 @@ const LocalTheme = StyleSheet.create({
   innerBorder: {
     color: THEME_COLORS.TRANSPARENT
   },
-  selectedFilterButton: {},
+  selectedFilterButton: {
+    backgroundColor: THEME_COLORS.TRANSPARENT,
+    borderColor: THEME_COLORS.TRANSPARENT
+  },
   selectedText: {
-    color: THEME_COLORS.HEADING_TEXT
+    color: THEME_COLORS.PRIMARY,
+  },
+  buttonText: {
+    color: THEME_COLORS.SECONDARY,
   },
   filterLabel: {
     color: THEME_COLORS.HEADING_TEXT,
     fontWeight: "bold",
     fontSize: 18
-  }
+  },
+  filterIcon: {
+    color: THEME_COLORS.HEADING_TEXT,
+    fontWeight: "bold",
+    fontSize: 18,
+  },
 });

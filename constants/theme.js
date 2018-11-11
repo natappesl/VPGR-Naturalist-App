@@ -13,12 +13,16 @@ export const THEME_COLORS = {
 }
 export const Theme = StyleSheet.create({
   background: {
-    height: 160,
     width: '100%',
+    height: '100%',
     position: 'absolute',
-    top: 150,
+    backgroundColor: THEME_COLORS.BG,
   },
   backgroundLogo: {
+    position: 'absolute',
+    top: 100,
+    width: '100%',
+    height: 160,
     resizeMode: 'contain',
   },
   containerContainer: {
@@ -38,7 +42,7 @@ export const Theme = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignContent: 'flex-start',
-    alignItems: 'baseline',
+    alignItems: 'center',
     backgroundColor: THEME_COLORS.TRANSPARENT,
   },
   headerTitle: {
@@ -48,20 +52,10 @@ export const Theme = StyleSheet.create({
     textAlign: 'left',
     marginLeft: 10,
   },
-  headerButton: {
-    flex: 1,
-    padding: 10,
-    margin: 20,
-    marginBottom: 0,
-    marginRight: 0,
-    textAlign: 'center',
-    textAlignVertical:'center',
-    backgroundColor: THEME_COLORS.SECONDARY,
-  },
   listContainer: {
     flex: 10,
     width: '100%',
-    backgroundColor: THEME_COLORS.BG,
+    backgroundColor: THEME_COLORS.TRANSPARENT,
   },
   listContent: {
     flex:1,
