@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Alert} from "react-native";
+import { Icon } from 'react-native-elements';
 import { Theme, THEME_COLORS } from '../constants/theme';
-import { LeftButton, RightButton } from './buttons';
+import { LeftButton, RightButton, RightIconButton } from './buttons';
 import Background from './background';
 
 class HomeScreen extends Component {
@@ -18,6 +19,11 @@ class HomeScreen extends Component {
     return (
       <View style = {Theme.containerContainer}>
         <Background showLogo={true} />
+        <View style={[Theme.headerContainer, LocalTheme.signInButton]}>
+        <RightIconButton onPress={() => {this.props.navigation.navigate('Login')}}>
+            <Icon style={{flex: 1,}} name='pencil' type='font-awesome' color={THEME_COLORS.BG}/>
+          </RightIconButton>
+        </View>
         <View style = {LocalTheme.buttonContainer}>
           <LeftButton text={'NEWS & EVENTS'} onPress={() => {
             Alert.alert(
@@ -40,6 +46,10 @@ const LocalTheme = StyleSheet.create({
     backgroundColor: THEME_COLORS.TRANSPARENT,
     justifyContent: 'flex-end',
     paddingBottom: 60
+  },
+  signInButton: {
+    alignSelf: 'flex-end',
+    width: 80,
   },
 });
 
