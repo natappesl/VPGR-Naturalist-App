@@ -45,16 +45,12 @@ export default class SearchScreen extends Component {
     this.props.navigation.navigate('Species', {species: species});
   }
 
-  navigateHome() {
-    this.props.navigation.navigate('Home');
-  }
-
   render() {
     return (
       <View style={Theme.containerContainer}>
         <Background/>
         <View style={Theme.headerContainer}>
-          <LeftButton text={'SEARCH'} onPress={() => {this.navigateHome()}}/>
+          <LeftButton text={'SEARCH'} onPress={() => {this.props.navigation.pop()}}/>
           <RightIconButton onPress={() => {this.toggleSearch()}}>
             <Icon style={{flex: 1, padding: 5,}} name='search' type='font-awesome' color={THEME_COLORS.BG}/>
           </RightIconButton>
