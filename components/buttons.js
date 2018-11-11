@@ -143,7 +143,6 @@ const LocalTheme = StyleSheet.create({
     shadowOpacity: 0.5, // IOS
     shadowRadius: 5, //IOS
     elevation: 5, // Android
-    zIndex: 10,
   },
   leftButtonPressed: {
     flex: 3,
@@ -161,7 +160,6 @@ const LocalTheme = StyleSheet.create({
     shadowOpacity: 0.5, // IOS
     shadowRadius: 5, //IOS
     elevation: 5, // Android
-    zIndex: 10,
   },
   leftButtonText : {
     flex: 1,
@@ -197,7 +195,6 @@ const LocalTheme = StyleSheet.create({
     shadowOpacity: 0.5, // IOS
     shadowRadius: 5, //IOS
     elevation: 5, // Android
-    zIndex: 10,
   },
   rightButtonPressed: {
     flex: 3,
@@ -215,7 +212,6 @@ const LocalTheme = StyleSheet.create({
     shadowOpacity: 0.5, // IOS
     shadowRadius: 5, //IOS
     elevation: 5, // Android
-    zIndex: 10,
   },
   rightButtonText : {
     flex: 1,

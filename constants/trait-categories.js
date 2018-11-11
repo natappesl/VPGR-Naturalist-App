@@ -18,4 +18,8 @@ export const SPECIES_TYPES = [
   'plant',
   'animal',
   'branchiopoda'
-]
+];
+
+export const CONS_STATUS = {
+  'LC': 'Least Concern',
+};

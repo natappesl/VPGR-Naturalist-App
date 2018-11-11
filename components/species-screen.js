@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import { Theme, THEME_COLORS } from "../constants/theme";
+import {CONS_STATUS} from '../constants/trait-categories';
 import {LeftButton} from './buttons';
 import Background from "./background";
 import DatabaseService from '../services/database';
@@ -12,142 +13,66 @@ export default class SpeciesScreen extends Component {
     this.state = {
       showDetails: false
     };
+    this.species = this.props.navigation.getParam('species');
+    if (!this.species) {
+      console.warn("Navigated to species page without passing a species object!");
+    }
   }
 
   toggleDetails() {
     this.setState(state => ({ showDetails: !state.showDetails }));
   }
 
+  conservationStatus() {
+    console.log(CONS_STATUS[this.species.conservationstatus]);
+  }
   render() {
-    const { navigation } = this.props;
-    const species = navigation.getParam("species");
-    if (!species) {
-      console.warn("Navigated to species page without passing a species object!");
-    }
-
     return (
       <View style={Theme.containerContainer}>
         <Background/>
         <View style={Theme.headerContainer}>
-          <LeftButton text={species.alias} onPress={() => {
+          <LeftButton text={this.species.alias} onPress={() => {
             this.props.navigation.pop()
           }}/>
         </View>
         <View style={Theme.contentContainer}>
-          <View style={LocalTheme.titleView}>
-            <Image
-              style={LocalTheme.mainImage}
-              source={{ uri: MediaService.getImageURI(species.url)}}
-            />
-            <View style={LocalTheme.headerView}>
-              <Text style={LocalTheme.headerTitle}>{species.alias}</Text>
+          <ScrollView style={LocalTheme.contentScroll}>
+          <View style={LocalTheme.infoContainer}>
+            <View style={LocalTheme.imageContainer}>
+              <Image
+                style={[LocalTheme.mainImage, Theme.shadow]}
+                source={{ uri: MediaService.getImageURI(this.species.url)}}
+              />
+              <View style={LocalTheme.namesContainer}>
+                <View style={[LocalTheme.detailContainer]}>
+                <Text style={LocalTheme.detailLabel}>Scientific Name</Text>
+                <Text style={[LocalTheme.detailContent, LocalTheme.italicText]}>{this.species.sciname}</Text>
+              </View>
+              <View style={[LocalTheme.detailContainer,]}>
+                <Text style={LocalTheme.detailLabel}>Aliases</Text>
+                <Text style={LocalTheme.detailContent}>{this.species.aliases}</Text>
+              </View>
+              </View>
+            </View>
+            <View style={[LocalTheme.detailContainer]}>
+              <Text style={[LocalTheme.detailLabel]}>Overview</Text>
+              <Text style={LocalTheme.detailContent}>{this.species.overview}</Text>
+            </View>
+            <View style={[LocalTheme.detailContainer]}>
+              <Text style={[LocalTheme.detailLabel]}>Size</Text>
+              <Text style={LocalTheme.detailContent}>{this.species.size}</Text>
+            </View>
+            <View style={[LocalTheme.detailContainer]}>
+              <Text style={[LocalTheme.detailLabel]}>Species Type</Text>
+              <Text style={LocalTheme.detailContent}>{this.species.stype}</Text>
+            </View>
+            <View style={[LocalTheme.detailContainer]}>
+              <Text style={[LocalTheme.detailLabel]}>Conservation Status</Text>
+              <Text style={LocalTheme.detailContent}>{CONS_STATUS[this.species.conservationstatus]}</Text>
             </View>
           </View>
-          <View style={Theme.contentContainer}>
-            {!this.state.showDetails && (
-              <TouchableOpacity
-                style={LocalTheme.showDetailsBar}
-                onPress={() => {
-                  this.toggleDetails();
-                }}
-              >
-                <Text>SHOW DEETS</Text>
-              </TouchableOpacity>
-            )}
-            {this.state.showDetails && (
-              <View style={Theme.contentContainer}>
-                <View style={LocalTheme.detailView}>
-                  <Text style={LocalTheme.labelTitle}>Scientific Name:</Text>
-                  <Text style={LocalTheme.labelText}>{species.sciname}</Text>
-                </View>
-                <View style={LocalTheme.detailView}>
-                  <Text style={LocalTheme.labelTitle}>Overview:</Text>
-                  <Text style={LocalTheme.labelText}>{species.overview}</Text>
-                </View>
-                <View style={LocalTheme.detailView}>
-                  <Text style={LocalTheme.labelTitle}>Size:</Text>
-                  <Text style={LocalTheme.labelText}>{species.size}</Text>
-                </View>
-                <View style={LocalTheme.detailView}>
-                  <Text style={LocalTheme.labelTitle}>Animal Type:</Text>
-                  <Text style={LocalTheme.labelText}>{species.stype}</Text>
-                </View>
-                <View style={LocalTheme.detailView}>
-                  <Text style={LocalTheme.labelTitle}>
-                    Conservation Status:
-                  </Text>
-                  <Text style={LocalTheme.labelText}>
-                    {species.conservationstatus}
-                  </Text>
-                </View>
-              </View>
-            )}
-          </View>
-        </View>
-      </View>
-    );
-  }
-
-  _render() {
-    const { navigation } = this.props;
-    const species = navigation.getParam("species");
-    if (!species) {
-      console.warn("Navigated to species page without passing a species object!");
-    }
-
-    return (
-      <View style={Theme.containerContainer}>
-        <Background/>
-        <View style={Theme.contentContainer}>
-          <View style={Theme.primaryBackground, LocalTheme.titleView}>
-            <Image
-              style={LocalTheme.mainImage}
-              source={{ uri: MediaService.getImageURI(species.url)}}
-            />
-            <View style={LocalTheme.headerView}>
-              <Text style={LocalTheme.headerTitle}>{species.alias}</Text>
-            </View>
-          </View>
-          <View style={Theme.contentContainer}>
-            {!this.state.showDetails && (
-              <TouchableOpacity
-                style={LocalTheme.showDetailsBar}
-                onPress={() => {
-                  this.toggleDetails();
-                }}
-              >
-                <Text>SHOW DEETS</Text>
-              </TouchableOpacity>
-            )}
-            {this.state.showDetails && (
-              <View style={Theme.contentContainer}>
-                <View style={LocalTheme.detailView}>
-                  <Text style={LocalTheme.labelTitle}>Scientific Name:</Text>
-                  <Text style={LocalTheme.labelText}>{species.sciname}</Text>
-                </View>
-                <View style={LocalTheme.detailView}>
-                  <Text style={LocalTheme.labelTitle}>Overview:</Text>
-                  <Text style={LocalTheme.labelText}>{species.overview}</Text>
-                </View>
-                <View style={LocalTheme.detailView}>
-                  <Text style={LocalTheme.labelTitle}>Size:</Text>
-                  <Text style={LocalTheme.labelText}>{species.size}</Text>
-                </View>
-                <View style={LocalTheme.detailView}>
-                  <Text style={LocalTheme.labelTitle}>Animal Type:</Text>
-                  <Text style={LocalTheme.labelText}>{species.stype}</Text>
-                </View>
-                <View style={LocalTheme.detailView}>
-                  <Text style={LocalTheme.labelTitle}>
-                    Conservation Status:
-                  </Text>
-                  <Text style={LocalTheme.labelText}>
-                    {species.conservationstatus}
-                  </Text>
-                </View>
-              </View>
-            )}
-          </View>
+        
+        </ScrollView>
         </View>
       </View>
     );
@@ -155,52 +80,60 @@ export default class SpeciesScreen extends Component {
 }
 
 const LocalTheme = StyleSheet.create({
-  detailContainer: {
-    flex: 10
+  infoContainer: {
+    flex: 10,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
   },
-  showDetailsBar: {
-    flex: 1
+  contentScroll: {
+    flex:1,
   },
-  titleView: {
-    flex: 1,
+  imageContainer: {
+    flex: 10,
+    padding: 5,
     flexDirection: "row",
-    backgroundColor: THEME_COLORS.PRIMARY,
+    backgroundColor: THEME_COLORS.TRANSPARENT,
+  },
+  namesContainer: {
+    flex: 4,
+    padding: 10,
+    flexDirection: 'column',
+  },
+  detailContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    padding: 10,
+  },
+  row: {
+    flexDirection: 'row',
   },
   mainImage: {
-    flex: 1,
-    padding: 5
-  },
-  headerView: {
-    flex: 6,
-    justifyContent: 'center',
-    alignContent: 'center',
-  },
-  headerTitle: {
-    flex: 1,
-    fontWeight: "bold",
-    fontSize: 28,
-    textAlign: "center",
-    color: 'white',
-  },
-  headerSubtitle: {
-    flex: 1,
-    fontStyle: "italic",
-    fontSize: 20
-  },
-  detailView: {
     flex: 3,
-    flexDirection: "row"
+    height: 200,
+    width: 200,
+    padding: 5,
+    borderRadius: 10,
+    resizeMode: 'contain',
   },
-  labelTitle: {
-    flex: 3,
-    alignSelf: "flex-end",
-    fontSize: 18
+  detailLabel: {
+    flex: 9,
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlignVertical: 'center',
+    paddingBottom: 0,
+    color: THEME_COLORS.SECONDARY,
   },
-  labelText: {
-    flex: 5,
-    fontStyle: "italic",
-    fontSize: 16,
-    textAlign: "left",
-    alignSelf: "flex-end"
-  }
+  detailContent: {
+    flex: 12,
+    textAlign: 'justify',
+    textAlignVertical: 'center',
+    color: THEME_COLORS.SECONDARY,
+    paddingLeft: 10,
+    borderRadius: 10,
+    backgroundColor: THEME_COLORS.TRANSPARENT_HALF,
+  },
+  italicText: {
+    fontStyle: 'italic',
+  },
 });

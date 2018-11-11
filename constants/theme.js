@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
-
+import { StyleSheet, Text, View, Dimensions } from 'react-native';
+const d = Dimensions.get('window');
 export const THEME_COLORS = {
   BG: '#fcf7f0',
   PRIMARY: '#001964',
@@ -9,16 +9,20 @@ export const THEME_COLORS = {
   TRANSPARENT_HALF: 'rgba(255, 255, 255, 0.4)',
   
   HEADING_TEXT: 'white',
+  CONTENT_TEXT: 'white',
   
 }
 export const Theme = StyleSheet.create({
   background: {
-    width: '100%',
-    height: '100%',
+    top: 0,
+    left: 0,
+    width: d.width,
+    height: d.height,
     position: 'absolute',
     backgroundColor: THEME_COLORS.BG,
   },
   backgroundLogo: {
+    flex: 0,
     position: 'absolute',
     top: 100,
     width: '100%',
@@ -27,6 +31,7 @@ export const Theme = StyleSheet.create({
   },
   containerContainer: {
     flex: 1,
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: THEME_COLORS.BG,
@@ -101,5 +106,11 @@ export const Theme = StyleSheet.create({
     flex: 1,
     width: '90%',
     backgroundColor: THEME_COLORS.BG,
+  },
+  shadow: {
+    shadowColor: 'rgba(0,0,0, 0.5)', // IOS
+    shadowOffset: { height: 10, width: 10 }, // IOS
+    shadowOpacity: 0.5, // IOS
+    shadowRadius: 5, //IOS
   },
 });
