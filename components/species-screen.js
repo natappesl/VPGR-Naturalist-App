@@ -22,10 +22,6 @@ export default class SpeciesScreen extends Component {
   toggleDetails() {
     this.setState(state => ({ showDetails: !state.showDetails }));
   }
-
-  conservationStatus() {
-    console.log(CONS_STATUS[this.species.conservationstatus]);
-  }
   render() {
     return (
       <View style={Theme.containerContainer}>
