@@ -456,6 +456,21 @@ class DatabaseService {
     });
   }
 
+  async searchAliases (alias) {
+    let searchResult;
+    let db = await DatabaseService.instance.getDB();
+
+    await db.transaction( async (tx) => {
+        let query = `
+          SELECT DISTINCT *
+          FROM aliases
+          WHERE alias = ?`;
+        let [t, results] = await tx.executeSql(query, [alias]);
+        searchResult = results.rows.raw();
+    });
+    return searchResult;
+  }
+
   async getAliasedSpecies() {
     let allSpecies;
     let db = await DatabaseService.instance.getDB();
@@ -544,6 +559,51 @@ class DatabaseService {
     return searchResult;
   }
 
+  async searchTraits (tag) {
+    let searchResult;
+    let db = await DatabaseService.instance.getDB();
+
+    await db.transaction( async (tx) => {
+        let query = `
+          SELECT DISTINCT *
+          FROM traits
+          WHERE tag = ?`;
+        let [t, results] = await tx.executeSql(query, [tag]);
+        searchResult = results.rows.raw();
+    });
+    return searchResult;
+  }
+
+  async getImagesById (id) {
+    let searchResult;
+    let db = await DatabaseService.instance.getDB();
+
+    await db.transaction( async (tx) => {
+        let query = `
+          SELECT *
+          FROM images
+          WHERE id = ?`;
+        let [t, results] = await tx.executeSql(query, [id]);
+        searchResult = results.rows.raw();
+    });
+    return searchResult;
+  }
+
+  async getReferencesById (id) {
+    let searchResult;
+    let db = await DatabaseService.instance.getDB();
+
+    await db.transaction( async (tx) => {
+        let query = `
+          SELECT *
+          FROM links
+          WHERE id = ?`;
+        let [t, results] = await tx.executeSql(query, [id]);
+        searchResult = results.rows.raw();
+    });
+    return searchResult;
+  }
+
   async createAliasedSpeciesView () {
     let db = await DatabaseService.instance.getDB();
     await db.transaction ( async tx => {
@@ -591,7 +651,29 @@ class DatabaseService {
       )
     });
   }
+
+  async createColorTraitsView () {
+    let db = await DatabaseService.instance.getDB();
+    await db.transaction ( async tx => {
+      tx.executeSql(`DROP VIEW IF EXISTS colorTraits;`);
+      
+      tx.executeSql(
+        `CREATE VIEW colorTraits (
+          id,
+          tag
+      )
+      AS
+          SELECT *
+            FROM traits
+          WHERE tag IN ('brown', 'black', 'white', 'yellow', 'blue', 'green', 'red');
+      `
+      )
+    });
+  }
+
 }
+
+
 
 const instance = new DatabaseService();
 Object.freeze(instance);
