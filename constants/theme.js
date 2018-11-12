@@ -1,5 +1,15 @@
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
 const d = Dimensions.get('window');
+
+const BUTTON_FONT_SIZE = 24;
+const BUTTON_WIDTH = 320;
+const BUTTON_HEIGHT = 60;
+const BUTTON_FONT_WEIGHT = 'bold';
+const BUTTON_FONT_STYLE = 'normal';
+const BUTTON_MARGIN = 20;
+const BUTTON_PADDING = 10;
+const BUTTON_BORDER_RADIUS = 10;
+
 export const THEME_COLORS = {
   BG: '#fcf7f0',
   PRIMARY: '#001964',
@@ -12,7 +22,65 @@ export const THEME_COLORS = {
   CONTENT_TEXT: 'white',
   
 }
+
 export const Theme = StyleSheet.create({
+  sideButton: {
+    flex: 3,
+    maxHeight: BUTTON_HEIGHT,
+    backgroundColor: THEME_COLORS.SECONDARY,
+    width: BUTTON_WIDTH,
+    padding: BUTTON_PADDING,
+    margin: BUTTON_MARGIN,
+  },
+
+  buttonPressed: {
+    maxHeight: BUTTON_HEIGHT - 10,
+    width: BUTTON_WIDTH - 10,
+    margin: BUTTON_MARGIN + 5,
+  },
+
+  leftButton: {
+    alignSelf: 'flex-start',
+    marginLeft: 0,
+    borderTopRightRadius: BUTTON_BORDER_RADIUS,
+    borderBottomRightRadius: BUTTON_BORDER_RADIUS,
+  },
+
+  rightButton: {
+    alignSelf: 'flex-end',
+    marginRight: 0,
+    borderTopLeftRadius: BUTTON_BORDER_RADIUS,
+    borderBottomLeftRadius: BUTTON_BORDER_RADIUS,
+  },
+
+  buttonText: {
+    flex: 1,
+    textAlignVertical: 'center',
+    fontSize: BUTTON_FONT_SIZE,
+    color: THEME_COLORS.BG,
+    fontStyle: BUTTON_FONT_STYLE,
+    fontWeight: BUTTON_FONT_WEIGHT,
+  },
+
+  leftButtonText: {
+    textAlign: 'right',
+  },
+
+  rightButtonText: {
+    textAlign: 'left',
+  },
+
+  buttonTextPressed: {
+    fontSize: BUTTON_FONT_SIZE - 4,
+  },
+
+  rightIconButton: {
+    flex: 0,
+    width:60,
+    marginLeft: BUTTON_MARGIN,
+    alignSelf: 'center',
+  },
+
   background: {
     top: 0,
     left: 0,
@@ -25,7 +93,7 @@ export const Theme = StyleSheet.create({
     flex: 0,
     position: 'absolute',
     top: 100,
-    width: '100%',
+    width: d.width,
     height: 160,
     resizeMode: 'contain',
   },
@@ -42,13 +110,16 @@ export const Theme = StyleSheet.create({
     backgroundColor: THEME_COLORS.TRANSPARENT
   },
   headerContainer: {
-    flex: 1,
-    minHeight: 60,
+    width: d.width,
+    height: 100,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignContent: 'flex-end',
-    alignItems: 'baseline',
+    alignContent: 'center',
+    alignItems: 'center',
     backgroundColor: THEME_COLORS.TRANSPARENT,
+  },
+  reverseRow: {
+    flexDirection: 'row-reverse',
   },
   headerTitle: {
     color: THEME_COLORS.HEADING_TEXT,
@@ -56,11 +127,6 @@ export const Theme = StyleSheet.create({
     flex: 5,
     textAlign: 'left',
     marginLeft: 10,
-  },
-  smallHeaderButtonIcon: {
-    flex:1,
-    padding: 20,
-    margin: 10,
   },
   listContainer: {
     flex: 10,
