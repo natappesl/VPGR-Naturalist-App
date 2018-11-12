@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { StyleSheet, View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import { Theme, THEME_COLORS } from "../constants/theme";
 import {CONS_STATUS} from '../constants/trait-categories';
-import {LeftButton} from './buttons';
+import {SideButton} from './buttons';
 import Background from "./background";
 import DatabaseService from '../services/database';
 import MediaService from '../services/media';
@@ -31,7 +31,7 @@ export default class SpeciesScreen extends Component {
       <View style={Theme.containerContainer}>
         <Background/>
         <View style={Theme.headerContainer}>
-          <LeftButton text={this.species.alias} onPress={() => {
+          <SideButton left text={this.species.alias} onPress={() => {
             this.props.navigation.pop()
           }}/>
         </View>

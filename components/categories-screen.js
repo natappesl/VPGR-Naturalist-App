@@ -15,7 +15,6 @@ import {
   SIZE_TRAITS,
   SPECIES_TYPES
 } from "../constants/trait-categories";
-import { LeftButton } from './buttons'
 import DatabaseService from '../services/database';
 import Background from './background';
 
@@ -123,7 +122,7 @@ export default class CategoriesScreen extends Component {
       <View style={Theme.containerContainer}>
       <Background/>
         <View style={Theme.headerContainer}>
-          <LeftButton text={'CATEGORIES'} onPress={() => {this.props.navigation.navigate('Home')}}/>
+          <SideButton left text={'CATEGORIES'} onPress={() => {this.props.navigation.navigate('Home')}}/>
         </View>
         <View style={Theme.contentContainer}>
           <FilterGroup filterName="COLORS"

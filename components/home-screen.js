@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, Alert} from "react-native";
 import { Icon } from 'react-native-elements';
 import { Theme, THEME_COLORS } from '../constants/theme';
-import { LeftButton, RightButton, RightIconButton } from './buttons';
+import { SideButton } from './buttons';
 import Background from './background';
 
 class HomeScreen extends Component {
@@ -19,20 +19,20 @@ class HomeScreen extends Component {
     return (
       <View style = {Theme.containerContainer}>
         <Background showLogo={true} />
-        <View style={[Theme.headerContainer, LocalTheme.signInButton]}>
-        <RightIconButton onPress={() => {this.props.navigation.navigate('Login')}}>
+        <View style={[Theme.headerContainer, Theme.reverseRow]}>
+        <SideButton right style={Theme.rightIconButton} onPress={() => {this.props.navigation.navigate('Login')}}>
             <Icon style={{flex: 1,}} name='pencil' type='font-awesome' color={THEME_COLORS.BG}/>
-          </RightIconButton>
+          </SideButton>
         </View>
         <View style = {LocalTheme.buttonContainer}>
-          <LeftButton text={'NEWS & EVENTS'} onPress={() => {
+          <SideButton left text={'NEWS & EVENTS'} onPress={() => {
             Alert.alert(
               'NEWS & EVENTS',
               'Coming soon! Stay tuned, mah boy!',
               [{text: 'You got it, dude.', onPress: ()=> {}}, {text: 'Hurry up already!', onPress: ()=> {}}])
           }}/>
-          <RightButton text={'SEARCH'} onPress={() => {this.navigateTo('Search')}}/> 
-          <LeftButton text={'CATEGORIES'} onPress={() => {this.navigateTo('Categories')}}/> 
+          <SideButton right text={'SEARCH'} onPress={() => {this.navigateTo('Search')}}/> 
+          <SideButton left text={'CATEGORIES'} onPress={() => {this.navigateTo('Categories')}}/> 
         </View>
       </View>
     );
@@ -46,11 +46,7 @@ const LocalTheme = StyleSheet.create({
     backgroundColor: THEME_COLORS.TRANSPARENT,
     justifyContent: 'flex-end',
     paddingBottom: 60
-  },
-  signInButton: {
-    alignSelf: 'flex-end',
-    width: 80,
-  },
+  }
 });
 
 export default HomeScreen;
