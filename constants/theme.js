@@ -1,182 +1,310 @@
+// Styling reference: https://revelry.co/styles-in-react-native/
+
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
 const d = Dimensions.get('window');
 
-const BUTTON_FONT_SIZE = 24;
-const BUTTON_WIDTH = 320;
-const BUTTON_HEIGHT = 60;
-const BUTTON_FONT_WEIGHT = 'bold';
-const BUTTON_FONT_STYLE = 'normal';
-const BUTTON_MARGIN = 20;
-const BUTTON_PADDING = 10;
-const BUTTON_BORDER_RADIUS = 10;
-
-export const THEME_COLORS = {
-  BG: '#fcf7f0',
-  PRIMARY: '#001964',
-  PRIMARY_HIGHLIGHT: '#0E35A8',
-  SECONDARY: '#5A4B42',
-  TRANSPARENT: 'rgba(255, 255, 255, 0.0)',
-  TRANSPARENT_HALF: 'rgba(255, 255, 255, 0.4)',
+export const dimensions = {
+  h: d.height,
+  w: d.width,
+}
+export const ButtonConst = {
+  fontSize: 24,
+  width: 320,
+  height: 60,
+  fontWeight: 'bold',
+  fontStyle: 'normal',
+  margin: 20,
+  padding: 10,
+  borderRadius: 10,
+}
+export const Colors = {
+  bg: '#fcf7f0',
+  primary: '#001964',
+  primaryLight: '#0E35A8',
+  secondary: '#5A4B42',
+  transparent: 'rgba(255, 255, 255, 0.0)',
+  transparentSemi: 'rgba(255, 255, 255, 0.4)',
   
-  HEADING_TEXT: 'white',
-  CONTENT_TEXT: 'white',
+  headingText: 'white',
+  contentText: 'white',
   
 }
-
-export const Theme = StyleSheet.create({
-  sideButton: {
-    flex: 3,
-    maxHeight: BUTTON_HEIGHT,
-    backgroundColor: THEME_COLORS.SECONDARY,
-    width: BUTTON_WIDTH,
-    padding: BUTTON_PADDING,
-    margin: BUTTON_MARGIN,
-  },
-
-  buttonPressed: {
-    maxHeight: BUTTON_HEIGHT - 10,
-    width: BUTTON_WIDTH - 10,
-    margin: BUTTON_MARGIN + 5,
-  },
-
-  leftButton: {
-    alignSelf: 'flex-start',
-    marginLeft: 0,
-    borderTopRightRadius: BUTTON_BORDER_RADIUS,
-    borderBottomRightRadius: BUTTON_BORDER_RADIUS,
-  },
-
-  rightButton: {
-    alignSelf: 'flex-end',
-    marginRight: 0,
-    borderTopLeftRadius: BUTTON_BORDER_RADIUS,
-    borderBottomLeftRadius: BUTTON_BORDER_RADIUS,
-  },
-
-  buttonText: {
-    flex: 1,
-    textAlignVertical: 'center',
-    fontSize: BUTTON_FONT_SIZE,
-    color: THEME_COLORS.BG,
-    fontStyle: BUTTON_FONT_STYLE,
-    fontWeight: BUTTON_FONT_WEIGHT,
-  },
-
-  leftButtonText: {
-    textAlign: 'right',
-  },
-
-  rightButtonText: {
-    textAlign: 'left',
-  },
-
-  buttonTextPressed: {
-    fontSize: BUTTON_FONT_SIZE - 4,
-  },
-
-  rightIconButton: {
-    flex: 0,
-    width:60,
-    marginLeft: BUTTON_MARGIN,
-    alignSelf: 'center',
-  },
-
-  background: {
+export const BackgroundTheme =  StyleSheet.create({
+  main: {
     top: 0,
     left: 0,
-    width: d.width,
-    height: d.height,
+    width: dimensions.w,
+    height: dimensions.h,
     position: 'absolute',
-    backgroundColor: THEME_COLORS.BG,
+    backgroundColor: Colors.bg,
   },
-  backgroundLogo: {
+  logo: {
     flex: 0,
     position: 'absolute',
     top: 100,
-    width: d.width,
+    width: dimensions.w,
     height: 160,
     resizeMode: 'contain',
   },
-  containerContainer: {
+});
+export const ButtonTheme = StyleSheet.create({
+  side: {
+    flex: 3,
+    maxHeight: ButtonConst.height,
+    backgroundColor: Colors.secondary,
+    width: ButtonConst.width,
+    padding: ButtonConst.padding,
+    margin: ButtonConst.margin,
+  },
+
+  pressed: {
+    maxHeight: ButtonConst.height - 10,
+    width: ButtonConst.width - 10,
+    margin: ButtonConst.margin + 5,
+  },
+
+  left: {
+    alignSelf: 'flex-start',
+    marginLeft: 0,
+    borderTopRightRadius: ButtonConst.borderRadius,
+    borderBottomRightRadius: ButtonConst.borderRadius,
+  },
+
+  right: {
+    alignSelf: 'flex-end',
+    marginRight: 0,
+    borderTopLeftRadius: ButtonConst.borderRadius,
+    borderBottomLeftRadius: ButtonConst.borderRadius,
+  },
+
+  text: {
     flex: 1,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: THEME_COLORS.BG,
+    textAlignVertical: 'center',
+    fontSize: ButtonConst.fontSize,
+    color: Colors.bg,
+    fontStyle: ButtonConst.fontStyle,
+    fontWeight: ButtonConst.fontWeight,
   },
-  contentContainer: {
-    flex: 10,
-    width: '100%',
-    backgroundColor: THEME_COLORS.TRANSPARENT
+
+  leftText: {
+    textAlign: 'right',
   },
-  headerContainer: {
-    width: d.width,
-    height: 100,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignContent: 'center',
-    alignItems: 'center',
-    backgroundColor: THEME_COLORS.TRANSPARENT,
-  },
-  reverseRow: {
-    flexDirection: 'row-reverse',
-  },
-  headerTitle: {
-    color: THEME_COLORS.HEADING_TEXT,
-    fontSize: 24,
-    flex: 5,
+
+  rightText: {
     textAlign: 'left',
-    marginLeft: 10,
   },
-  listContainer: {
+
+  textPressed: {
+    fontSize: ButtonConst.fontSize - 4,
+  },
+
+  icon: {
+    flex: 0,
+    width:60,
+    margin: ButtonConst.margin,
+    alignSelf: 'center',
+  },
+});
+export const ListTheme = StyleSheet.create({
+  container: {
     flex: 10,
-    width: '100%',
+    width: dimensions.w,
     borderTopWidth: 1,
-    backgroundColor: THEME_COLORS.TRANSPARENT_HALF,
+    backgroundColor: Colors.transparentSemi,
     
   },
-  listContent: {
+  row: {
     flex:1,
     flexDirection: 'row',
     padding: 5,
     borderBottomWidth: 1,
   },
-  listContentImage: {
+  image: {
     flex: 1,
   },
-  listContentView: {
+  content: {
     flex: 10,
     paddingLeft: 5,
   },
-  listContentTitle: {
+  title: {
     fontWeight: 'bold',
   },
-  listContentSubtitle: {
+  subtitle: {
     fontStyle: 'italic'
   },
-  loadingContainer: {
-    flex: 10,
+  loader: {
+    height: d.height,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  searchContainer: {
-    height: 60,
+});
+export const BaseTheme = StyleSheet.create({
+  container: {
+    flex: 1,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: THEME_COLORS.TRANSPARENT,
-    borderTopWidth: 0,
-    borderColor: THEME_COLORS.SECONDARY,
+    backgroundColor: Colors.bg,
   },
-  searchInput: {
-    flex: 1,
-    width: '90%',
-    backgroundColor: THEME_COLORS.BG,
+  content: {
+    flex: 10,
+    width: dimensions.w,
+    backgroundColor: Colors.transparent
+  },
+  header: {
+    width: dimensions.w,
+    height: 100,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.transparent,
+  },
+  reverseRow: {
+    flexDirection: 'row-reverse',
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  headerTitle: {
+    color: Colors.headingText,
+    fontSize: 24,
+    flex: 5,
+    textAlign: 'left',
+    marginLeft: 10,
+  },
+  italic: {
+    fontStyle: 'italic',
   },
   shadow: {
     shadowColor: 'rgba(0,0,0, 0.5)', // IOS
     shadowOffset: { height: 10, width: 10 }, // IOS
     shadowOpacity: 0.5, // IOS
     shadowRadius: 5, //IOS
+  },
+});
+export const SearchTheme = StyleSheet.create({
+  container: {
+    height: 60,
+    width: dimensions.w,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.transparent,
+    borderTopWidth: 0,
+    borderColor: Colors.secondary,
+  },
+  input: {
+    flex: 1,
+    width: '90%',
+    backgroundColor: Colors.bg,
+  },
+});
+export const SpeciesTheme = StyleSheet.create({
+  info: {
+    flex: 10,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  },
+  scroll: {
+    flex:1,
+  },
+  mainImageContainer: {
+    flex: 10,
+    padding: 5,
+    flexDirection: "row",
+    backgroundColor: Colors.transparent,
+  },
+  mainImage: {
+    flex: 3,
+    height: 200,
+    width: 200,
+    padding: 5,
+    borderRadius: 10,
+    resizeMode: 'contain',
+  },
+  namesContainer: {
+    flex: 4,
+    padding: 10,
+    flexDirection: 'column',
+  },
+  detailContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    padding: 10,
+  },
+  detailContent: {
+    flex: 12,
+    textAlign: 'justify',
+    textAlignVertical: 'center',
+    color: Colors.secondary,
+    paddingLeft: 10,
+    borderRadius: 10,
+    backgroundColor: Colors.transparentSemi,
+  },
+  detailLabel: {
+    flex: 9,
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlignVertical: 'center',
+    paddingBottom: 0,
+    color: Colors.secondary,
+  },
+});
+export const FilterTheme = StyleSheet.create ({
+  group: {
+    borderColor: Colors.transparent,
+    borderWidth: 0,
+    backgroundColor: Colors.transparent,
+  },
+  container: {
+    width: '100%',
+    maxHeight: 100,
+    flexDirection: "column",
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.secondary,
+    backgroundColor: Colors.transparent,
+  },
+  labelContainer: {
+    width: '100%',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    flexDirection: 'row',
+    alignContent: 'flex-start',
+    justifyContent: 'space-between',
+    backgroundColor: Colors.secondary,
+    shadowColor: 'rgba(0,0,0, 0.5)', // IOS
+    shadowOffset: { height: 10, width: 10 }, // IOS
+    shadowOpacity: 0.5, // IOS
+    shadowRadius: 5, //IOS
+    elevation: 5, // Android
+    zIndex: 10,
+  },
+  button: {
+    backgroundColor: Colors.transparent,
+    borderColor: Colors.transparent
+  },
+  border: {
+    color: Colors.transparent
+  },
+  selectedButton: {
+    backgroundColor: Colors.transparent,
+    borderColor: Colors.transparent
+  },
+  selectedText: {
+    color: Colors.primary,
+  },
+  text: {
+    color: Colors.secondary,
+  },
+  label: {
+    color: Colors.headingtext,
+    fontWeight: "bold",
+    fontSize: 18
+  },
+  icon: {
+    color: Colors.headingtext,
+    fontWeight: "bold",
+    fontSize: 18,
   },
 });

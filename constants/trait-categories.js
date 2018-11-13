@@ -1,4 +1,4 @@
-export const COLOR_TRAITS = [
+export const ColorTraits = [
   'brown',
   'black',
   'white',
@@ -8,18 +8,26 @@ export const COLOR_TRAITS = [
   'red'
 ];
 
-export const SIZE_TRAITS = [
+export const SizeTraits = [
   'small',
   'medium',
   'large'
 ];
 
-export const SPECIES_TYPES = [
+export const SpeciesTypes = [
   'plant',
   'animal',
   'branchiopoda'
 ];
 
-export const CONS_STATUS = {
+export const ConservationStatus = {
   'LC': 'Least Concern',
+  'NT': 'Near Threatened',
+  'VU': 'Vulnerable',
+  'EN': 'Endangered',
+  'CR': 'Critically Endangered',
+  'EW': 'Extinct in the Wild',
+  'EX': 'Extinct',
+  'DD': 'Data Dificient',
+  'NE': 'Not Evaluated',
 };

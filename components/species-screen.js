@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
-import { Theme, THEME_COLORS } from "../constants/theme";
-import {CONS_STATUS} from '../constants/trait-categories';
+import { BaseTheme, Colors, SpeciesTheme } from "../constants/theme";
+import {ConservationStatus} from '../constants/trait-categories';
 import {SideButton} from './buttons';
 import Background from "./background";
 import DatabaseService from '../services/database';
@@ -24,47 +24,47 @@ export default class SpeciesScreen extends Component {
   }
   render() {
     return (
-      <View style={Theme.containerContainer}>
+      <View style={BaseTheme.container}>
         <Background/>
-        <View style={Theme.headerContainer}>
+        <View style={BaseTheme.header}>
           <SideButton left text={this.species.alias} onPress={() => {
             this.props.navigation.pop()
           }}/>
         </View>
-        <View style={Theme.contentContainer}>
-          <ScrollView style={LocalTheme.contentScroll}>
-          <View style={LocalTheme.infoContainer}>
-            <View style={LocalTheme.imageContainer}>
+        <View style={BaseTheme.content}>
+          <ScrollView style={SpeciesTheme.scroll}>
+          <View style={SpeciesTheme.info}>
+            <View style={SpeciesTheme.mainImageContainer}>
               <Image
-                style={[LocalTheme.mainImage, Theme.shadow]}
+                style={[SpeciesTheme.mainImage, BaseTheme.shadow]}
                 source={{ uri: MediaService.getImageURI(this.species.url)}}
               />
-              <View style={LocalTheme.namesContainer}>
-                <View style={[LocalTheme.detailContainer]}>
-                <Text style={LocalTheme.detailLabel}>Scientific Name</Text>
-                <Text style={[LocalTheme.detailContent, LocalTheme.italicText]}>{this.species.sciname}</Text>
+              <View style={SpeciesTheme.namesContainer}>
+                <View style={[SpeciesTheme.detailContainer]}>
+                <Text style={SpeciesTheme.detailLabel}>Scientific Name</Text>
+                <Text style={[SpeciesTheme.detailContent, BaseTheme.italic]}>{this.species.sciname}</Text>
               </View>
-              <View style={[LocalTheme.detailContainer,]}>
-                <Text style={LocalTheme.detailLabel}>Aliases</Text>
-                <Text style={LocalTheme.detailContent}>{this.species.aliases}</Text>
+              <View style={[SpeciesTheme.detailContainer,]}>
+                <Text style={SpeciesTheme.detailLabel}>Aliases</Text>
+                <Text style={SpeciesTheme.detailContent}>{this.species.aliases}</Text>
               </View>
               </View>
             </View>
-            <View style={[LocalTheme.detailContainer]}>
-              <Text style={[LocalTheme.detailLabel]}>Overview</Text>
-              <Text style={LocalTheme.detailContent}>{this.species.overview}</Text>
+            <View style={[SpeciesTheme.detailContainer]}>
+              <Text style={[SpeciesTheme.detailLabel]}>Overview</Text>
+              <Text style={SpeciesTheme.detailContent}>{this.species.overview}</Text>
             </View>
-            <View style={[LocalTheme.detailContainer]}>
-              <Text style={[LocalTheme.detailLabel]}>Size</Text>
-              <Text style={LocalTheme.detailContent}>{this.species.size}</Text>
+            <View style={[SpeciesTheme.detailContainer]}>
+              <Text style={[SpeciesTheme.detailLabel]}>Size</Text>
+              <Text style={SpeciesTheme.detailContent}>{this.species.size}</Text>
             </View>
-            <View style={[LocalTheme.detailContainer]}>
-              <Text style={[LocalTheme.detailLabel]}>Species Type</Text>
-              <Text style={LocalTheme.detailContent}>{this.species.stype}</Text>
+            <View style={[SpeciesTheme.detailContainer]}>
+              <Text style={[SpeciesTheme.detailLabel]}>Species Type</Text>
+              <Text style={SpeciesTheme.detailContent}>{this.species.stype}</Text>
             </View>
-            <View style={[LocalTheme.detailContainer]}>
-              <Text style={[LocalTheme.detailLabel]}>Conservation Status</Text>
-              <Text style={LocalTheme.detailContent}>{CONS_STATUS[this.species.conservationstatus]}</Text>
+            <View style={[SpeciesTheme.detailContainer]}>
+              <Text style={[SpeciesTheme.detailLabel]}>Conservation Status</Text>
+              <Text style={SpeciesTheme.detailContent}>{ConservationStatus[this.species.conservationstatus]}</Text>
             </View>
           </View>
         
@@ -74,62 +74,3 @@ export default class SpeciesScreen extends Component {
     );
   }
 }
-
-const LocalTheme = StyleSheet.create({
-  infoContainer: {
-    flex: 10,
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  },
-  contentScroll: {
-    flex:1,
-  },
-  imageContainer: {
-    flex: 10,
-    padding: 5,
-    flexDirection: "row",
-    backgroundColor: THEME_COLORS.TRANSPARENT,
-  },
-  namesContainer: {
-    flex: 4,
-    padding: 10,
-    flexDirection: 'column',
-  },
-  detailContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    padding: 10,
-  },
-  row: {
-    flexDirection: 'row',
-  },
-  mainImage: {
-    flex: 3,
-    height: 200,
-    width: 200,
-    padding: 5,
-    borderRadius: 10,
-    resizeMode: 'contain',
-  },
-  detailLabel: {
-    flex: 9,
-    fontSize: 22,
-    fontWeight: 'bold',
-    textAlignVertical: 'center',
-    paddingBottom: 0,
-    color: THEME_COLORS.SECONDARY,
-  },
-  detailContent: {
-    flex: 12,
-    textAlign: 'justify',
-    textAlignVertical: 'center',
-    color: THEME_COLORS.SECONDARY,
-    paddingLeft: 10,
-    borderRadius: 10,
-    backgroundColor: THEME_COLORS.TRANSPARENT_HALF,
-  },
-  italicText: {
-    fontStyle: 'italic',
-  },
-});

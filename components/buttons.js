@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { Theme, THEME_COLORS } from '../constants/theme';
+import { ButtonTheme, BaseTheme } from '../constants/theme';
 
 export class SideButton extends Component {
   constructor(props) {
@@ -18,29 +18,33 @@ export class SideButton extends Component {
   }
 
   render() {
-    let buttonStyle = [Theme.sideButton, Theme.shadow];
+    //TODO: HOW TO REDUCE THESE UGLY IFs ???
+    let buttonStyle = [ButtonTheme.side, BaseTheme.shadow];
     if (this.state.pressStatus) {
-      buttonStyle.push(Theme.buttonPressed);
+      buttonStyle.push(ButtonTheme.pressed);
     }
     if (this.props.left) {
-      buttonStyle.push(Theme.leftButton);
+      buttonStyle.push(ButtonTheme.left);
     }
     if (this.props.right) {
-      buttonStyle.push (Theme.rightButton);
+      buttonStyle.push (ButtonTheme.right);
+    }
+    if (this.props.icon) {
+      buttonStyle.push(ButtonTheme.icon);
     }
     if (this.props.style) {
       buttonStyle.push(this.props.style);
     }
 
-    let textStyle = [Theme.buttonText];
+    let textStyle = [ButtonTheme.text];
     if (this.state.pressStatus) {
-      textStyle.push(Theme.buttonTextPressed);
+      textStyle.push(ButtonTheme.textPressed);
     }
     if (this.props.left) {
-      textStyle.push(Theme.leftButtonText);
+      textStyle.push(ButtonTheme.leftText);
     }
     if (this.props.right) {
-      textStyle.push (Theme.rightButtonText);
+      textStyle.push (ButtonTheme.rightText);
     }
     return (
       <TouchableOpacity

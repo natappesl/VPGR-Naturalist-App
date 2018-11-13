@@ -1,22 +1,14 @@
 // Anti-switch reference: https://toddmotto.com/deprecating-the-switch-statement-for-object-literals/
 
 import React, { Component } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import {
-  Icon,
-  ListItem,
-  ButtonGroup
-} from "react-native-elements";
-import {Catalog} from './catalog';
-import { SideButton } from './buttons';
-import { Theme, THEME_COLORS } from "../constants/theme";
-import {
-  COLOR_TRAITS,
-  SIZE_TRAITS,
-  SPECIES_TYPES
-} from "../constants/trait-categories";
 import DatabaseService from '../services/database';
 import Background from './background';
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Icon, ListItem, ButtonGroup } from "react-native-elements";
+import { Catalog } from './catalog';
+import { SideButton } from './buttons';
+import { BaseTheme, Colors, FilterTheme } from "../constants/theme";
+import { ColorTraits, SizeTraits, SpeciesTypes } from "../constants/trait-categories";
 
 class FilterGroup extends Component {
   constructor(props) {
@@ -34,18 +26,18 @@ class FilterGroup extends Component {
   render() {
 
     return (
-      <View style={LocalTheme.filterContainer}>
+      <View style={FilterTheme.container}>
         <TouchableOpacity
           onPress={() => this.toggleFilters()}
           delayPressIn={0}
           delayPressOut={0}>
-          <View style={LocalTheme.filterLabelContainer}>
-            <Text style={LocalTheme.filterLabel}>{this.props.filterName}</Text>
+          <View style={FilterTheme.labelContainer}>
+            <Text style={FilterTheme.label}>{this.props.filterName}</Text>
             <Icon
-              iconStyle={LocalTheme.filterIcon}
+              iconStyle={FilterTheme.icon}
               name={this.state.showFilters ? 'chevron-down' : 'chevron-right'}
               type='font-awesome'
-              color={THEME_COLORS.HEADING_TEXT}
+              color={Colors.headingText}
             />
           </View>
         </TouchableOpacity>
@@ -56,13 +48,13 @@ class FilterGroup extends Component {
             buttons={this.props.filters}
             onPress= {this.props.onUpdateIndex}
             delayPressOut={0}
-            containerStyle={LocalTheme.groupContainer}
+            containerStyle={FilterTheme.group}
             containerBorderRadius={1}
-            innerBorderStyle={LocalTheme.innerBorder}
-            buttonStyle={LocalTheme.filterButton}
-            textStyle={LocalTheme.buttonText}
-            selectedTextStyle={LocalTheme.selectedText}
-            selectedButtonStyle={LocalTheme.selectedFilterButton}
+            innerBorderStyle={FilterTheme.innerBorder}
+            buttonStyle={FilterTheme.button}
+            textStyle={FilterTheme.text}
+            selectedTextStyle={FilterTheme.selectedText}
+            selectedButtonStyle={FilterTheme.selectedButton}
           />
         )}
       </View>
@@ -119,24 +111,24 @@ export default class CategoriesScreen extends Component {
   render() {
 
     return (
-      <View style={Theme.containerContainer}>
+      <View style={BaseTheme.container}>
       <Background/>
-        <View style={Theme.headerContainer}>
+        <View style={BaseTheme.header}>
           <SideButton left text={'CATEGORIES'} onPress={() => {this.props.navigation.navigate('Home')}}/>
         </View>
-        <View style={Theme.contentContainer}>
+        <View style={BaseTheme.content}>
           <FilterGroup filterName="COLORS"
-            filters={COLOR_TRAITS}
+            filters={ColorTraits}
             selectedIndex={this.state.indexes['colors']}
             onUpdateIndex={(selectedIndex) => {this.onIndexUpdated('colors', selectedIndex)}} />
 
             <FilterGroup filterName="SIZES"
-            filters={SIZE_TRAITS}
+            filters={SizeTraits}
             selectedIndex={this.state.indexes['sizes']}
             onUpdateIndex={(selectedIndex) => {this.onIndexUpdated('sizes', selectedIndex)}}/>
 
             <FilterGroup filterName="TYPES"
-            filters={SPECIES_TYPES}
+            filters={SpeciesTypes}
             selectedIndex={this.state.indexes['stypes']}
             onUpdateIndex={(selectedIndex) => {this.onIndexUpdated('stypes', selectedIndex)}}/>
 
@@ -146,61 +138,3 @@ export default class CategoriesScreen extends Component {
     );
   }
 }
-
-const LocalTheme = StyleSheet.create({
-  groupContainer: {
-    borderColor: THEME_COLORS.TRANSPARENT,
-    borderWidth: 0,
-    backgroundColor: THEME_COLORS.TRANSPARENT,
-  },
-  filterContainer: {
-    width: '100%',
-    maxHeight: 100,
-    flexDirection: "column",
-    borderBottomWidth: 1,
-    borderBottomColor: THEME_COLORS.SECONDARY,
-    backgroundColor: THEME_COLORS.TRANSPARENT,
-  },
-  filterLabelContainer: {
-    width: '100%',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    flexDirection: 'row',
-    alignContent: 'flex-start',
-    justifyContent: 'space-between',
-    backgroundColor: THEME_COLORS.SECONDARY,
-    shadowColor: 'rgba(0,0,0, 0.5)', // IOS
-    shadowOffset: { height: 10, width: 10 }, // IOS
-    shadowOpacity: 0.5, // IOS
-    shadowRadius: 5, //IOS
-    elevation: 5, // Android
-    zIndex: 10,
-  },
-  filterButton: {
-    backgroundColor: THEME_COLORS.TRANSPARENT,
-    borderColor: THEME_COLORS.TRANSPARENT
-  },
-  innerBorder: {
-    color: THEME_COLORS.TRANSPARENT
-  },
-  selectedFilterButton: {
-    backgroundColor: THEME_COLORS.TRANSPARENT,
-    borderColor: THEME_COLORS.TRANSPARENT
-  },
-  selectedText: {
-    color: THEME_COLORS.PRIMARY,
-  },
-  buttonText: {
-    color: THEME_COLORS.SECONDARY,
-  },
-  filterLabel: {
-    color: THEME_COLORS.HEADING_TEXT,
-    fontWeight: "bold",
-    fontSize: 18
-  },
-  filterIcon: {
-    color: THEME_COLORS.HEADING_TEXT,
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-});

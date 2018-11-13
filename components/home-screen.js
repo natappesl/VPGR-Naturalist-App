@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
+import Background from './background';
 import { StyleSheet, Text, View, Alert} from "react-native";
 import { Icon } from 'react-native-elements';
-import { Theme, THEME_COLORS } from '../constants/theme';
+import { BaseTheme, Colors, dimensions } from '../constants/theme';
 import { SideButton } from './buttons';
-import Background from './background';
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -17,11 +17,11 @@ class HomeScreen extends Component {
 
   render() {
     return (
-      <View style = {Theme.containerContainer}>
-        <Background showLogo={true} />
-        <View style={[Theme.headerContainer, Theme.reverseRow]}>
-        <SideButton right style={Theme.rightIconButton} onPress={() => {this.props.navigation.navigate('Login')}}>
-            <Icon style={{flex: 1,}} name='pencil' type='font-awesome' color={THEME_COLORS.BG}/>
+      <View style = {BaseTheme.container}>
+        <Background showLogo />
+        <View style={[BaseTheme.header, BaseTheme.reverseRow]}>
+        <SideButton right icon onPress={() => {this.props.navigation.navigate('Login')}}>
+            <Icon style={{flex: 1}} name='pencil' type='font-awesome' color={Colors.bg}/>
           </SideButton>
         </View>
         <View style = {LocalTheme.buttonContainer}>
@@ -42,8 +42,8 @@ class HomeScreen extends Component {
 const LocalTheme = StyleSheet.create({
   buttonContainer: {
     flex: 1,
-    width: '100%',
-    backgroundColor: THEME_COLORS.TRANSPARENT,
+    width: dimensions.w,
+    backgroundColor: Colors.TRANSPARENT,
     justifyContent: 'flex-end',
     paddingBottom: 60
   }

@@ -8,13 +8,13 @@ import {
   ActivityIndicator
 } from 'react-native';
 
-import { Theme } from "../constants/theme";
+import { ListTheme, BaseTheme } from "../constants/theme";
 import MediaService from '../services/media';
 
 class LoadingIndicator extends Component {
   render() {
     return (
-      <View style={Theme.loadingContainer}>
+      <View style={ListTheme.loader}>
         <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
@@ -28,25 +28,25 @@ export class Catalog extends Component {
 
   render() {
     return (
-        <View style={Theme.contentContainer}>
+        <View style={BaseTheme.content}>
           {!this.props.listLoaded && <LoadingIndicator />}
-          <View style={Theme.listContainer}>
+          <View style={ListTheme.container}>
             {this.props.listLoaded && (
                 <FlatList
                   data={this.props.list}
                   keyExtractor={item => item.id.toString()}
                   renderItem={(species, index) => (
                     <TouchableOpacity
-                      style={Theme.listContent}
+                      style={ListTheme.row}
                       onPress={() => {this.props.onRowPress(species.item)}}
                     >
                       <Image
-                        style={Theme.listContentImage}
+                        style={ListTheme.image}
                         source={{ uri: MediaService.getImageURI(species.item.url)}}
                       />
-                      <View style={Theme.listContentView}>
-                        <Text style={Theme.listContentTitle}>{species.item.alias}</Text>
-                        <Text style={Theme.listContentSubtitle}>{species.item.sciname}</Text>
+                      <View style={ListTheme.content}>
+                        <Text style={ListTheme.title}>{species.item.alias}</Text>
+                        <Text style={ListTheme.subtitle}>{species.item.sciname}</Text>
                       </View>
                     </TouchableOpacity>
                   )}

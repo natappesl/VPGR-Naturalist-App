@@ -4,7 +4,7 @@ import { Icon } from "react-native-elements";
 import { Search } from './search';
 import { Catalog } from './catalog';
 import { SideButton } from './buttons';
-import { Theme, THEME_COLORS } from "../constants/theme";
+import { BaseTheme, Colors } from "../constants/theme";
 import DatabaseService from "../services/database";
 import Background from "./background";
 
@@ -47,15 +47,15 @@ export default class SearchScreen extends Component {
 
   render() {
     return (
-      <View style={Theme.containerContainer}>
+      <View style={BaseTheme.container}>
         <Background/>
-        <View style={Theme.headerContainer}>
+        <View style={BaseTheme.header}>
           <SideButton left text={'SEARCH'} onPress={() => {this.props.navigation.pop()}}/>
-            <SideButton right style={Theme.rightIconButton} onPress={() => {this.toggleSearch()}}>
-              <Icon style={{flex: 1, padding: 5,}} name='search' type='font-awesome' color={THEME_COLORS.BG}/>
+            <SideButton right icon onPress={() => {this.toggleSearch()}}>
+              <Icon style={{flex: 1, padding: 5,}} name='search' type='font-awesome' color={Colors.bg}/>
             </SideButton>
         </View>
-        <View style={Theme.contentContainer}>
+        <View style={BaseTheme.content}>
         {this.state.showSearch && (
           <Search onTextInput={this.searchUpdated.bind(this)} />
         )}
