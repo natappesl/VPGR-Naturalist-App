@@ -11,9 +11,9 @@ import aws_exports from '../aws-exports';
 import AWS from 'aws-sdk';
 import RNFS from 'react-native-fs';
 import {
-  COLOR_TRAITS,
-  SIZE_TRAITS,
-  SPECIES_TYPES
+  ColorTraits,
+  SizeTraits,
+  SpeciesTypes
 } from '../constants/trait-categories';
 
 
@@ -26,25 +26,6 @@ const dbFileName = 'speciesDatabase.db';
 
 let _S3;
 let _db;
-
-const SEARCH_TYPE = {
-  BY_NAME: "name",
-  BY_SCI_NAME: "scientificName",
-  BY_TAG: "tag",
-  BY_TYPE: "type"
-};
-Object.freeze(SEARCH_TYPE);
-
-const CONSERVATION_STATUS = {
-  LC: "LC",
-  NT: "NT",
-  VU: "VU",
-  EN: "EN",
-  CR: "CR",
-  EW: "EW",
-  EX: "EX"
-};
-Object.freeze(CONSERVATION_STATUS);
 
 class DatabaseService {
   constructor() {
@@ -495,19 +476,19 @@ class DatabaseService {
     if (colorIndex != -1) {
       let updatedQuery = DatabaseService.instance.appendCondition(query, `id IN (SELECT id FROM traits WHERE tag = ?)`);
       query = updatedQuery;
-      params.push(COLOR_TRAITS[colorIndex]);
+      params.push(ColorTraits[colorIndex]);
     }
 
     if (sizeIndex != -1) {
       let updatedQuery = DatabaseService.instance.appendCondition(query, `id IN (SELECT id FROM traits WHERE tag = ?)`);
       query = updatedQuery;
-      params.push(SIZE_TRAITS[sizeIndex]);
+      params.push(SizeTraits[sizeIndex]);
     }
 
     if (stypeIndex != -1) {
       let updatedQuery = DatabaseService.instance.appendCondition(query, `id IN (SELECT id FROM traits WHERE tag = ?)`);
       query = updatedQuery;
-      params.push(SPECIES_TYPES[stypeIndex]);
+      params.push(SpeciesTypes[stypeIndex]);
     }
 
     query = query.concat(` GROUP BY id;`);
