@@ -231,6 +231,7 @@ export const SpeciesTheme = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
+    overflow: 'hidden',
     padding: 10,
   },
   detailContent: {
@@ -240,7 +241,15 @@ export const SpeciesTheme = StyleSheet.create({
     color: Colors.secondary,
     paddingLeft: 10,
     borderRadius: 10,
+    overflow: 'hidden',
     backgroundColor: Colors.transparentSemi,
+  },
+  detailTextContainer: {
+    flex: 1,
+    backgroundColor: Colors.transparent,
+  },
+  detailContentText: {
+    color: Colors.secondary,
   },
   detailLabel: {
     flex: 9,
@@ -249,6 +258,7 @@ export const SpeciesTheme = StyleSheet.create({
     textAlignVertical: 'center',
     paddingBottom: 0,
     color: Colors.secondary,
+
   },
 });
 export const FilterTheme = StyleSheet.create ({
@@ -298,12 +308,12 @@ export const FilterTheme = StyleSheet.create ({
     color: Colors.secondary,
   },
   label: {
-    color: Colors.headingtext,
+    color: Colors.headingText,
     fontWeight: "bold",
     fontSize: 18
   },
   icon: {
-    color: Colors.headingtext,
+    color: Colors.headingText,
     fontWeight: "bold",
     fontSize: 18,
   },
