@@ -524,19 +524,36 @@ class DatabaseService {
     return newQuery;
   }
 
-  async search (text) {
-    let searchResult;
+  async search (query) {
+    let searchResult = [];
     let db = await DatabaseService.instance.getDB();
+    let tags = query.slice(' ');
 
-    await db.transaction( async (tx) => {
+    for (text of tags) {
+      await db.transaction( async (tx) => {
         let query = `
           SELECT DISTINCT *
           FROM aliasedSpecies
           WHERE ( id IN ( SELECT id FROM traits WHERE tag LIKE '%` + text + `%' ))
-            OR ( id IN ( SELECT id FROM aliases WHERE alias LIKE '%` + text + `%' ));`;
+            OR ( id IN ( SELECT id FROM aliases WHERE alias LIKE '%` + text + `%' ))
+            OR ( stype LIKE '%` + text + `%');`;
         let [t, results] = await tx.executeSql(query);
-        searchResult = results.rows.raw();
-    });
+        let species = results.rows.raw(); 
+        for (s of species) {
+          let alreadyFound = false;
+          for (i of searchResult) {
+            if (s.id == i.id) {
+              alreadyFound = true;
+            }
+          }
+          if (!alreadyFound) {
+            searchResult.push(s);
+          }
+        }
+      });
+    }
+
+    
     return searchResult;
   }
 
