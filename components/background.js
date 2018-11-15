@@ -6,6 +6,7 @@ export default class Background extends Component {
   constructor(props) {
     super(props);
   }
+  
   render() {
     return (
         <ImageBackground
