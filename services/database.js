@@ -15,13 +15,17 @@ import {
   SizeTraits,
   SpeciesTypes
 } from '../constants/trait-categories';
+import {Platform} from 'react-native';
 
 
 Amplify.configure(aws_exports);
 SQLite.DEBUG(false);
 SQLite.enablePromise(true);
 
-const dbFolderPath = '/data/data/com.vpgrnaturalistapp/databases/';
+const dbFolderPath = Platform.OS == 'ios' ?
+  RNFS.LibraryDirectoryPath + '/LocalDatabase/' :
+  '/data/data/com.vpgrnaturalistapp/databases/';
+
 const dbFileName = 'speciesDatabase.db';
 
 let _S3;
@@ -82,6 +86,7 @@ class DatabaseService {
   }
 
   async downloadDatabase() {
+    console.log(RNFS);
     console.log('Downloading database file ' + dbFileName + ' ...');
     let S3 = await DatabaseService.instance.getS3();
 
@@ -92,6 +97,7 @@ class DatabaseService {
     })
       .promise()
       .then(data => {
+        console.log('Writing DB file to: ', dbFolderPath + dbFileName)
         RNFS.writeFile(
           dbFolderPath + dbFileName,
           data.Body.toString('base64'),
