@@ -54,11 +54,10 @@ class DatabaseService {
       let dbExists = await RNFS.exists(dbFolderPath + dbFileName);
       if (dbExists) {
         console.log("Found DB file: " + dbFolderPath + dbFileName);
+        await DatabaseService.instance.getDB();
       } else {
         await DatabaseService.instance.downloadDatabase();
       }
-
-      await DatabaseService.instance.getDB();
       // await DatabaseService.instance.updateDatabase();
     })
     .catch(async error => {
