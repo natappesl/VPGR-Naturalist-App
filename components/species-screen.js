@@ -52,10 +52,15 @@ export default class SpeciesScreen extends Component {
     for (key of keys) {
       if (DetailFields.includes(key)) {
         renderedKeys.push(
-          <TouchableWithoutFeedback style={[SpeciesTheme.detailContainer, {backgroundColor: 'red'}]} longPressDelay={1} onLongPress={(event) => {this.editField(event)}} key={key}>
-            <View style={{flex: 1,}}>
+          <TouchableWithoutFeedback style={[SpeciesTheme.detailContainer, {backgroundColor: 'red'}]}
+            longPressDelay={1}
+            onLongPress={(event) => {this.editField(event)}} 
+            key={key}>
+            <View style={SpeciesTheme.detailTextContainer}>
               <Text style={[SpeciesTheme.detailLabel]}>{key.toProperCase()}</Text>
-              <Text style={SpeciesTheme.detailContent}>{this.species[key]}</Text>
+              <View style={SpeciesTheme.detailContent}>
+                <Text style={SpeciesTheme.detailContentText}>{this.species[key]}</Text>
+              </View>
             </View>
           </TouchableWithoutFeedback>
         );
@@ -90,17 +95,19 @@ export default class SpeciesScreen extends Component {
                     <Text style={SpeciesTheme.detailLabel}>
                       Scientific Name
                     </Text>
-                    <Text
-                      style={[SpeciesTheme.detailContent, BaseTheme.italic]}
-                    >
-                      {this.species.sciname}
-                    </Text>
+                    <View style={SpeciesTheme.detailContent}>
+                    <Text style={[SpeciesTheme.detailContentText, BaseTheme.italic]}>
+                        {this.species.sciname}
+                      </Text>
+                    </View>
                   </View>
                   <View style={[SpeciesTheme.detailContainer]}>
                     <Text style={SpeciesTheme.detailLabel}>Aliases</Text>
-                    <Text style={SpeciesTheme.detailContent}>
-                      {this.species.aliases}
-                    </Text>
+                    <View style={SpeciesTheme.detailContent}>
+                      <Text style={[SpeciesTheme.detailContentText]}>
+                        {this.species.aliases}
+                      </Text>
+                    </View>
                   </View>
                 </View>
               </View>
