@@ -30,10 +30,6 @@ export default class SearchScreen extends Component {
     }
   }
 
-  toggleSearch() {
-    this.setState(state => ({ showSearch: !state.showSearch }));
-  }
-
   async searchUpdated(text) {
     if (text.length >= minSearchTextLength || text.trim() == '') {
       let updatedList = await DatabaseService.search(text);
@@ -51,14 +47,9 @@ export default class SearchScreen extends Component {
         <Background/>
         <View style={BaseTheme.header}>
           <SideButton left text={'SEARCH'} onPress={() => {this.props.navigation.pop()}}/>
-            <SideButton right icon onPress={() => {this.toggleSearch()}}>
-              <Icon style={{flex: 1, padding: 5,}} name='search' type='font-awesome' color={Colors.bg}/>
-            </SideButton>
         </View>
         <View style={BaseTheme.content}>
-        {this.state.showSearch && (
-          <Search onTextInput={this.searchUpdated.bind(this)} />
-        )}
+        <Search onTextInput={this.searchUpdated.bind(this)} />
         <Catalog list={this.state.list} listLoaded={this.state.listLoaded} onRowPress={(species) => this.onRowPressed(species)}/>
         </View>
       </View>
