@@ -511,7 +511,7 @@ class DatabaseService {
 
   }
 
-  appendCondition(query, conditionText, or = false) {
+  appendCondition(query, conditionText, addConjuct = true, or = false ) {
     let newQuery = query;
     // Chop off any trailing semicolon
     if (query.includes(';')) {
@@ -520,7 +520,7 @@ class DatabaseService {
     }
     if (!query.includes('WHERE')) {
       newQuery = newQuery.concat(' WHERE ');
-    } else {
+    } else if (addConjuct) {
       or ? (newQuery = newQuery.concat(' OR ')) : (newQuery = newQuery.concat(' AND '));
     }
     newQuery = newQuery.concat(' ' + conditionText);
@@ -529,36 +529,40 @@ class DatabaseService {
     return newQuery;
   }
 
-  async search (query) {
+  async search (searchText) {
     let searchResult = [];
     let db = await DatabaseService.instance.getDB();
-    let tags = query.slice(' ');
+    let tags = searchText.split(/(\s+)/).filter( function(e) { return e.trim().length > 0; } );
 
-    for (text of tags) {
-      await db.transaction( async (tx) => {
-        let query = `
-          SELECT DISTINCT *
-          FROM aliasedSpecies
-          WHERE ( id IN ( SELECT id FROM traits WHERE tag LIKE '%` + text + `%' ))
-            OR ( id IN ( SELECT id FROM aliases WHERE alias LIKE '%` + text + `%' ))
-            OR ( stype LIKE '%` + text + `%');`;
-        let [t, results] = await tx.executeSql(query);
-        let species = results.rows.raw(); 
-        for (s of species) {
-          let alreadyFound = false;
-          for (i of searchResult) {
-            if (s.id == i.id) {
-              alreadyFound = true;
-            }
-          }
-          if (!alreadyFound) {
-            searchResult.push(s);
-          }
-        }
-      });
+    if (tags.length <= 0) {
+      return searchResult;
     }
 
-    
+    let firstCondition = true;
+    let query =
+    `SELECT DISTINCT *
+    FROM aliasedSpecies
+    WHERE (
+      `;
+
+    for (tag of tags) {
+      let conditionText =
+        "( id IN ( SELECT id FROM traits WHERE tag LIKE '%" + tag + "%' ) " +
+        "OR id IN ( SELECT id FROM aliases WHERE alias LIKE '%" + tag + "%' ) " +
+        `OR stype LIKE '%` + tag + `%' )
+        `;
+
+      let updatedQuery = DatabaseService.instance.appendCondition(query, conditionText, !firstCondition);
+      query = updatedQuery;
+      firstCondition = false;
+    }
+
+    query = query.concat(` );`);
+    await db.transaction( async (tx) => {
+      let [t, results] = await tx.executeSql(query);
+      searchResult = results.rows.raw(); 
+    });
+
     return searchResult;
   }
 
