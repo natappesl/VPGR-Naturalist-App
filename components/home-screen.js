@@ -18,11 +18,8 @@ class HomeScreen extends Component {
   render() {
     return (
       <View style = {BaseTheme.container}>
-        <Background showLogo />
+        <Background showLogo onLongPress={() => {this.props.navigation.navigate('Login')}}/>
         <View style={[BaseTheme.header, BaseTheme.reverseRow]}>
-        <SideButton right icon onPress={() => {this.props.navigation.navigate('Login')}}>
-            <Icon style={{flex: 1}} name='pencil' type='font-awesome' color={Colors.bg}/>
-          </SideButton>
         </View>
         <View style = {LocalTheme.buttonContainer}>
           <SideButton left text={'NEWS & EVENTS'} onPress={() => {
@@ -31,8 +28,8 @@ class HomeScreen extends Component {
               'Coming soon! Stay tuned, mah boy!',
               [{text: 'You got it, dude.', onPress: ()=> {}}, {text: 'Hurry up already!', onPress: ()=> {}}])
           }}/>
-          <SideButton right text={'SEARCH'} onPress={() => {this.navigateTo('Search')}}/> 
-          <SideButton left text={'CATEGORIES'} onPress={() => {this.navigateTo('Categories')}}/> 
+          <SideButton right text={'CATEGORIES'} onPress={() => {this.navigateTo('Categories')}}/>
+          <SideButton left text={'SEARCH'} onPress={() => {this.navigateTo('Search')}}/> 
         </View>
       </View>
     );
