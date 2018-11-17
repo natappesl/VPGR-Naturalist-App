@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {ImageBackground, Image} from 'react-native';
+import {ImageBackground, Image, TouchableWithoutFeedback} from 'react-native';
 import {BackgroundTheme} from '../constants/theme';
 
 export default class Background extends Component {
@@ -13,7 +13,11 @@ export default class Background extends Component {
           source={require('../assets/splish-splash.jpg')}
           style={BackgroundTheme.main}
           resizeMode={'cover'}>
-          {this.props.showLogo && (<Image style={BackgroundTheme.logo} source={require('../assets/logo_shadow.png')} resizeMode='contain'/>)}
+          {this.props.showLogo && (
+            <TouchableWithoutFeedback onLongPress={() => {this.props.onLongPress()}} delayLongPress={1000}>
+              <Image style={BackgroundTheme.logo} source={require('../assets/vpgr_logo.png')} resizeMode='contain'/>
+            </TouchableWithoutFeedback>
+            )}
         </ImageBackground>
     );
   }
