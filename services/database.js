@@ -169,7 +169,23 @@ class DatabaseService {
     }
   }
 
-  async updateSpecies() {
+  async updateSpecies(id, fieldName, fieldValue) {
+    let success = false;
+    let query =
+    `UPDATE species
+    SET ` + fieldName + ` = '` + fieldValue + `'
+    WHERE id = ` + id + `;`;
+
+    let db = await DatabaseService.instance.getDB();
+    await db.transaction (async tx => {
+      await tx.executeSql(query)
+      success = true;
+    });
+
+    return success;
+  }
+
+  async _updateSpecies() {
     let S3 = await DatabaseService.instance.getS3();
     let listResponse = await S3
       .listObjects({ Bucket: "natappdata", Prefix: "json/" })
@@ -214,14 +230,17 @@ class DatabaseService {
       console.log(result);
     });
   }
-  async getSpecies(speciesData) {
-    let speciesQuery;
+  async getSpecies(id) {
+    let species;
+    let query =
+    `SELECT * FROM aliasedSpecies WHERE id = ` + id + `;`;
+
     let db = await DatabaseService.instance.getDB();
     await db.transaction( async (tx) => {
-      let [t, resp] = await tx.executeSql(`SELECT * FROM species WHERE sciname = ?;`, [speciesData.scientificName]);
-      speciesQuery = resp.rows.item(0);
+      let [t, result] = await tx.executeSql(query);
+      species = result.rows.item(0);
     });
-    return speciesQuery;
+    return species;
   }
 
   async insertSpecies(speciesData) {
