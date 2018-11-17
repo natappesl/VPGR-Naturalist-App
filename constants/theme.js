@@ -318,3 +318,70 @@ export const FilterTheme = StyleSheet.create ({
     fontSize: 18,
   },
 });
+export const EditModalTheme = StyleSheet.create ({
+  container: {
+    flex: 1,
+    // height: dimensions.h,
+    // width: dimensions.w,
+    paddingTop: 100,
+    paddingBottom: 50,
+    backgroundColor: Colors.transparent,
+  },
+  headerContainer: {
+    flex: 1,
+  },
+  centerText: {
+    textAlign: 'center',
+    textAlignVertical: 'center',
+  },
+  header: {
+    alignSelf: 'center',
+    fontWeight: 'bold',
+    fontSize: 30,
+    color: Colors.headingText,
+    backgroundColor: Colors.secondary,
+    margin: 20,
+    padding: 20,
+    borderRadius: 10,
+  },
+  content: {
+    flex: 10,
+    backgroundColor: Colors.secondary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 20,
+    padding: 10,
+    borderRadius: 10,
+  },
+  fieldInputContainer: {
+    height: 100,
+    width: '100%',
+    backgroundColor: Colors.bg,
+    borderRadius: ButtonConst.borderRadius,
+  },
+  fieldInput: {
+    flex: 1,
+  },
+  buttonContainer: {
+    height: 80,
+    margin: 10,
+    flexDirection: 'row',
+  },
+  button: {
+    flex: 1,
+    margin: 10,
+    padding: ButtonConst.padding,
+    borderRadius: ButtonConst.borderRadius,
+  },
+  saveButton: {
+    backgroundColor: 'green',
+  },
+  cancelButton: {
+    backgroundColor: 'red',
+  },
+  buttonText: {
+    color: Colors.contentText,
+    fontSize: ButtonConst.fontSize,
+    fontWeight: ButtonConst.fontWeight,
+  },
+});
