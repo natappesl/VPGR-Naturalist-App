@@ -176,8 +176,15 @@ export const BaseTheme = StyleSheet.create({
     textAlign: 'left',
     marginLeft: 10,
   },
+  bold: {
+    fontWeight: 'bold',
+  },
   italic: {
     fontStyle: 'italic',
+  },
+  centerText: {
+    textAlign: 'center',
+    textAlignVertical: 'center',
   },
   shadow: {
     shadowColor: 'rgba(0,0,0, 0.5)', // IOS
@@ -330,8 +337,6 @@ export const FilterTheme = StyleSheet.create ({
 export const EditModalTheme = StyleSheet.create ({
   container: {
     flex: 1,
-    // height: dimensions.h,
-    // width: dimensions.w,
     paddingTop: 100,
     paddingBottom: 50,
     backgroundColor: Colors.transparent,
@@ -364,8 +369,8 @@ export const EditModalTheme = StyleSheet.create ({
     borderRadius: 10,
   },
   fieldInputContainer: {
-    height: 80,
-    width: '100%',
+    flex: 2,
+    minHeight: 80,
     backgroundColor: Colors.bg,
     borderRadius: ButtonConst.borderRadius,
   },
@@ -397,4 +402,29 @@ export const EditModalTheme = StyleSheet.create ({
     fontSize: ButtonConst.fontSize,
     fontWeight: ButtonConst.fontWeight,
   },
+});
+export const FieldInputTheme = StyleSheet.create ({
+  container: {
+    flexDirection: 'row',
+    padding: 10,
+    height: 80,
+    backgroundColor: 'green',
+  },
+  label: {
+    flex:1,
+  },
+  labelText: {
+    flex: 1,
+    color: Colors.headingText,
+  },
+  inputContainer: {
+    flex: 2,
+    padding: 5,
+    backgroundColor: 'bisque'
+  },
+  textInput: {
+    flex: 1,
+  },
+});
+export const NewSpeciesTheme = StyleSheet.create ({
 });
