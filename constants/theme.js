@@ -104,6 +104,31 @@ export const ButtonTheme = StyleSheet.create({
     margin: ButtonConst.margin,
     alignSelf: 'center',
   },
+  buttonContainer: {
+    height: 80,
+    margin: 10,
+    flexDirection: 'row',
+  },
+  button: {
+    flex: 1,
+    margin: 10,
+    padding: ButtonConst.padding,
+    borderRadius: ButtonConst.borderRadius,
+  },
+  saveButton: {
+    backgroundColor: 'green',
+  },
+  cancelButton: {
+    backgroundColor: 'red',
+  },
+  normalText: {
+    color: Colors.contentText,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    fontSize: ButtonConst.fontSize,
+    fontWeight: ButtonConst.fontWeight,
+  },
+
 });
 export const ListTheme = StyleSheet.create({
   container: {
@@ -379,37 +404,17 @@ export const EditModalTheme = StyleSheet.create ({
     flex: 1,
     padding: 10,
   },
-  buttonContainer: {
-    height: 80,
-    margin: 10,
-    flexDirection: 'row',
-  },
-  button: {
-    flex: 1,
-    margin: 10,
-    padding: ButtonConst.padding,
-    borderRadius: ButtonConst.borderRadius,
-  },
-  saveButton: {
-    backgroundColor: 'green',
-  },
-  cancelButton: {
-    backgroundColor: 'red',
-  },
-  buttonText: {
-    color: Colors.contentText,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    fontSize: ButtonConst.fontSize,
-    fontWeight: ButtonConst.fontWeight,
-  },
 });
 export const FieldInputTheme = StyleSheet.create ({
   container: {
-    flexDirection: 'row',
-    padding: 10,
-    height: 80,
-    backgroundColor: 'green',
+    flex: 10,
+    backgroundColor: Colors.secondary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 2,
+    marginTop: 0,
+    padding: 5,
+    borderRadius: 10,
   },
   label: {
     flex:1,
@@ -420,12 +425,29 @@ export const FieldInputTheme = StyleSheet.create ({
   },
   inputContainer: {
     flex: 2,
-    padding: 5,
-    backgroundColor: 'bisque'
+    minHeight: 40,
+    justifyContent: 'center',
+    backgroundColor: Colors.bg,
+    borderRadius: ButtonConst.borderRadius,
   },
-  textInput: {
+  input: {
     flex: 1,
   },
 });
 export const NewSpeciesTheme = StyleSheet.create ({
+  header: {
+    flex: 1,
+    alignSelf: 'center',
+    backgroundColor: Colors.secondary,
+    margin: 20,
+    padding: 20,
+    borderRadius: 10,
+  },
+  headerText: {
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    fontWeight: 'bold',
+    fontSize: 30,
+    color: Colors.headingText,
+  },
 });
