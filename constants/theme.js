@@ -426,12 +426,14 @@ export const FieldInputTheme = StyleSheet.create ({
   inputContainer: {
     flex: 2,
     minHeight: 40,
+    padding: 3,
     justifyContent: 'center',
     backgroundColor: Colors.bg,
     borderRadius: ButtonConst.borderRadius,
   },
   input: {
     flex: 1,
+    paddingTop: 0,
   },
 });
 export const NewSpeciesTheme = StyleSheet.create ({

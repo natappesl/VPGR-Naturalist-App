@@ -17,7 +17,7 @@ class FieldInput extends Component {
           </Text>
         </View>
         <View style={[FieldInputTheme.inputContainer]}>
-          <TextInput style={[FieldInputTheme.input, BaseTheme.centerText]}
+          <TextInput style={[FieldInputTheme.input]}
             multiline={true}
             numberOfLines={1}
             returnKeyType={'done'}
