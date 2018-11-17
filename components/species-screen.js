@@ -17,7 +17,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 import { BaseTheme, Colors, SpeciesTheme, EditModalTheme } from "../constants/theme";
 import { ConservationStatus } from "../constants/trait-categories";
-import { SideButton } from "./buttons";
+import { SideButton, ConfirmButtons } from "./buttons";
 import Background from "./background";
 import DatabaseService from "../services/database";
 import MediaService from "../services/media";
@@ -141,18 +141,7 @@ export default class SpeciesScreen extends Component {
 
                 />
               </View>
-              <View style={EditModalTheme.buttonContainer}>
-                <TouchableOpacity
-                  style={[EditModalTheme.button, EditModalTheme.saveButton, BaseTheme.shadow]}
-                  onPress={this.saveEditModal}>
-                  <Text style={[EditModalTheme.buttonText, EditModalTheme.centerText]}>Save</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[EditModalTheme.button, EditModalTheme.cancelButton, BaseTheme.shadow]}
-                  onPress={this.closeEditModal}>
-                  <Text style={[EditModalTheme.buttonText, EditModalTheme.centerText]}>Cancel</Text>
-                </TouchableOpacity>
-              </View>
+              <ConfirmButtons confirm={this.saveEditModal} cancel={this.closeEditModal}/>
             </View>
           </KeyboardAwareScrollView>
         </Modal>}

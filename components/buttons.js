@@ -64,3 +64,22 @@ export class SideButton extends Component {
     );
   }
 }
+
+export class ConfirmButtons extends Component {
+  render() {
+    return (
+      <View style={ButtonTheme.buttonContainer}>
+        <TouchableOpacity
+          style={[ButtonTheme.button, ButtonTheme.saveButton, BaseTheme.shadow]}
+          onPress={this.props.confirm}>
+          <Text style={[ButtonTheme.normalText, BaseTheme.centerText]}>Save</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[ButtonTheme.button, ButtonTheme.cancelButton, BaseTheme.shadow]}
+          onPress={this.props.cancel}>
+          <Text style={[ButtonTheme.normalText, BaseTheme.centerText]}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+}
