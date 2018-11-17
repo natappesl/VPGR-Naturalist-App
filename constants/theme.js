@@ -184,6 +184,7 @@ export const BaseTheme = StyleSheet.create({
     shadowOffset: { height: 10, width: 10 }, // IOS
     shadowOpacity: 0.5, // IOS
     shadowRadius: 5, //IOS
+    elevation: 5,
   },
 });
 export const SearchTheme = StyleSheet.create({
@@ -211,18 +212,23 @@ export const SpeciesTheme = StyleSheet.create({
   scroll: {
     flex:1,
   },
-  mainImageContainer: {
+  mainInfoContainer: {
     flex: 10,
     padding: 5,
+    paddingLeft: 10,
     flexDirection: "row",
     backgroundColor: Colors.transparent,
+  },
+  mainImageContainer: {
+    flex: 3,
+    overflow: 'hidden',
+    borderRadius: 10,
   },
   mainImage: {
     flex: 3,
     height: 200,
     width: 200,
     padding: 5,
-    borderRadius: 10,
     resizeMode: 'contain',
   },
   namesContainer: {

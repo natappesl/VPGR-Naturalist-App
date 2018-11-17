@@ -97,7 +97,7 @@ export default class SpeciesScreen extends Component {
             editField={this.openEditModal}>
             <View style={SpeciesTheme.detailTextContainer}>
               <Text style={[SpeciesTheme.detailLabel]}>{key.toProperCase()}</Text>
-              <View style={SpeciesTheme.detailContent}>
+              <View style={[SpeciesTheme.detailContent]}>
                 <Text style={SpeciesTheme.detailContentText}>{this.state.species[key]}</Text>
               </View>
             </View>
@@ -143,12 +143,12 @@ export default class SpeciesScreen extends Component {
               </View>
               <View style={EditModalTheme.buttonContainer}>
                 <TouchableOpacity
-                  style={[EditModalTheme.button, EditModalTheme.saveButton]}
+                  style={[EditModalTheme.button, EditModalTheme.saveButton, BaseTheme.shadow]}
                   onPress={this.saveEditModal}>
                   <Text style={[EditModalTheme.buttonText, EditModalTheme.centerText]}>Save</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[EditModalTheme.button, EditModalTheme.cancelButton]}
+                  style={[EditModalTheme.button, EditModalTheme.cancelButton, BaseTheme.shadow]}
                   onPress={this.closeEditModal}>
                   <Text style={[EditModalTheme.buttonText, EditModalTheme.centerText]}>Cancel</Text>
                 </TouchableOpacity>
@@ -168,11 +168,13 @@ export default class SpeciesScreen extends Component {
         <View style={BaseTheme.content}>
           <ScrollView style={SpeciesTheme.scroll}>
             <View style={SpeciesTheme.info}>
-              <View style={SpeciesTheme.mainImageContainer}>
-                <Image
-                  style={[SpeciesTheme.mainImage, BaseTheme.shadow]}
-                  source={{ uri: MediaService.getImageURI(this.state.species.url) }}
-                />
+              <View style={[SpeciesTheme.mainInfoContainer]}>
+                <View style={[SpeciesTheme.mainImageContainer, BaseTheme.shadow]}>
+                  <Image
+                    style={SpeciesTheme.mainImage}
+                    source={{ uri: MediaService.getImageURI(this.state.species.url) }}
+                  />
+                </View>
                 <View style={SpeciesTheme.namesContainer}>
                   <View style={[SpeciesTheme.detailContainer]}>
                     <Text style={SpeciesTheme.detailLabel}>
