@@ -1,15 +1,21 @@
 import React, { Component } from "react";
 import {
+  Modal,
   Alert,
   StyleSheet,
   View,
   Text,
+  TextInput,
   Image,
   TouchableOpacity,
   ScrollView,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Button
 } from "react-native";
-import { BaseTheme, Colors, SpeciesTheme } from "../constants/theme";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
+import { BaseTheme, Colors, SpeciesTheme, EditModalTheme } from "../constants/theme";
 import { ConservationStatus } from "../constants/trait-categories";
 import { SideButton } from "./buttons";
 import Background from "./background";
@@ -21,11 +27,13 @@ export default class SpeciesScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showDetails: false
+      species: this.props.navigation.getParam("species"),
+      showModal: false,
+      edittingFieldName: '',
+      edittingFieldValue: '',
     };
 
-    this.species = this.props.navigation.getParam("species");
-    if (!this.species) {
+    if (!this.state.species) {
       console.warn(
         "Navigated to species page without passing a species object!"
       );
@@ -34,32 +42,63 @@ export default class SpeciesScreen extends Component {
 
     // Bind in constructor so the bounded function is only created once
     this.renderKeys = this.renderKeys.bind(this);
-    this.editField = this.editField.bind(this);
+    this.setField = this.setField.bind(this);
+    this.openEditModal = this.openEditModal.bind(this);
+    this.closeEditModal = this.closeEditModal.bind(this);
+    this.saveEditModal = this.saveEditModal.bind(this);
+
   }
 
-  toggleDetails() {
-    this.setState(state => ({ showDetails: !state.showDetails }));
+  callEdit() {
+    this.editField(this.fieldName);
   }
 
-  editField (event) { 
-    //Alert.alert('Editting Field', event, [{text: 'OK', onPress: ()=> {}}])
-    console.log(event);
+  setField (fieldName, value) {
+    DatabaseService.updateSpecies(fieldName)
+  }
+
+  openEditModal (fieldName) {
+    this.setState(prevState => ({
+      showModal: true,
+      edittingFieldName: fieldName,
+      edittingFieldValue: this.state.species[fieldName]
+    }));
+  }
+
+  async saveEditModal() {
+    let success = await DatabaseService.updateSpecies(this.state.species.id, this.state.edittingFieldName, this.state.edittingFieldValue);
+    this.closeEditModal();
+
+    if (success) {
+      let updatedSpecies = await DatabaseService.getSpecies(this.state.species.id);
+      if (updatedSpecies) {
+        this.setState({species: updatedSpecies});
+      }
+    }
+  }
+
+  async closeEditModal() {
+    this.setState({
+      showModal: false,
+    });
   }
 
   renderKeys() {
-    let keys = Object.keys(this.species);
+    let keys = Object.keys(this.state.species);
     let renderedKeys = [];
     for (key of keys) {
       if (DetailFields.includes(key)) {
         renderedKeys.push(
-          <TouchableWithoutFeedback style={[SpeciesTheme.detailContainer, {backgroundColor: 'red'}]}
+          <TouchableWithoutFeedback style={SpeciesTheme.detailContainer}
             longPressDelay={1}
-            onLongPress={(event) => {this.editField(event)}} 
-            key={key}>
+            onPress={this.callEdit} 
+            key={this.state.species[key]}
+            fieldName={key}
+            editField={this.openEditModal}>
             <View style={SpeciesTheme.detailTextContainer}>
               <Text style={[SpeciesTheme.detailLabel]}>{key.toProperCase()}</Text>
               <View style={SpeciesTheme.detailContent}>
-                <Text style={SpeciesTheme.detailContentText}>{this.species[key]}</Text>
+                <Text style={SpeciesTheme.detailContentText}>{this.state.species[key]}</Text>
               </View>
             </View>
           </TouchableWithoutFeedback>
@@ -73,10 +112,46 @@ export default class SpeciesScreen extends Component {
     return (
       <View style={BaseTheme.container}>
         <Background />
+        {this.state.showModal &&
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.showModal}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+          }}
+        >
+          <KeyboardAwareScrollView style={EditModalTheme.container}>
+          <Text style={[EditModalTheme.header, EditModalTheme.centerText]}>Editting "{this.state.edittingFieldName.toProperCase()}"</Text>
+            <View style= {EditModalTheme.content}>
+              <View style={EditModalTheme.fieldInputContainer}>
+                <TextInput style={EditModalTheme.fieldInput}
+                  autoFocus={true}
+                  multiline={true}
+                  numberOfLines={2}
+                  value={this.state.edittingFieldValue}
+                  onChangeText={text => this.setState({edittingFieldValue: text})}
+                />
+              </View>
+              <View style={EditModalTheme.buttonContainer}>
+                <TouchableOpacity
+                  style={[EditModalTheme.button, EditModalTheme.saveButton]}
+                  onPress={this.saveEditModal}>
+                  <Text style={[EditModalTheme.buttonText, EditModalTheme.centerText]}>Save</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[EditModalTheme.button, EditModalTheme.cancelButton]}
+                  onPress={this.closeEditModal}>
+                  <Text style={[EditModalTheme.buttonText, EditModalTheme.centerText]}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </KeyboardAwareScrollView>
+        </Modal>}
         <View style={BaseTheme.header}>
           <SideButton
             left
-            text={this.species.alias}
+            text={this.state.species.alias}
             onPress={() => {
               this.props.navigation.pop();
             }}
@@ -88,7 +163,7 @@ export default class SpeciesScreen extends Component {
               <View style={SpeciesTheme.mainImageContainer}>
                 <Image
                   style={[SpeciesTheme.mainImage, BaseTheme.shadow]}
-                  source={{ uri: MediaService.getImageURI(this.species.url) }}
+                  source={{ uri: MediaService.getImageURI(this.state.species.url) }}
                 />
                 <View style={SpeciesTheme.namesContainer}>
                   <View style={[SpeciesTheme.detailContainer]}>
@@ -97,7 +172,7 @@ export default class SpeciesScreen extends Component {
                     </Text>
                     <View style={SpeciesTheme.detailContent}>
                     <Text style={[SpeciesTheme.detailContentText, BaseTheme.italic]}>
-                        {this.species.sciname}
+                        {this.state.species.sciname}
                       </Text>
                     </View>
                   </View>
@@ -105,7 +180,7 @@ export default class SpeciesScreen extends Component {
                     <Text style={SpeciesTheme.detailLabel}>Aliases</Text>
                     <View style={SpeciesTheme.detailContent}>
                       <Text style={[SpeciesTheme.detailContentText]}>
-                        {this.species.aliases}
+                        {this.state.species.aliases}
                       </Text>
                     </View>
                   </View>
