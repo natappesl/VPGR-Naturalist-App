@@ -27,7 +27,9 @@ const dbFolderPath = Platform.OS == 'ios' ?
   '/data/data/com.vpgrnaturalistapp/databases/';
 
 const dbFileName = 'speciesDatabase.db';
-
+const lmdFileName = 'lastModifiedDate';
+const bucketName = 'natappdata';
+const dbFileType = 'application/x-sqlite3';
 let _S3;
 let _db;
 
@@ -35,30 +37,16 @@ class DatabaseService {
   constructor() {
     if (!DatabaseService.instance) {
       DatabaseService.instance = this;
-
-      // DatabaseService.instance.updateDatabase();
+      DatabaseService.instance.syncDatabase();
     }
     return DatabaseService.instance;
   }
 
   async getS3() {
-    if (_S3) {
-      return _S3;
-    }
-
     await Auth.currentCredentials().then(async credentials => {
       // Update aws credentials through Cognito to verify IAM Role
       AWS.config.update(Auth.essentialCredentials(credentials));
       _S3 = new AWS.S3();
-
-      let dbExists = await RNFS.exists(dbFolderPath + dbFileName);
-      if (dbExists) {
-        console.log("Found DB file: " + dbFolderPath + dbFileName);
-        await DatabaseService.instance.getDB();
-      } else {
-        await DatabaseService.instance.downloadDatabase();
-      }
-      // await DatabaseService.instance.updateDatabase();
     })
     .catch(async error => {
       throw error;
@@ -78,34 +66,49 @@ class DatabaseService {
 
   }
 
-  async updateDatabase() {
-    await DatabaseService.instance.downloadDatabase();
-    await DatabaseService.instance.createAliasedSpeciesView();
-    await DatabaseService.instance.uploadDatabase();
-  }
-
-  async downloadDatabase() {
-    console.log(RNFS);
-    console.log('Downloading database file ' + dbFileName + ' ...');
+  async getDatabaseFile(additionalParams = {}) {
     let S3 = await DatabaseService.instance.getS3();
+    let params = {
+    Bucket: bucketName,
+    Key: dbFileName,
+    ResponseContentType: dbFileType,
+    ...additionalParams
+    }
 
-    S3.getObject({
-      Bucket: 'natappdata',
-      Key: dbFileName,
-      ResponseContentType: 'application/x-sqlite3'
-    })
-      .promise()
-      .then(data => {
-        console.log('Writing DB file to: ', dbFolderPath + dbFileName)
-        RNFS.writeFile(
-          dbFolderPath + dbFileName,
-          data.Body.toString('base64'),
-          'base64'
-        ).catch(error => {
-          alert('Database download FAILED!');
-          console.error(error);
-        });
-      });
+    let newDBDownloaded = true;
+    let data = await S3.getObject(params).promise()
+    .catch (err => {
+      if (err.statusCode == 304) {
+        console.log("DB Not modified since " + additionalParams.IfModifiedSince.toJSON());
+        newDBDownloaded = false;
+      }
+    });
+    if (!newDBDownloaded) {
+      return;
+    }
+
+    console.log('Writing DB file to: ', dbFolderPath + dbFileName);
+
+    await RNFS.writeFile(
+      dbFolderPath + dbFileName,
+      data.Body.toString('base64'),
+      'base64'
+    ).catch(error => {
+      alert('Database download writing FAILED!');
+      console.error(error);
+    });
+    
+    await RNFS.writeFile(
+      dbFolderPath + lmdFileName,
+      data.LastModified.toJSON(),
+      'utf8'
+    )
+    .catch(error => {
+      alert('LastModified writing FAILED!');
+      console.error(error);
+    });
+
+    console.log('Done writing files.');
   }
 
   async uploadDatabase() {
@@ -115,10 +118,10 @@ class DatabaseService {
 
     let S3 = await DatabaseService.instance.getS3();
     S3.upload({
-      Bucket: "natappdata",
+      Bucket: bucketName,
       Key: dbFileName,
       Body: buf,
-      ContentType: "application/x-sqlite3"
+      ContentType: dbFileType,
     })
       .promise()
       .then(data => {
@@ -128,6 +131,34 @@ class DatabaseService {
         alert("Database upload FAILED!");
         console.error(error);
       });
+  }
+
+  async syncDatabase() {
+    console.log('Syncing database file ' + dbFileName + ' ...');
+    let dbExists = await RNFS.exists(dbFolderPath + dbFileName);
+    if (!dbExists) {
+      await DatabaseService.instance.getDatabaseFile();
+    } else {
+      let savedModifiedDate = await DatabaseService.instance.getLastModifiedDate();
+      let additionalParams;
+      if (savedModifiedDate) {
+        additionalParams = {
+          IfModifiedSince: savedModifiedDate
+        }
+      }
+
+      await DatabaseService.instance.getDatabaseFile(additionalParams);
+    }
+  }
+
+  async getLastModifiedDate() {
+    let savedModifiedDate;
+    if (RNFS.exists(dbFolderPath + lmdFileName)) {
+      let savedModifiedDateJSON = await RNFS.readFile(dbFolderPath + lmdFileName, 'utf8');
+      savedModifiedDate = new Date (savedModifiedDateJSON);
+      console.log('DB Last Modified: ' + savedModifiedDate.toJSON());
+    }
+    return savedModifiedDate;
   }
 
   async dropSpeciesTable() {
@@ -170,6 +201,8 @@ class DatabaseService {
   }
 
   async updateSpecies(id, fieldName, fieldValue) {
+    await DatabaseService.instance.syncDatabase();
+
     let success = false;
     let query =
     `UPDATE species
@@ -182,6 +215,7 @@ class DatabaseService {
       success = true;
     });
 
+    DatabaseService.instance.uploadDatabase();
     return success;
   }
 
