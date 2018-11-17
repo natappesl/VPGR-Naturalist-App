@@ -50,7 +50,7 @@ export default class SearchScreen extends Component {
         </View>
         <View style={BaseTheme.content}>
         <Search onTextInput={this.searchUpdated.bind(this)} />
-        <Catalog list={this.state.list} listLoaded={this.state.listLoaded} onRowPress={(species) => this.onRowPressed(species)}/>
+        <Catalog list={this.state.list} listLoaded={this.state.listLoaded} onLongPress = {() => {this.props.navigation.navigate('NewSpecies')}}onRowPress={(species) => this.onRowPressed(species)}/>
         </View>
       </View>
     );

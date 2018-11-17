@@ -10,6 +10,7 @@ import SearchScreen from './components/search-screen';
 import LoginScreen from './components/login-screen';
 import SpeciesScreen from './components/species-screen';
 import CategoriesScreen from './components/categories-screen';
+import NewSpeciesScreen from './components/new-species-screen';
 import { Colors } from './constants/theme';
 
 
@@ -43,7 +44,13 @@ const RootStack = createStackNavigator({
     navigationOptions: ({ navigation }) => ({
       header: null
     }),
-  }
+  },
+  NewSpecies: {
+    screen: NewSpeciesScreen,
+    navigationOptions: ({ navigation }) => ({
+      header: null
+    }),
+  },
 },
 {
   initialRouteName: 'Home',
