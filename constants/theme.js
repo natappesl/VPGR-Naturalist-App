@@ -41,9 +41,9 @@ export const BackgroundTheme =  StyleSheet.create({
   logo: {
     flex: 0,
     position: 'absolute',
-    top: 100,
+    top: 80,
     width: dimensions.w,
-    height: 160,
+    height: 200,
     resizeMode: 'contain',
   },
 });
