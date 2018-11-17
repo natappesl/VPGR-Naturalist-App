@@ -371,6 +371,7 @@ export const EditModalTheme = StyleSheet.create ({
   fieldInputContainer: {
     flex: 2,
     minHeight: 80,
+    justifyContent: 'center',
     backgroundColor: Colors.bg,
     borderRadius: ButtonConst.borderRadius,
   },

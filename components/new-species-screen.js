@@ -13,7 +13,7 @@ class FieldInput extends Component {
           </Text>
         </View>
         <View style={EditModalTheme.fieldInputContainer}>
-          <TextInput style={FieldInputTheme.textInput}
+          <TextInput style={[FieldInputTheme.fieldInput, BaseTheme.centerText]}
             multiline={true}
             numberOfLines={1}
             returnKeyType={'done'}
