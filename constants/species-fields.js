@@ -22,8 +22,14 @@ export const ExcludedNewSpeciesNondetailFields = [
 ];
 
 export const FieldInputPlaceholders = {
-  alias: 'The common name of the species',
-  overview: 'It does stuff sometimes.',
+  alias: 'A common name of the species',
+  overview: 'A short, general description',
+  sciname: 'Genus species',
+  size: 'small medium large',
+  stype: 'Animals Plants Birds Crustaceans',
+  behavior: 'Common habits',
+  habitat: 'Common types of places one might find this species',
+  conservationstatus: 'LC NT VU EN CR EW EX DD NE',
 };
 
 // https://stackoverflow.com/questions/196972/convert-string-to-title-case-with-javascript
