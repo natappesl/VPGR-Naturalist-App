@@ -1,38 +1,17 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
-import { BaseTheme, NewSpeciesTheme, FieldInputTheme, EditModalTheme } from '../constants/theme';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 import {DetailFields, NondetailFields, ExcludedNewSpeciesNondetailFields, FieldInputPlaceholders } from '../constants/species-fields';
 import {ColorTraits, SizeTraits, SpeciesTypes, ConservationStatus} from '../constants/trait-categories';
-import {ConfirmButtons} from './buttons';
+import { BaseTheme, NewSpeciesTheme } from '../constants/theme';
+
 import Background from './background';
+import { FieldInput } from './field-input';
+import {ConfirmButtons} from './buttons';
 
-class FieldInput extends Component {
-  render() {
-    return (
-      <View style={[FieldInputTheme.container, BaseTheme.row, BaseTheme.shadow]}>
-        <View style={FieldInputTheme.label}>
-          <Text style= {[FieldInputTheme.labelText, BaseTheme.centerText, BaseTheme.bold]}>
-          {this.props.fieldName}
-          </Text>
-        </View>
-        <View style={[FieldInputTheme.inputContainer]}>
-          <TextInput style={[FieldInputTheme.input]}
-            multiline={true}
-            numberOfLines={1}
-            returnKeyType={'done'}
-            returnKeyLabel={'done'}
-            blurOnSubmit={true}
-            selectTextOnFocus={true}
-            value={this.props.fieldValue}
-            onChangeText={(text) => {this.props.onChangeText(this.props.fieldName, text)}}/>
-        </View>
-      </View>
-    );
-  }
-}
 
-class NewSpeciesScreen extends Component {
+export default class NewSpeciesScreen extends Component {
   constructor(props) {
     super(props);
     this.renderFieldInputs = this.renderFieldInputs.bind(this);
@@ -101,5 +80,3 @@ class NewSpeciesScreen extends Component {
     );
   }
 }
-
-export default NewSpeciesScreen;
