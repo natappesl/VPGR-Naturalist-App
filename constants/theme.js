@@ -41,7 +41,7 @@ export const BackgroundTheme =  StyleSheet.create({
   logo: {
     flex: 0,
     position: 'absolute',
-    top: 80,
+    top: '5%',
     width: dimensions.w,
     height: 200,
     resizeMode: 'contain',
@@ -165,6 +165,9 @@ export const BaseTheme = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
+  },
+  reverseColumn: {
+    flexDirection: 'column-reverse',
   },
   headerTitle: {
     color: Colors.headingText,
