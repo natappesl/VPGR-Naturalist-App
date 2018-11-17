@@ -333,15 +333,16 @@ export const EditModalTheme = StyleSheet.create ({
   headerContainer: {
     flex: 1,
   },
-  centerText: {
+  headerText: {
     textAlign: 'center',
     textAlignVertical: 'center',
-  },
-  header: {
-    alignSelf: 'center',
     fontWeight: 'bold',
     fontSize: 30,
     color: Colors.headingText,
+  },
+  header: {
+    flex: 1,
+    alignSelf: 'center',
     backgroundColor: Colors.secondary,
     margin: 20,
     padding: 20,
@@ -357,13 +358,14 @@ export const EditModalTheme = StyleSheet.create ({
     borderRadius: 10,
   },
   fieldInputContainer: {
-    height: 100,
+    height: 80,
     width: '100%',
     backgroundColor: Colors.bg,
     borderRadius: ButtonConst.borderRadius,
   },
   fieldInput: {
     flex: 1,
+    padding: 10,
   },
   buttonContainer: {
     height: 80,
@@ -384,6 +386,8 @@ export const EditModalTheme = StyleSheet.create ({
   },
   buttonText: {
     color: Colors.contentText,
+    textAlign: 'center',
+    textAlignVertical: 'center',
     fontSize: ButtonConst.fontSize,
     fontWeight: ButtonConst.fontWeight,
   },

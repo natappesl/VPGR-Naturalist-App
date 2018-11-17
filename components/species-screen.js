@@ -122,15 +122,23 @@ export default class SpeciesScreen extends Component {
           }}
         >
           <KeyboardAwareScrollView style={EditModalTheme.container}>
-          <Text style={[EditModalTheme.header, EditModalTheme.centerText]}>Editting "{this.state.edittingFieldName.toProperCase()}"</Text>
-            <View style= {EditModalTheme.content}>
+          <View style={[EditModalTheme.header, BaseTheme.shadow]}>
+            <Text style={EditModalTheme.headerText}>
+            Editting "{this.state.edittingFieldName.toProperCase()}"
+            </Text>
+          </View>
+            <View style= {[EditModalTheme.content, BaseTheme.shadow]}>
               <View style={EditModalTheme.fieldInputContainer}>
                 <TextInput style={EditModalTheme.fieldInput}
                   autoFocus={true}
                   multiline={true}
-                  numberOfLines={2}
+                  numberOfLines={1}
                   value={this.state.edittingFieldValue}
                   onChangeText={text => this.setState({edittingFieldValue: text})}
+                  returnKeyType={'done'}
+                  returnKeyLabel={'done'}
+                  blurOnSubmit={true}
+
                 />
               </View>
               <View style={EditModalTheme.buttonContainer}>
