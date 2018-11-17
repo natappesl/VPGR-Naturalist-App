@@ -1,24 +1,29 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { BaseTheme, NewSpeciesTheme, FieldInputTheme, EditModalTheme } from '../constants/theme';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {DetailFields, NondetailFields, ExcludedNewSpeciesNondetailFields, FieldInputPlaceholders } from '../constants/species-fields';
+import {ColorTraits, SizeTraits, SpeciesTypes, ConservationStatus} from '../constants/trait-categories';
+import {ConfirmButtons} from './buttons';
+import Background from './background';
+
 class FieldInput extends Component {
   render() {
     return (
-      <View style={[EditModalTheme.content, BaseTheme.row]}>
+      <View style={[FieldInputTheme.container, BaseTheme.row, BaseTheme.shadow]}>
         <View style={FieldInputTheme.label}>
           <Text style= {[FieldInputTheme.labelText, BaseTheme.centerText, BaseTheme.bold]}>
-          {this.props.fieldName.toProperCase()}
+          {this.props.fieldName}
           </Text>
         </View>
-        <View style={EditModalTheme.fieldInputContainer}>
-          <TextInput style={[FieldInputTheme.fieldInput, BaseTheme.centerText]}
+        <View style={[FieldInputTheme.inputContainer]}>
+          <TextInput style={[FieldInputTheme.input, BaseTheme.centerText]}
             multiline={true}
             numberOfLines={1}
             returnKeyType={'done'}
             returnKeyLabel={'done'}
             blurOnSubmit={true}
+            selectTextOnFocus={true}
             value={this.props.fieldValue}
             onChangeText={(text) => {this.props.onChangeText(this.props.fieldName, text)}}/>
         </View>
@@ -31,6 +36,8 @@ class NewSpeciesScreen extends Component {
   constructor(props) {
     super(props);
     this.renderFieldInputs = this.renderFieldInputs.bind(this);
+    this.saveNewSpecies = this.saveNewSpecies.bind(this);
+    this.cancelNewSpecies = this.cancelNewSpecies.bind(this);
 
     let state = {};
     state.fields = {};
@@ -54,6 +61,14 @@ class NewSpeciesScreen extends Component {
     });
   }
 
+  saveNewSpecies() {
+    console.log(this.state);
+  }
+
+  cancelNewSpecies () {
+    console.log(this.state);
+  }
+
   renderFieldInputs() {
     let fields = Object.keys(this.state.fields);
     let renderedFields = [];
@@ -73,16 +88,16 @@ class NewSpeciesScreen extends Component {
 
   render() {
     return (
-      <KeyboardAwareScrollView>
-        <View style={EditModalTheme.header}>
-          <Text style={[EditModalTheme.headerText]}>New Species</Text>
-        </View>
-        {this.renderFieldInputs()}
-      {/* <FieldInput
-        fieldName={'overview'}
-        fieldValue={this.state['overview']}
-        onChangeText={(fieldName, newFieldValue) => {this.setFieldValue(fieldName, newFieldValue)}}/> */}
-      </KeyboardAwareScrollView>
+      <View>
+        <Background/>
+        <KeyboardAwareScrollView>
+          <View style={[NewSpeciesTheme.header, BaseTheme.shadow]}>
+            <Text style={[NewSpeciesTheme.headerText]}>Add New Species</Text>
+          </View>
+          {this.renderFieldInputs()}
+          <ConfirmButtons confirm={this.saveNewSpecies} cancel={this.cancelNewSpecies} />
+        </KeyboardAwareScrollView>
+      </View>
     );
   }
 }
