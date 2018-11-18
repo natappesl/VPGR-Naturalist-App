@@ -15,11 +15,33 @@ export const NondetailFields = [
   'sciname',
 ];
 
+export const NewSpeciesFields = [
+  'sciname',
+  'alias',
+  'overview',
+  'size',
+  'stype',
+  'conservationstatus',
+  'behavior',
+  'habitat',
+]
+
 export const ExcludedNewSpeciesNondetailFields = [
   'url',
   'id',
   'aliases',
 ];
+
+export const DefaultFieldInputPlaceholders = {
+  alias: 'Test species',
+  overview: 'A short, general description of tests',
+  sciname: 'Genius testspecicus',
+  size: 'small',
+  stype: 'Animals',
+  behavior: 'Common associates with bugs of the pestering type',
+  habitat: 'Only found while testing',
+  conservationstatus: 'LC',
+};
 
 export const FieldInputPlaceholders = {
   alias: 'A common name of the species',
