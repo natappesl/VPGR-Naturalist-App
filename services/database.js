@@ -1,10 +1,6 @@
 // Singleton Reference: https://www.sitepoint.com/javascript-design-patterns-singleton/
 // Enumeration Reference: https://www.sohamkamani.com/blog/2017/08/21/enums-in-javascript/
 
-//TODO: Update database from S3 using ifModifiedSince param in getObject
-//TODO: Refactor into component?
-//TODO: DB, S3 into This.
-//TODO: Make S3, DB into getter
 import SQLite from 'react-native-sqlite-storage';
 import Amplify, { Storage, Auth } from 'aws-amplify';
 import aws_exports from '../aws-exports';
@@ -25,7 +21,8 @@ Amplify.configure(aws_exports);
 SQLite.DEBUG(false);
 SQLite.enablePromise(true);
 
-const dbFolderPath = Platform.OS == 'ios' ?
+const dbFolderPath = 
+  (Platform.OS == 'ios') ?
   RNFS.LibraryDirectoryPath + '/LocalDatabase/' :
   '/data/data/com.vpgrnaturalistapp/databases/';
 
@@ -159,12 +156,12 @@ class DatabaseService {
     if (RNFS.exists(dbFolderPath + lmdFileName)) {
       let savedModifiedDateJSON = await RNFS.readFile(dbFolderPath + lmdFileName, 'utf8');
       savedModifiedDate = new Date (savedModifiedDateJSON);
-      console.log('DB Last Modified: ' + savedModifiedDate.toJSON());
+      console.log('Saved DB Modified Date: ' + savedModifiedDate.toJSON());
     }
     return savedModifiedDate;
   }
 
-  async dropSpeciesTable() {
+  async _dropSpeciesTable() {
     let db = await DatabaseService.instance.getDB();
     await db.transaction(tx => {
       tx.exequteSql("DROP TABLE IF EXISTS species");
@@ -174,7 +171,7 @@ class DatabaseService {
     });
   }
 
-  async populateDatabase() {
+  async _populateDatabase() {
     let S3 = await DatabaseService.instance.getS3();
 
     let listResponse = await S3
@@ -254,7 +251,7 @@ class DatabaseService {
     }
   }
 
-  async updateImageURLs() {
+  async _updateImageURLs() {
     let db = await DatabaseService.instance.getDB();
     await db.transaction (async tx => {
       let [txtwo, result] = await tx.executeSql(
@@ -280,15 +277,16 @@ class DatabaseService {
     return species;
   }
 
-  async insertSpecies(speciesData, speciesTags={}, speciesImages={}, speciesLinks={}) {
+  async insertSpecies(speciesData, speciesTraits, speciesImages, speciesLinks = []) {
     // Returns the species.id of the newly creates species entry
     // or -1 on failure.
     let speciesId = -1;
 
-    let verified = await DatabaseService.instance.verifySpeciesData(speciesData);
+    let verified = await DatabaseService.instance.verifyData(speciesData, speciesTraits, speciesImages);
     if (!verified) {
       return speciesId;
     }
+    await DatabaseService.instance.syncDatabase();
 
     let db = await DatabaseService.instance.getDB();
 
@@ -318,7 +316,7 @@ class DatabaseService {
           speciesData.behavior,
           speciesData.habitat,
           speciesData.size,
-          speciesData.conservationStatus,
+          speciesData.conservationstatus,
           speciesData.stype
         ]
       );
@@ -330,11 +328,37 @@ class DatabaseService {
       console.error(error);
     });
 
+    await DatabaseService.instance.insertAliases([speciesData.alias], speciesId);
+    await DatabaseService.instance.insertLinks(speciesImages, speciesId, 'images');
+    await DatabaseService.instance.insertTraits(speciesTraits, speciesId);
+    if (speciesLinks.length > 0) {
+      await DatabaseService.instance.insertLinks(speciesLinks, speciesId, 'links');
+    }
+
     console.log("SUCCESSFULLY INSERTED: " + speciesData.alias + " ID: " + speciesId);
+    DatabaseService.instance.uploadDatabase();
     return speciesId;
   }
 
-  async verifySpeciesData(speciesData) {
+  async verifyData(speciesData, speciesTraits, speciesImages) {
+    //Verify that tags and images aren't empty
+    if (speciesTraits.length <= 0) {
+      Alert.alert('Species Verification Failed!', 'The passed traits array is empty, species must have at least one tag!');
+      return false;
+    }
+    if (speciesImages.length <= 0) {
+      Alert.alert('Species Verification Failed!', 'The passed images array is empty, species must have at least one image!');
+      return false;
+    }
+    // Verify that the tags and images are arrays
+    if (!Array.isArray(speciesTraits)) {
+      Alert.alert('Species Verification Failed!', 'The passed traits are not in an array! Did you accidentally use curly braces?');
+      return false;
+    }
+    if (!Array.isArray(speciesImages)) {
+      Alert.alert('Species Verification Failed!', 'The passed images are not in an array! Did you accidentally use curly braces?');
+      return false;
+    }
     // Verify that the passed species data has
     // all the necessary species fields
     for (field of RequiredSpeciesFields) {
@@ -365,31 +389,42 @@ class DatabaseService {
     return true;
   }
 
-  async insertAliases(speciesData, id) {
-    let names = speciesData.name.split(",");
-    let db = await DatabaseService.instance.getDB();
-
-    for (const name of names) {
-      await db.transaction(tx => {
-        tx.executeSql(`INSERT INTO aliases (id, alias) VALUES (?,?);`, [
-          id,
-          name
-        ]);
-      }).catch(error => {
-        //alert(speciesData.scientificName + " insert Alias failed!");
-        console.error(error);
+  async insertAliases(speciesAliases, id) {
+    if (speciesAliases.length != 0) {
+      console.log('Inserting Aliases: ' + speciesAliases);
+      let db = await DatabaseService.instance.getDB();
+      await db.transaction(async tx => {
+        for (alias of speciesAliases) {
+          console.log(id + " Alias: " + alias);
+          await tx.executeSql (
+            `INSERT INTO aliases (
+                id,
+                alias
+              ) VALUES (
+                ?,
+                ?
+              );`,
+              [
+                id,
+                alias
+              ]
+          );
+        }
+      })
+      .catch (err => {
+        console.warn(err);
       });
     }
   }
 
   async insertLinks(speciesLinks, id, linkType) {
-    if (Object.keys(speciesLinks).length != 0) {
+    if (speciesLinks.length != 0) {
       console.log('Inserting Links: ' + speciesLinks);
-      let links = Object.keys(speciesLinks);
+      let db = await DatabaseService.instance.getDB();
       await db.transaction(async tx => {
-        for (link of links) {
-          console.log(speciesId + " Link: " + link);
-          await tx.executSql (
+        for (link of speciesLinks) {
+          console.log(id + " Link: " + link);
+          await tx.executeSql (
             `INSERT INTO ` + linkType + ` (
                 id,
                 url
@@ -398,11 +433,13 @@ class DatabaseService {
                 ?
               );`,
               [
-                speciesId,
+                id,
                 link
               ]
           );
         }
+      }).catch (err => {
+        console.warn(err);
       });
     }
   }
@@ -519,7 +556,7 @@ class DatabaseService {
   async getAliasedSpecies() {
     let allSpecies;
     let db = await DatabaseService.instance.getDB();
-    
+    //await DatabaseService.instance.createAliasedSpeciesView();
     await db.transaction(async tx => {
       let [t, results] = await tx.executeSql(
         `SELECT * FROM aliasedSpecies`
