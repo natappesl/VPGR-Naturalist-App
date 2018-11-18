@@ -32,6 +32,17 @@ export const FieldInputPlaceholders = {
   conservationstatus: 'LC NT VU EN CR EW EX DD NE',
 };
 
+export const RequiredSpeciesFields = [
+  'alias',
+  'sciname',
+  'overview',
+  'size',
+  'stype',
+  'conservationstatus',
+  'behavior',
+  'habitat',
+]
+
 // https://stackoverflow.com/questions/196972/convert-string-to-title-case-with-javascript
 String.prototype.toProperCase = function () {
   return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});

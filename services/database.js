@@ -13,9 +13,12 @@ import RNFS from 'react-native-fs';
 import {
   ColorTraits,
   SizeTraits,
-  SpeciesTypes
+  SpeciesTypes,
 } from '../constants/trait-categories';
-import {Platform} from 'react-native';
+import {
+  RequiredSpeciesFields,
+} from '../constants/species-fields';
+import {Platform, Alert} from 'react-native';
 
 
 Amplify.configure(aws_exports);
@@ -281,28 +284,13 @@ class DatabaseService {
     // Returns the species.id of the newly creates species entry
     // or -1 on failure.
     let speciesId = -1;
-    if (!speciesData.sciname) return speciesId;
-
-    let db = await DatabaseService.instance.getDB();
-
-    // First check that the species doesn't already exist
-    // by checking if there is an entry with the same scientific name
-    await db.transaction(async tx => {
-      let [t, existsResult] = await tx.executeSql(
-        'SELECT * FROM species WHERE sciname = "' +
-          speciesData.sciname + '";'
-      );
-      let alreadyExists = existsResult.rows.length > 0 ? true : false;
-      if (alreadyExists) {
-        console.warn(speciesData.sciname + " ALREADY EXISTS!");
-        return speciesId;
-      }
-    });
 
     let verified = await DatabaseService.instance.verifySpeciesData(speciesData);
     if (!verified) {
       return speciesId;
     }
+
+    let db = await DatabaseService.instance.getDB();
 
     await db.transaction(async tx => {
       console.log("Inserting Species entry: " + speciesData);
@@ -410,15 +398,39 @@ class DatabaseService {
         }
       });
     }
-    
+    console.log("SUCCESSFULLY INSERTED: " + speciesData.alias + " ID: " + speciesId);
     return speciesId;
   }
 
   async verifySpeciesData(speciesData) {
-    // Verify that the passed species data 
-    let verified = true;
-    console.log('TODO: Verify ' + speciesData );
-    return verified;
+    // Verify that the passed species data has
+    // all the necessary species fields
+    for (field of RequiredSpeciesFields) {
+      if (!speciesData[field]) {
+        Alert.alert('Species Verification Failed!', 'The passed data is missing the required field: ' + field);
+        return false;
+      }
+    }
+    
+    let db = await DatabaseService.instance.getDB();
+
+    // Check that the species doesn't already exist
+    // by checking if there is an entry with the same scientific name
+    let alreadyExists = false;
+    await db.transaction(async tx => {
+      let [t, existsResult] = await tx.executeSql(
+        'SELECT * FROM species WHERE sciname = "' +
+          speciesData.sciname + '";'
+      );
+      alreadyExists = existsResult.rows.length > 0 ? true : false;
+    });
+    if (alreadyExists) {
+      //Alert.alert('Species Verification Failed!', speciesData.sciname + " already exists.");
+      console.warn(speciesData.alias + " already exists, adding anyway");
+      //return false;
+    }
+
+    return true;
   }
 
   async insertAliases(speciesData, id) {
