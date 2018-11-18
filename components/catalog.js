@@ -39,7 +39,6 @@ export class Catalog extends Component {
                     <TouchableOpacity
                       style={ListTheme.row}
                       onPress={() => {this.props.onRowPress(species.item)}}
-                      onLongPress={() => {this.props.newSpecies()}}
                     >
                       <Image
                         style={ListTheme.image}
