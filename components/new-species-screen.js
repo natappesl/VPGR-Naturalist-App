@@ -22,6 +22,17 @@ import { ConfirmButtons } from "./buttons";
 
 import DatabaseService from '../services/database';
 
+DefaultFieldInputPlaceholders = {
+  alias: 'Test species',
+  overview: 'A short, general description of tests',
+  sciname: 'Genius testspecicus',
+  size: 'small',
+  stype: 'Animals',
+  behavior: 'Common associates with bugs of the pestering type',
+  habitat: 'Only found while testing',
+  conservationstatus: 'LC',
+}
+
 export default class NewSpeciesScreen extends Component {
   constructor(props) {
     super(props);
@@ -33,11 +44,11 @@ export default class NewSpeciesScreen extends Component {
     state.fields = {};
     for (field of NondetailFields) {
       if (ExcludedNewSpeciesNondetailFields.includes(field) == false) {
-        state.fields[field] = FieldInputPlaceholders[field] || "";
+        state.fields[field] = DefaultFieldInputPlaceholders[field] || "";
       }
     }
     for (field of DetailFields) {
-      state.fields[field] = FieldInputPlaceholders[field] || "";
+      state.fields[field] = DefaultFieldInputPlaceholders[field] || "";
     }
     console.log(state.fields);
     this.state = state;
@@ -52,9 +63,9 @@ export default class NewSpeciesScreen extends Component {
     });
   }
 
-  saveNewSpecies() {
-    console.log(this.state);
-    //DatabaseService.instance.insertSpecies(this.state.fields, this.state.tags);
+  async saveNewSpecies() {
+    let id = await DatabaseService.insertSpecies(this.state.fields);
+    console.log(id);
   }
 
   cancelNewSpecies() {
