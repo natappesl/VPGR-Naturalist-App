@@ -28,6 +28,9 @@ export const Colors = {
   headingText: 'white',
   contentText: 'white',
   
+  positive: 'green',
+  negative: '#f50',
+
 }
 export const BackgroundTheme =  StyleSheet.create({
   main: {

@@ -327,7 +327,7 @@ class DatabaseService {
       alert(speciesData.sciname + " insert failed!");
       console.error(error);
     });
-
+    console.log('Adding Additional entries');
     await DatabaseService.instance.insertAliases([speciesData.alias], speciesId);
     await DatabaseService.instance.insertLinks(speciesImages, speciesId, 'images');
     await DatabaseService.instance.insertTraits(speciesTraits, speciesId);
@@ -446,13 +446,13 @@ class DatabaseService {
 
 
   async insertTraits(speciesTags, id) {
-    if (Object.keys(speciesTags).length != 0) {
+    if (speciesTags.length != 0) {
       console.log('Inserting Tags: ' + speciesTags);
-      let tags = Object.keys(speciesTags);
+      let db = await DatabaseService.instance.getDB();
       await db.transaction(async tx => {
-        for (tag of tags) {
-          console.log(speciesId + " Tag: " + tag);
-          await tx.executSql (
+        for (tag of speciesTags) {
+          console.log(id + " Tag: " + tag);
+          await tx.executeSql (
             `INSERT INTO traits (
                 id,
                 tag
@@ -461,7 +461,7 @@ class DatabaseService {
                 ?
               );`,
               [
-                speciesId,
+                id,
                 tag
               ]
           );

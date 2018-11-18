@@ -5,6 +5,8 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import {
   DetailFields,
   NondetailFields,
+  NewSpeciesFields,
+  DefaultFieldInputPlaceholders,
   ExcludedNewSpeciesNondetailFields,
   FieldInputPlaceholders
 } from "../constants/species-fields";
@@ -17,21 +19,11 @@ import {
 import { BaseTheme, NewSpeciesTheme } from "../constants/theme";
 
 import Background from "./background";
-import { FieldInput } from "./field-input";
+import { FieldInput, EntryInput } from "./field-input";
 import { ConfirmButtons } from "./buttons";
 
 import DatabaseService from '../services/database';
 
-DefaultFieldInputPlaceholders = {
-  alias: 'Test species',
-  overview: 'A short, general description of tests',
-  sciname: 'Genius testspecicus',
-  size: 'small',
-  stype: 'Animals',
-  behavior: 'Common associates with bugs of the pestering type',
-  habitat: 'Only found while testing',
-  conservationstatus: 'LC',
-}
 
 export default class NewSpeciesScreen extends Component {
   constructor(props) {
@@ -42,15 +34,16 @@ export default class NewSpeciesScreen extends Component {
 
     let state = {};
     state.fields = {};
-    for (field of NondetailFields) {
-      if (ExcludedNewSpeciesNondetailFields.includes(field) == false) {
-        state.fields[field] = DefaultFieldInputPlaceholders[field] || "";
-      }
-    }
-    for (field of DetailFields) {
+    for (field of NewSpeciesFields) {
       state.fields[field] = DefaultFieldInputPlaceholders[field] || "";
     }
-    console.log(state.fields);
+
+    state.tags = [
+      'default',
+    ];
+    state.images = [
+      'placeholder.png',
+    ];
     this.state = state;
   }
 
@@ -59,19 +52,63 @@ export default class NewSpeciesScreen extends Component {
     this.setState(prevState => {
       let newFields = prevState.fields;
       newFields[fieldName] = newFieldValue;
-      return { feilds: newFields };
+      return { fields: newFields };
+    });
+  }
+
+  async addEntry(entryType) {
+    this.setState(prevState => {
+      let newState = prevState;
+      newState[entryType].push('');
+      return {state: newState};
+    });
+  }
+
+  async updateEntry(entryType, index, text) {
+    this.setState( prevState => {
+      let newState = prevState;
+      newState[entryType][index] = text;
+      return {state: newState};
+    })
+  }
+
+  async deleteEntry (entryType) {
+    this.setState(prevState => {
+      let newState = prevState;
+      newState[entryType].pop();
+      return {state: newState};
     });
   }
 
   async saveNewSpecies() {
-    let id = await DatabaseService.insertSpecies(this.state.fields);
+    let tags = this.parseEntries(this.state.tags);
+    let images = this.parseEntries(this.state.images);
+    console.log('Calling');
+    let id = await DatabaseService.insertSpecies(this.state.fields, tags, images);
     if (id != -1) {
       this.props.navigation.pop();
     }
   }
 
+  parseEntries(entries) {
+    let parsedEntries = [];
+    for (i = 0; i < entries.length; i++) {
+      if (entries[i] != '') {
+        let entry = entries[i].trim();
+        // Check twice in case someone added
+        // any number of spaces and nothing else
+        // lol
+        if (entry != '') {
+          parsedEntries.push(entry);
+        }
+      }
+    }
+    return parsedEntries;
+  }
+
   cancelNewSpecies() {
     console.log(this.state);
+    this.props.navigation.pop();
   }
 
   renderFieldInputs() {
@@ -102,6 +139,18 @@ export default class NewSpeciesScreen extends Component {
             <Text style={[NewSpeciesTheme.headerText]}>Add New Species</Text>
           </View>
           {this.renderFieldInputs()}
+          <EntryInput
+            entries={this.state.tags}
+            entryName={'Traits'}
+            onAdd={() => { this.addEntry('tags') }}
+            onUpdate={(entryId, entry) => { this.updateEntry('tags', entryId, entry) }}
+            onDelete={() => { this.deleteEntry('tags') }}/>
+          <EntryInput
+            entries={this.state.images}
+            entryName={'Images'}
+            onAdd={() => { this.addEntry('images') }}
+            onUpdate={(entryId, entry) => { this.updateEntry('images', entryId, entry) }}
+            onDelete={() => { this.deleteEntry('images') }}/>
           <ConfirmButtons
             confirm={this.saveNewSpecies}
             cancel={this.cancelNewSpecies}
