@@ -1,6 +1,6 @@
 // Styling reference: https://revelry.co/styles-in-react-native/
 
-import { StyleSheet, Text, View, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 const d = Dimensions.get('window');
 
 export const dimensions = {
@@ -38,15 +38,21 @@ export const BackgroundTheme =  StyleSheet.create({
     left: 0,
     width: dimensions.w,
     height: dimensions.h,
+    alignItems:'center',
     position: 'absolute',
     backgroundColor: Colors.bg,
   },
-  logo: {
-    flex: 0,
+  logoContainer: {
     position: 'absolute',
-    top: '5%',
-    width: dimensions.w,
-    height: 200,
+    flex: 1,
+    top: 100,
+    borderRadius: ButtonConst.borderRadius,
+    borderWidth: 3,
+    borderColor: Colors.secondary,
+    overflow: 'hidden',
+    backgroundColor: 'yellow',
+  },
+  logo: {
     resizeMode: 'contain',
   },
 });

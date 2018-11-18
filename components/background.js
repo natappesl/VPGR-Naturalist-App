@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import {ImageBackground, Image, TouchableWithoutFeedback} from 'react-native';
-import {BackgroundTheme} from '../constants/theme';
+import {ImageBackground, Image, TouchableWithoutFeedback, View} from 'react-native';
+import {BackgroundTheme, BaseTheme} from '../constants/theme';
 
 export default class Background extends Component {
   constructor(props) {
@@ -14,9 +14,11 @@ export default class Background extends Component {
           style={BackgroundTheme.main}
           resizeMode={'cover'}>
           {this.props.showLogo && (
+            <View style= {[BackgroundTheme.logoContainer, BaseTheme.shadow]}>
             <TouchableWithoutFeedback onLongPress={() => {this.props.onLongPress()}} delayLongPress={1000}>
-              <Image style={BackgroundTheme.logo} source={require('../assets/vpgr_logo.png')} resizeMode='contain'/>
+              <Image style={BackgroundTheme.logo} source={require('../assets/vpgr_logo.jpg')} resizeMode='contain'/>
             </TouchableWithoutFeedback>
+            </View>
             )}
         </ImageBackground>
     );
