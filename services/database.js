@@ -79,7 +79,7 @@ class DatabaseService {
     let data = await S3.getObject(params).promise()
     .catch (err => {
       if (err.statusCode == 304) {
-        console.log("DB Not modified since " + additionalParams.IfModifiedSince.toJSON());
+        console.debug("DB Not modified since " + additionalParams.IfModifiedSince.toJSON());
         newDBDownloaded = false;
       }
     });
@@ -87,14 +87,12 @@ class DatabaseService {
       return;
     }
 
-    console.log('Writing DB file to: ', dbFolderPath + dbFileName);
-
     await RNFS.writeFile(
       dbFolderPath + dbFileName,
       data.Body.toString('base64'),
       'base64'
     ).catch(error => {
-      alert('Database download writing FAILED!');
+      alert('Database writing FAILED!');
       console.error(error);
     });
     
@@ -108,11 +106,10 @@ class DatabaseService {
       console.error(error);
     });
 
-    console.log('Done writing files.');
+    Alert.alert("Local Database Updated!");
   }
 
   async uploadDatabase() {
-    console.log('Uploading database file ' + dbFileName + ' ...');
     let uploadDBFile = await RNFS.readFile(dbFolderPath + dbFileName, "base64");
     let buf = Buffer.from(uploadDBFile, "base64");
 
@@ -125,7 +122,7 @@ class DatabaseService {
     })
       .promise()
       .then(data => {
-        alert("Database upload SUCCESS!");
+        Alert.alert("Local Database Uploaded!");
       })
       .catch(error => {
         alert("Database upload FAILED!");
@@ -334,7 +331,7 @@ class DatabaseService {
       await DatabaseService.instance.insertLinks(speciesLinks, speciesId, 'links');
     }
 
-    console.log("SUCCESSFULLY INSERTED: " + speciesData.alias + " ID: " + speciesId);
+    console.debug("SUCCESSFULLY INSERTED: " + speciesData.alias + " ID: " + speciesId);
     DatabaseService.instance.uploadDatabase();
     return speciesId;
   }
