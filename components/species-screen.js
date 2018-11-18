@@ -14,7 +14,7 @@ import {
   Button
 } from "react-native";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import {StackActions, NavigationActions} from 'react-navigation';
 import { BaseTheme, Colors, SpeciesTheme, EditModalTheme } from "../constants/theme";
 import { ConservationStatus } from "../constants/trait-categories";
 import { SideButton, ConfirmButtons } from "./buttons";
@@ -34,9 +34,7 @@ export default class SpeciesScreen extends Component {
     };
 
     if (!this.state.species) {
-      console.warn(
-        "Navigated to species page without passing a species object!"
-      );
+      console.warn("Navigated to species page without passing a species object!");
       this.props.navigation.pop();
     }
 
@@ -47,6 +45,18 @@ export default class SpeciesScreen extends Component {
     this.closeEditModal = this.closeEditModal.bind(this);
     this.saveEditModal = this.saveEditModal.bind(this);
 
+  }
+
+  deleteSpecies () {
+    Alert.alert('Confirm Deletion', 'Are you sure you want to delete ' + this.state.species.alias, [
+      {text: 'Yes', onPress: () => {
+      let resetAction = StackActions.reset({
+        index: 0,
+        actions: [NavigationActions.navigate({ routeName: 'Home' })],
+      });
+      this.props.navigation.dispatch(resetAction);
+      DatabaseService.deleteSpecies(this.state.species.id);
+    }},{text: 'No', onPress: () => {}}]);
   }
 
   callEdit() {
@@ -152,6 +162,7 @@ export default class SpeciesScreen extends Component {
             onPress={() => {
               this.props.navigation.pop();
             }}
+            onLongPress={() => {this.deleteSpecies()}}
           />
         </View>
         <View style={BaseTheme.content}>

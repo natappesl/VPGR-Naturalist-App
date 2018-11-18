@@ -336,6 +336,28 @@ class DatabaseService {
     return speciesId;
   }
 
+  async deleteSpecies(id) {
+    Alert.alert('Double Confirm Deletion', 'Are you very sure you want to delete species id: ' + id + '?', [{text: 'Yes', onPress: async () => {
+      await DatabaseService.instance.syncDatabase();
+      let db = await DatabaseService.instance.getDB();
+      await db.transaction( async tx => {
+        tx.executeSql('DELETE FROM traits WHERE id = ' + id);
+        tx.executeSql('DELETE FROM aliases WHERE id = ' + id);
+        tx.executeSql('DELETE FROM links WHERE id = ' + id);
+        tx.executeSql('DELETE FROM images WHERE id = ' + id);
+        tx.executeSql('DELETE FROM species WHERE id = ' + id);
+      })
+      .then( async () => {
+        await DatabaseService.instance.uploadDatabase();
+        Alert.alert('Species ' + id + ' deleted!');
+      })
+      .catch(err => {
+        Alert.alert('Species ' + id + " deletion Failed!", [{text: 'Bye Bye.'}]);
+      });
+    }},
+    {text: 'No', onPress: () => {}}]);
+  }
+
   async verifyData(speciesData, speciesTraits, speciesImages) {
     //Verify that tags and images aren't empty
     if (speciesTraits.length <= 0) {
