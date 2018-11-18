@@ -327,7 +327,6 @@ class DatabaseService {
       alert(speciesData.sciname + " insert failed!");
       console.error(error);
     });
-    console.log('Adding Additional entries');
     await DatabaseService.instance.insertAliases([speciesData.alias], speciesId);
     await DatabaseService.instance.insertLinks(speciesImages, speciesId, 'images');
     await DatabaseService.instance.insertTraits(speciesTraits, speciesId);
@@ -381,9 +380,8 @@ class DatabaseService {
       alreadyExists = existsResult.rows.length > 0 ? true : false;
     });
     if (alreadyExists) {
-      //Alert.alert('Species Verification Failed!', speciesData.sciname + " already exists.");
-      console.warn(speciesData.alias + " already exists, adding anyway");
-      //return false;
+      Alert.alert('Species Verification Failed!', speciesData.sciname + " already exists.");
+      return false;
     }
 
     return true;
@@ -391,11 +389,9 @@ class DatabaseService {
 
   async insertAliases(speciesAliases, id) {
     if (speciesAliases.length != 0) {
-      console.log('Inserting Aliases: ' + speciesAliases);
       let db = await DatabaseService.instance.getDB();
       await db.transaction(async tx => {
         for (alias of speciesAliases) {
-          console.log(id + " Alias: " + alias);
           await tx.executeSql (
             `INSERT INTO aliases (
                 id,
@@ -419,11 +415,9 @@ class DatabaseService {
 
   async insertLinks(speciesLinks, id, linkType) {
     if (speciesLinks.length != 0) {
-      console.log('Inserting Links: ' + speciesLinks);
       let db = await DatabaseService.instance.getDB();
       await db.transaction(async tx => {
         for (link of speciesLinks) {
-          console.log(id + " Link: " + link);
           await tx.executeSql (
             `INSERT INTO ` + linkType + ` (
                 id,
@@ -447,11 +441,9 @@ class DatabaseService {
 
   async insertTraits(speciesTags, id) {
     if (speciesTags.length != 0) {
-      console.log('Inserting Tags: ' + speciesTags);
       let db = await DatabaseService.instance.getDB();
       await db.transaction(async tx => {
         for (tag of speciesTags) {
-          console.log(id + " Tag: " + tag);
           await tx.executeSql (
             `INSERT INTO traits (
                 id,
