@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Background from './background';
 import { StyleSheet, Text, View, Alert} from "react-native";
-import { Icon } from 'react-native-elements';
 import { BaseTheme, Colors, dimensions } from '../constants/theme';
 import { SideButton } from './buttons';
 
