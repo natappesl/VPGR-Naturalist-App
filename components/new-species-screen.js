@@ -47,7 +47,7 @@ export default class NewSpeciesScreen extends Component {
     this.state = state;
   }
 
-  setFieldValue(fieldName, newFieldValue) {
+  updateField(fieldName, newFieldValue) {
     console.log(fieldName + ": " + newFieldValue);
     this.setState(prevState => {
       let newFields = prevState.fields;
@@ -122,7 +122,7 @@ export default class NewSpeciesScreen extends Component {
           fieldName={field}
           fieldValue={this.state.fields[field]}
           onChangeText={(fieldName, newFieldValue) => {
-            this.setFieldValue(fieldName, newFieldValue);
+            this.updateField(fieldName, newFieldValue);
           }}
         />
       );
