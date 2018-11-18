@@ -256,15 +256,13 @@ export const SpeciesTheme = StyleSheet.create({
   },
   mainImageContainer: {
     flex: 3,
+    padding: 0,
     overflow: 'hidden',
     borderRadius: 10,
   },
   mainImage: {
-    flex: 3,
-    height: 200,
-    width: 200,
+    flex: 1,
     padding: 5,
-    resizeMode: 'contain',
   },
   namesContainer: {
     flex: 4,
