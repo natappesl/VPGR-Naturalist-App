@@ -352,7 +352,7 @@ class DatabaseService {
         Alert.alert('Species ' + id + ' deleted!');
       })
       .catch(err => {
-        Alert.alert('Species ' + id + " deletion Failed!", [{text: 'Bye Bye.'}]);
+        Alert.alert('Species ' + id + " deletion Failed!", [{text: 'Bye Bye.', onPress: () => {}}]);
       });
     }},
     {text: 'No', onPress: () => {}}]);
