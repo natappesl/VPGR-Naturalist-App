@@ -330,74 +330,6 @@ class DatabaseService {
       console.error(error);
     });
 
-    if (Object.keys(speciesTags).length != 0) {
-      console.log('Inserting Tags: ' + speciesTags);
-      let tags = Object.keys(speciesTags);
-      await db.transaction(async tx => {
-        for (tag of tags) {
-          console.log(speciesId + " Tag: " + tag);
-          await tx.executSql (
-            `INSERT INTO traits (
-                id,
-                tag
-              ) VALUES (
-                ?,
-                ?
-              );`,
-              [
-                speciesId,
-                tag
-              ]
-          );
-        }
-      });
-    }
-
-    if (Object.keys(speciesImages).length != 0) {
-      console.log('Inserting Images: ' + speciesImages);
-      let images = Object.keys(speciesImages);
-      await db.transaction(async tx => {
-        for (url of images) {
-          console.log(speciesId + " Image: " + url);
-          await tx.executSql (
-            `INSERT INTO images (
-                id,
-                url
-              ) VALUES (
-                ?,
-                ?
-              );`,
-              [
-                speciesId,
-                url
-              ]
-          );
-        }
-      });
-    }
-
-    if (Object.keys(speciesLinks).length != 0) {
-      console.log('Inserting Links: ' + speciesLinks);
-      let links = Object.keys(speciesLinks);
-      await db.transaction(async tx => {
-        for (link of links) {
-          console.log(speciesId + " Link: " + link);
-          await tx.executSql (
-            `INSERT INTO links (
-                id,
-                url
-              ) VALUES (
-                ?,
-                ?
-              );`,
-              [
-                speciesId,
-                link
-              ]
-          );
-        }
-      });
-    }
     console.log("SUCCESSFULLY INSERTED: " + speciesData.alias + " ID: " + speciesId);
     return speciesId;
   }
@@ -450,77 +382,53 @@ class DatabaseService {
     }
   }
 
-  async insertImageLinks(speciesData, id) {
-    if (speciesData.imageURL) {
-      let db = await DatabaseService.instance.getDB();
-      await db.transaction((tx) => {
-        tx.executeSql(
-          `INSERT INTO images (id, url) VALUES (?,?);`,
-          [id, speciesData.imageURL]
-        );
-      }).catch(error => {
-        //alert(speciesData.scientificName + " insert imageURL failed!");
-        console.error(error);
+  async insertLinks(speciesLinks, id, linkType) {
+    if (Object.keys(speciesLinks).length != 0) {
+      console.log('Inserting Links: ' + speciesLinks);
+      let links = Object.keys(speciesLinks);
+      await db.transaction(async tx => {
+        for (link of links) {
+          console.log(speciesId + " Link: " + link);
+          await tx.executSql (
+            `INSERT INTO ` + linkType + ` (
+                id,
+                url
+              ) VALUES (
+                ?,
+                ?
+              );`,
+              [
+                speciesId,
+                link
+              ]
+          );
+        }
       });
     }
   }
 
-  async insertReferenceLinks(speciesData, id) {
-    if (speciesData.references) {
-      let db = await DatabaseService.instance.getDB();
-      let refs = speciesData.references.split(" ");
-      for (reference of refs) {
-        await db.transaction((tx) => {
-          tx.executeSql(
-            'INSERT INTO links (id,url) VALUES (?,?);',
-            [id, reference]
-          );
-        }).catch(error => {
-          //alert(speciesData.scientificName + " insert ref failed!");
-          console.error(error);
-        });
-      }
-    }
-  }
 
-  async _insertLinks(speciesData, id) {
-    if (speciesData.imageURL) {
-      let db = await DatabaseService.instance.getDB();
-      await db.transaction(tx => {
-        tx.executeSql(
-          `INSERT INTO links (id, url, type) VALUES (?,?, 'image');`,
-          [id, speciesData.imageURL]
-        );
-      }).catch(error => {
-        //alert(speciesData.scientificName + " insert imageURL failed!");
-        console.error(error);
-      });
-    }
-    if (speciesData.references) {
-      let refs = speciesData.references.split(" ");
-      for (const ref of refs) {
-        await db.transaction(tx => {
-          tx.executeSql(
-            `INSERT INTO links (id, url, type) VALUES (?,?, 'reference');`,
-            [id, ref]
+  async insertTraits(speciesTags, id) {
+    if (Object.keys(speciesTags).length != 0) {
+      console.log('Inserting Tags: ' + speciesTags);
+      let tags = Object.keys(speciesTags);
+      await db.transaction(async tx => {
+        for (tag of tags) {
+          console.log(speciesId + " Tag: " + tag);
+          await tx.executSql (
+            `INSERT INTO traits (
+                id,
+                tag
+              ) VALUES (
+                ?,
+                ?
+              );`,
+              [
+                speciesId,
+                tag
+              ]
           );
-        }).catch(error => {
-          //alert(speciesData.scientificName + " insert ref failed!");
-          console.error(error);
-        });
-      }
-    }
-  }
-
-  async insertTraits(speciesData, id) {
-    let traits = speciesData.tags.split(" ");
-    let db = await DatabaseService.instance.getDB();
-    for (const tag of traits) {
-      await db.transaction(tx => {
-        tx.executeSql(`INSERT INTO traits (id, tag) VALUES (?,?);`, [id, tag]);
-      }).catch(error => {
-        //alert(speciesData.scientificName + " insert trait failed!");
-        console.error(error);
+        }
       });
     }
   }
