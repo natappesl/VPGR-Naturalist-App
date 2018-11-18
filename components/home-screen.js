@@ -20,14 +20,14 @@ class HomeScreen extends Component {
       <View style = {[BaseTheme.container, BaseTheme.reverseColumn, {justifyContent: 'space-between'}]}>
         <Background showLogo onLongPress={() => {this.props.navigation.navigate('Login')}}/>
         <View style = {[LocalTheme.buttonContainer, BaseTheme.reverseColumn]}>
-          <SideButton left text={'SEARCH'} onPress={() => {this.navigateTo('Search')}}/> 
-          <SideButton right text={'CATEGORIES'} onPress={() => {this.navigateTo('Categories')}}/>
+          <SideButton left text={'SEARCH'} onPress={() => {this.navigateTo('Search')}} onLongPress={() => {this.navigateTo('NewSpecies')}} /> 
+          <SideButton right text={'CATEGORIES'} onPress={() => {this.navigateTo('Categories')}} onLongPress={() => {this.navigateTo('NewSpecies')}} />
           <SideButton left text={'NEWS & EVENTS'} onPress={() => {
             Alert.alert(
               'NEWS & EVENTS',
               'Coming soon! Stay tuned, mah boy!',
               [{text: 'You got it, dude.', onPress: ()=> {}}, {text: 'Hurry up already!', onPress: ()=> {}}])
-          }}/>
+          }} onLongPress={() => {this.navigateTo('NewSpecies')}} />
         </View>
       </View>
     );

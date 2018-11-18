@@ -52,6 +52,7 @@ export class SideButton extends Component {
         onPressIn={() => {this.onPressIn()}}
         onPressOut={() => { this.onPressOut()}}
         onPress={() => { this.props.onPress()}}
+        onLongPress={() => {this.props.onLongPress()}}
         delayPressIn={0}
         delayPressOut={0}>
         {this.props.text && (
