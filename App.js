@@ -53,7 +53,7 @@ const RootStack = createStackNavigator({
   },
 },
 {
-  initialRouteName: 'NewSpecies',
+  initialRouteName: 'Home',
 });
 
 export default class App extends Component {
