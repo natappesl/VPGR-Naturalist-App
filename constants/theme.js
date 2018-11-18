@@ -68,6 +68,7 @@ export const ButtonTheme = StyleSheet.create({
   side: {
     flex: 3,
     maxHeight: ButtonConst.height,
+    minHeight: 50,
     backgroundColor: Colors.secondary,
     width: ButtonConst.width,
     padding: ButtonConst.padding,
