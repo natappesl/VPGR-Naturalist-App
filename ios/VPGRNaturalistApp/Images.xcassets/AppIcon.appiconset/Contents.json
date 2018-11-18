@@ -3,55 +3,55 @@
     {
       "size" : "20x20",
       "idiom" : "iphone",
-      "filename" : "web_hi_res_512-20@2x.png",
+      "filename" : "logo_1024_bg-20@2x.png",
       "scale" : "2x"
     },
     {
       "size" : "20x20",
       "idiom" : "iphone",
-      "filename" : "web_hi_res_512-20@3x.png",
+      "filename" : "logo_1024_bg-20@3x.png",
       "scale" : "3x"
     },
     {
       "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "web_hi_res_512-29@2x.png",
+      "filename" : "logo_1024_bg-29@2x.png",
       "scale" : "2x"
     },
     {
       "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "web_hi_res_512-29@3x.png",
+      "filename" : "logo_1024_bg-29@3x.png",
       "scale" : "3x"
     },
     {
       "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "web_hi_res_512-40@2x.png",
+      "filename" : "logo_1024_bg-40@2x.png",
       "scale" : "2x"
     },
     {
       "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "web_hi_res_512-40@3x.png",
+      "filename" : "logo_1024_bg-40@3x.png",
       "scale" : "3x"
     },
     {
       "size" : "60x60",
       "idiom" : "iphone",
-      "filename" : "web_hi_res_512-60@2x.png",
+      "filename" : "logo_1024_bg-60@2x.png",
       "scale" : "2x"
     },
     {
       "size" : "60x60",
       "idiom" : "iphone",
-      "filename" : "web_hi_res_512-60@3x.png",
+      "filename" : "logo_1024_bg-60@3x.png",
       "scale" : "3x"
     },
     {
       "size" : "1024x1024",
       "idiom" : "ios-marketing",
-      "filename" : "natapp_launcher_1024_whit_bg.png",
+      "filename" : "logo_1024_bg-1024.png",
       "scale" : "1x"
     }
   ],
