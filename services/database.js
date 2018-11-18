@@ -277,62 +277,148 @@ class DatabaseService {
     return species;
   }
 
-  async insertSpecies(speciesData) {
+  async insertSpecies(speciesData, speciesTags={}, speciesImages={}, speciesLinks={}) {
+    // Returns the species.id of the newly creates species entry
+    // or -1 on failure.
     let speciesId = -1;
-    if (!speciesData.scientificName) return speciesId;
+    if (!speciesData.sciname) return speciesId;
 
     let db = await DatabaseService.instance.getDB();
+
+    // First check that the species doesn't already exist
+    // by checking if there is an entry with the same scientific name
     await db.transaction(async tx => {
       let [t, existsResult] = await tx.executeSql(
         'SELECT * FROM species WHERE sciname = "' +
-          speciesData.scientificName +
-          '"'
+          speciesData.sciname + '";'
       );
-
       let alreadyExists = existsResult.rows.length > 0 ? true : false;
       if (alreadyExists) {
-        console.warn(speciesData.scientificName + " already exists, bro.");
+        console.warn(speciesData.sciname + " ALREADY EXISTS!");
         return speciesId;
       }
     });
 
-    await db
-      .transaction(async tx => {
-        let [t, insertResult] = await tx.executeSql(
-          `INSERT INTO species (
-                    sciname,
-                    overview,
-                    behavior,
-                    habitat,
-                    size,
-                    conservationstatus,
-                    stype
-                ) VALUES (
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?
-                )`,
-          [
-            speciesData.scientificName,
-            speciesData.overview,
-            speciesData.behavior,
-            speciesData.habitat,
-            speciesData.size,
-            speciesData.conservationStatus,
-            speciesData.type
-          ]
-        );
-        return (speciesId = insertResult.insertId);
-      })
-      .catch(error => {
-        alert(speciesData.scientificName + " insert failed!");
-        console.error(error);
+    let verified = await DatabaseService.instance.verifySpeciesData(speciesData);
+    if (!verified) {
+      return speciesId;
+    }
+
+    await db.transaction(async tx => {
+      console.log("Inserting Species entry: " + speciesData);
+      let [txtwo, insertSpeciesResult] = await tx.executeSql(
+        `INSERT INTO species (
+                  sciname,
+                  overview,
+                  behavior,
+                  habitat,
+                  size,
+                  conservationstatus,
+                  stype
+              ) VALUES (
+                  ?,
+                  ?,
+                  ?,
+                  ?,
+                  ?,
+                  ?,
+                  ?
+              )`,
+        [
+          speciesData.sciname,
+          speciesData.overview,
+          speciesData.behavior,
+          speciesData.habitat,
+          speciesData.size,
+          speciesData.conservationStatus,
+          speciesData.stype
+        ]
+      );
+
+      speciesId = insertSpeciesResult.insertId;
+    })
+    .catch(error => {
+      alert(speciesData.sciname + " insert failed!");
+      console.error(error);
+    });
+
+    if (Object.keys(speciesTags).length != 0) {
+      console.log('Inserting Tags: ' + speciesTags);
+      let tags = Object.keys(speciesTags);
+      await db.transaction(async tx => {
+        for (tag of tags) {
+          console.log(speciesId + " Tag: " + tag);
+          await tx.executSql (
+            `INSERT INTO traits (
+                id,
+                tag
+              ) VALUES (
+                ?,
+                ?
+              );`,
+              [
+                speciesId,
+                tag
+              ]
+          );
+        }
       });
+    }
+
+    if (Object.keys(speciesImages).length != 0) {
+      console.log('Inserting Images: ' + speciesImages);
+      let images = Object.keys(speciesImages);
+      await db.transaction(async tx => {
+        for (url of images) {
+          console.log(speciesId + " Image: " + url);
+          await tx.executSql (
+            `INSERT INTO images (
+                id,
+                url
+              ) VALUES (
+                ?,
+                ?
+              );`,
+              [
+                speciesId,
+                url
+              ]
+          );
+        }
+      });
+    }
+
+    if (Object.keys(speciesLinks).length != 0) {
+      console.log('Inserting Links: ' + speciesLinks);
+      let links = Object.keys(speciesLinks);
+      await db.transaction(async tx => {
+        for (link of links) {
+          console.log(speciesId + " Link: " + link);
+          await tx.executSql (
+            `INSERT INTO links (
+                id,
+                url
+              ) VALUES (
+                ?,
+                ?
+              );`,
+              [
+                speciesId,
+                link
+              ]
+          );
+        }
+      });
+    }
+    
     return speciesId;
+  }
+
+  async verifySpeciesData(speciesData) {
+    // Verify that the passed species data 
+    let verified = true;
+    console.log('TODO: Verify ' + speciesData );
+    return verified;
   }
 
   async insertAliases(speciesData, id) {

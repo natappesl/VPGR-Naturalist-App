@@ -1,15 +1,26 @@
-import React, { Component } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import React, { Component } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-import {DetailFields, NondetailFields, ExcludedNewSpeciesNondetailFields, FieldInputPlaceholders } from '../constants/species-fields';
-import {ColorTraits, SizeTraits, SpeciesTypes, ConservationStatus} from '../constants/trait-categories';
-import { BaseTheme, NewSpeciesTheme } from '../constants/theme';
+import {
+  DetailFields,
+  NondetailFields,
+  ExcludedNewSpeciesNondetailFields,
+  FieldInputPlaceholders
+} from "../constants/species-fields";
+import {
+  ColorTraits,
+  SizeTraits,
+  SpeciesTypes,
+  ConservationStatus
+} from "../constants/trait-categories";
+import { BaseTheme, NewSpeciesTheme } from "../constants/theme";
 
-import Background from './background';
-import { FieldInput } from './field-input';
-import {ConfirmButtons} from './buttons';
+import Background from "./background";
+import { FieldInput } from "./field-input";
+import { ConfirmButtons } from "./buttons";
 
+import DatabaseService from '../services/database';
 
 export default class NewSpeciesScreen extends Component {
   constructor(props) {
@@ -22,29 +33,31 @@ export default class NewSpeciesScreen extends Component {
     state.fields = {};
     for (field of NondetailFields) {
       if (ExcludedNewSpeciesNondetailFields.includes(field) == false) {
-        state.fields[field] = FieldInputPlaceholders[field] || '';
+        state.fields[field] = FieldInputPlaceholders[field] || "";
       }
     }
     for (field of DetailFields) {
-      state.fields[field] = FieldInputPlaceholders[field] || '';
+      state.fields[field] = FieldInputPlaceholders[field] || "";
     }
     console.log(state.fields);
     this.state = state;
   }
-  setFieldValue (fieldName, newFieldValue) {
-    console.log(fieldName + ': ' + newFieldValue);
-    this.setState((prevState) =>{
+
+  setFieldValue(fieldName, newFieldValue) {
+    console.log(fieldName + ": " + newFieldValue);
+    this.setState(prevState => {
       let newFields = prevState.fields;
       newFields[fieldName] = newFieldValue;
-      return {feilds: newFields};
+      return { feilds: newFields };
     });
   }
 
   saveNewSpecies() {
     console.log(this.state);
+    //DatabaseService.instance.insertSpecies(this.state.fields, this.state.tags);
   }
 
-  cancelNewSpecies () {
+  cancelNewSpecies() {
     console.log(this.state);
   }
 
@@ -55,12 +68,14 @@ export default class NewSpeciesScreen extends Component {
     for (field of fields) {
       renderedFields.push(
         <FieldInput
-        key={field}
-        fieldName={field}
-        fieldValue={this.state.fields[field]}
-        onChangeText={(fieldName, newFieldValue) =>
-          {this.setFieldValue(fieldName, newFieldValue)}}/>
-      )
+          key={field}
+          fieldName={field}
+          fieldValue={this.state.fields[field]}
+          onChangeText={(fieldName, newFieldValue) => {
+            this.setFieldValue(fieldName, newFieldValue);
+          }}
+        />
+      );
     }
     return renderedFields;
   }
@@ -68,13 +83,16 @@ export default class NewSpeciesScreen extends Component {
   render() {
     return (
       <View>
-        <Background/>
+        <Background />
         <KeyboardAwareScrollView>
           <View style={[NewSpeciesTheme.header, BaseTheme.shadow]}>
             <Text style={[NewSpeciesTheme.headerText]}>Add New Species</Text>
           </View>
           {this.renderFieldInputs()}
-          <ConfirmButtons confirm={this.saveNewSpecies} cancel={this.cancelNewSpecies} />
+          <ConfirmButtons
+            confirm={this.saveNewSpecies}
+            cancel={this.cancelNewSpecies}
+          />
         </KeyboardAwareScrollView>
       </View>
     );
