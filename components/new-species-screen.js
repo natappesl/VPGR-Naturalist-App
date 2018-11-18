@@ -65,7 +65,9 @@ export default class NewSpeciesScreen extends Component {
 
   async saveNewSpecies() {
     let id = await DatabaseService.insertSpecies(this.state.fields);
-    console.log(id);
+    if (id != -1) {
+      this.props.navigation.pop();
+    }
   }
 
   cancelNewSpecies() {
