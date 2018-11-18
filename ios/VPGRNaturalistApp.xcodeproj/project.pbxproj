@@ -835,7 +835,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 940;
-				ORGANIZATIONNAME = Facebook;
+				ORGANIZATIONNAME = "Engineering Service Learning";
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
@@ -1471,6 +1471,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = edu.ucmerced.VPGRNaturalistApp;
 				PRODUCT_NAME = VPGRNaturalistApp;
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1497,6 +1498,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = edu.ucmerced.VPGRNaturalistApp;
 				PRODUCT_NAME = VPGRNaturalistApp;
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
