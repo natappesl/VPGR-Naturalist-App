@@ -10,7 +10,7 @@ export const dimensions = {
 export const ButtonConst = {
   fontSize: 24,
   width: 320,
-  height: 60,
+  height: 50,
   fontWeight: 'bold',
   fontStyle: 'normal',
   margin: 20,
@@ -45,7 +45,7 @@ export const BackgroundTheme =  StyleSheet.create({
 });
 export const HomeTheme = StyleSheet.create({
   logoContainerContainer: {
-    flex: 5,
+    flex: 4,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -66,9 +66,7 @@ export const HomeTheme = StyleSheet.create({
 });
 export const ButtonTheme = StyleSheet.create({
   side: {
-    flex: 3,
-    maxHeight: ButtonConst.height,
-    minHeight: 50,
+    height: ButtonConst.height,
     backgroundColor: Colors.secondary,
     width: ButtonConst.width,
     padding: ButtonConst.padding,
@@ -76,7 +74,7 @@ export const ButtonTheme = StyleSheet.create({
   },
 
   pressed: {
-    maxHeight: ButtonConst.height - 10,
+    height: ButtonConst.height - 10,
     width: ButtonConst.width - 10,
     margin: ButtonConst.margin + 5,
   },
