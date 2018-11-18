@@ -160,6 +160,7 @@ export default class SpeciesScreen extends Component {
               <View style={[SpeciesTheme.mainInfoContainer]}>
                 <View style={[SpeciesTheme.mainImageContainer, BaseTheme.shadow]}>
                   <Image
+                    resizeMode='stretch'
                     style={SpeciesTheme.mainImage}
                     source={{ uri: MediaService.getImageURI(this.state.species.url) }}
                   />

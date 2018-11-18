@@ -48,7 +48,6 @@ export default class NewSpeciesScreen extends Component {
   }
 
   updateField(fieldName, newFieldValue) {
-    console.log(fieldName + ": " + newFieldValue);
     this.setState(prevState => {
       let newFields = prevState.fields;
       newFields[fieldName] = newFieldValue;
@@ -83,7 +82,6 @@ export default class NewSpeciesScreen extends Component {
   async saveNewSpecies() {
     let tags = this.parseEntries(this.state.tags);
     let images = this.parseEntries(this.state.images);
-    console.log('Calling');
     let id = await DatabaseService.insertSpecies(this.state.fields, tags, images);
     if (id != -1) {
       this.props.navigation.pop();
@@ -107,7 +105,6 @@ export default class NewSpeciesScreen extends Component {
   }
 
   cancelNewSpecies() {
-    console.log(this.state);
     this.props.navigation.pop();
   }
 
