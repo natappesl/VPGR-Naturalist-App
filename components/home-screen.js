@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Background from './background';
-import { StyleSheet, Text, View, Alert} from "react-native";
-import { BaseTheme, Colors, dimensions } from '../constants/theme';
+import { Image, Text, View, Alert, TouchableWithoutFeedback} from "react-native";
+import { HomeTheme, BaseTheme, Colors, dimensions } from '../constants/theme';
 import { SideButton } from './buttons';
 
 class HomeScreen extends Component {
@@ -17,8 +17,8 @@ class HomeScreen extends Component {
   render() {
     return (
       <View style = {[BaseTheme.container, BaseTheme.reverseColumn, {justifyContent: 'space-between'}]}>
-        <Background showLogo onLongPress={() => {this.props.navigation.navigate('Login')}}/>
-        <View style = {[LocalTheme.buttonContainer, BaseTheme.reverseColumn]}>
+        <Background/>
+        <View style = {[HomeTheme.buttonContainer, BaseTheme.reverseColumn]}>
           <SideButton left text={'SEARCH'} onPress={() => {this.navigateTo('Search')}} onLongPress={() => {this.navigateTo('NewSpecies')}} /> 
           <SideButton right text={'CATEGORIES'} onPress={() => {this.navigateTo('Categories')}} onLongPress={() => {this.navigateTo('NewSpecies')}} />
           <SideButton left text={'NEWS & EVENTS'} onPress={() => {
@@ -28,18 +28,17 @@ class HomeScreen extends Component {
               [{text: 'You got it, dude.', onPress: ()=> {}}, {text: 'Hurry up already!', onPress: ()=> {}}])
           }} onLongPress={() => {this.navigateTo('NewSpecies')}} />
         </View>
+        <View style={HomeTheme.logoContainerContainer}>
+          <View style={[HomeTheme.logoContainer, BaseTheme.shadow]}>
+            <TouchableWithoutFeedback onLongPress={() => {this.props.navigation.navigate('Login')}} delayLongPress={1000}>
+              <Image style={HomeTheme.logo} source={require('../assets/vpgr_logo.jpg')} resizeMode='contain'/>
+            </TouchableWithoutFeedback>
+          </View>
+        </View>
       </View>
     );
   }
 }
 
-const LocalTheme = StyleSheet.create({
-  buttonContainer: {
-    flex: 1,
-    maxHeight: '50%',
-    width: dimensions.w,
-    backgroundColor: Colors.transparent,
-  }
-});
 
 export default HomeScreen;

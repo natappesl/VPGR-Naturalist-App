@@ -42,18 +42,26 @@ export const BackgroundTheme =  StyleSheet.create({
     position: 'absolute',
     backgroundColor: Colors.bg,
   },
+});
+export const HomeTheme = StyleSheet.create({
+  logoContainerContainer: {
+    flex: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   logoContainer: {
-    position: 'absolute',
-    flex: 1,
-    top: 100,
     borderRadius: ButtonConst.borderRadius,
     borderWidth: 3,
     borderColor: Colors.secondary,
     overflow: 'hidden',
-    backgroundColor: 'yellow',
   },
   logo: {
     resizeMode: 'contain',
+  },
+  buttonContainer: {
+    flex: 3,
+    width: dimensions.w,
+    backgroundColor: Colors.transparent,
   },
 });
 export const ButtonTheme = StyleSheet.create({
