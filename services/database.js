@@ -71,7 +71,7 @@ class DatabaseService {
     await Auth.currentAuthenticatedUser()
     .catch (error => {
       Alert.alert("You are not authenticated!");
-      console.debug(error);
+      console.error(error);
       isAuth = false;
     });
 
@@ -102,22 +102,24 @@ class DatabaseService {
     let newDBDownloaded = true;
     let data = await S3.getObject(params).promise()
     .catch (err => {
-      if (err.statusCode == 304) {
-        console.debug("DB Not modified since " + additionalParams.IfModifiedSince.toJSON());
+      if (!(err.statusCode == 304)) {
+        console.error(error);
       }
       newDBDownloaded = false;
     });
 
     if (!newDBDownloaded) return;
 
+    // Save the new database and lastModifiedDate
+    let lmdFilePathName = dbFolderPath + lmdFileName;
     await DatabaseService.instance.writeDatabase(data.Body.toString('base64'));
-    await DatabaseService.instance.writeLastModifiedDate(data.LastModified.toJSON());
-
+    await DatabaseService.instance.writeLastModifiedDate( lmdFilePathName, data.LastModified.toJSON());
     Alert.alert("Local Database Updated!");
   }
 
   async uploadDatabase() {
-    let uploadDBFile = await RNFS.readFile(dbFolderPath + dbFileName, "base64");
+    let dbFilePathName = dbFolderPath + dbFileName;
+    let uploadDBFile = await RNFS.readFile( dbFilePathName, "base64");
     let buf = Buffer.from(uploadDBFile, "base64");
 
     let S3 = await DatabaseService.instance.getS3();
@@ -137,12 +139,13 @@ class DatabaseService {
   }
 
   async syncDatabase() {
-    console.log('Syncing database file ' + dbFileName + ' ...');
-    let dbExists = await RNFS.exists(dbFolderPath + dbFileName);
+    console.debug('Syncing database file ' + dbFileName + ' ...');
+    let dbFilePathName = dbFolderPath + dbFileName;
+    let dbExists = await RNFS.exists(dbFilePathName);
     if (!dbExists) {
       await DatabaseService.instance.getDatabaseFile();
     } else {
-      let savedModifiedDate = await DatabaseService.instance.readLastModifiedDate();
+      let savedModifiedDate = await DatabaseService.instance.readLastModifiedDate(dbFolderPath + lmdFileName);
       let additionalParams;
       if (savedModifiedDate) {
         additionalParams = {
@@ -153,28 +156,27 @@ class DatabaseService {
     }
   }
 
-  async writeLastModifiedDate (lastModifiedDate) {
-    let filePathName = dbFolderPath + lmdFileName;
+  async writeLastModifiedDate (filePathName, lastModifiedDate) {
     await RNFS.writeFile(
       filePathName,
       lastModifiedDate,
       'utf8'
     )
     .then (() => {
-      console.log('Saved DB Modified Date: ' + lastModifiedDate);
     })
     .catch(error => {
-      alert('LastModified writing ' + filePathName + ' FAILED!');
       console.error(error);
     });
   }
 
-  async readLastModifiedDate() {
+  async readLastModifiedDate(filePathName) {
     let savedModifiedDate;
-    if (RNFS.exists(dbFolderPath + lmdFileName)) {
-      let savedModifiedDateJSON = await RNFS.readFile(dbFolderPath + lmdFileName, 'utf8');
-      savedModifiedDate = new Date (savedModifiedDateJSON);
-      console.log('Last DB Modified Date: ' + savedModifiedDate.toJSON());
+    if (RNFS.exists(filePathName)) {
+      let savedModifiedDateJSON = await RNFS.readFile(filePathName, 'utf8')
+      .catch (error => {});
+      if (savedModifiedDateJSON) {
+        savedModifiedDate = new Date (savedModifiedDateJSON);
+      }
     }
     return savedModifiedDate;
   }
@@ -234,6 +236,7 @@ class DatabaseService {
     });
 
     DatabaseService.instance.uploadDatabase();
+    
     return success;
   }
 
