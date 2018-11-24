@@ -37,7 +37,6 @@ class MediaService {
       try {
         let response = await S3.getObject({ Bucket: "natappdata", Key: item.Key }).promise();
         if (response.ContentType == 'image/png' || response.ContentType == 'image/jpeg' ){
-          console.log(fileName);
           let write = RNFS.writeFile(filePath, response.Body.toString('base64'), 'base64');
         }
       } catch (error) {
