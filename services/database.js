@@ -43,7 +43,7 @@ class DatabaseService {
   }
 
   async getS3() {
-    await Auth.currentCredentials().then(async credentials => {
+    await Auth.currentUserCredentials().then(async credentials => {
       // Update aws credentials through Cognito to verify IAM Role
       AWS.config.update(Auth.essentialCredentials(credentials));
       _S3 = new AWS.S3();
@@ -66,8 +66,32 @@ class DatabaseService {
 
   }
 
+  async checkAuth () {
+    let isAuth = true;
+    await Auth.currentAuthenticatedUser()
+    .catch (error => {
+      Alert.alert("You are not authenticated!");
+      console.debug(error);
+      isAuth = false;
+    });
+
+    return isAuth;
+  }
+
+  async writeDatabase (dbFileData) {
+    await RNFS.writeFile(
+      dbFolderPath + dbFileName,
+      dbFileData,
+      'base64'
+    ).catch(error => {
+      alert('Database writing FAILED!');
+      console.error(error);
+    });
+  }
+
   async getDatabaseFile(additionalParams = {}) {
     let S3 = await DatabaseService.instance.getS3();
+
     let params = {
     Bucket: bucketName,
     Key: dbFileName,
@@ -80,31 +104,14 @@ class DatabaseService {
     .catch (err => {
       if (err.statusCode == 304) {
         console.debug("DB Not modified since " + additionalParams.IfModifiedSince.toJSON());
-        newDBDownloaded = false;
       }
+      newDBDownloaded = false;
     });
-    if (!newDBDownloaded) {
-      return;
-    }
 
-    await RNFS.writeFile(
-      dbFolderPath + dbFileName,
-      data.Body.toString('base64'),
-      'base64'
-    ).catch(error => {
-      alert('Database writing FAILED!');
-      console.error(error);
-    });
-    
-    await RNFS.writeFile(
-      dbFolderPath + lmdFileName,
-      data.LastModified.toJSON(),
-      'utf8'
-    )
-    .catch(error => {
-      alert('LastModified writing FAILED!');
-      console.error(error);
-    });
+    if (!newDBDownloaded) return;
+
+    await DatabaseService.instance.writeDatabase(data.Body.toString('base64'));
+    await DatabaseService.instance.writeLastModifiedDate(data.LastModified.toJSON());
 
     Alert.alert("Local Database Updated!");
   }
@@ -119,15 +126,14 @@ class DatabaseService {
       Key: dbFileName,
       Body: buf,
       ContentType: dbFileType,
+    }).promise()
+    .then(() => {
+      Alert.alert("Local Database Uploaded!");
     })
-      .promise()
-      .then(data => {
-        Alert.alert("Local Database Uploaded!");
-      })
-      .catch(error => {
-        alert("Database upload FAILED!");
-        console.error(error);
-      });
+    .catch(error => {
+      alert("Database upload FAILED!");
+      console.error(error);
+    });
   }
 
   async syncDatabase() {
@@ -136,24 +142,39 @@ class DatabaseService {
     if (!dbExists) {
       await DatabaseService.instance.getDatabaseFile();
     } else {
-      let savedModifiedDate = await DatabaseService.instance.getLastModifiedDate();
+      let savedModifiedDate = await DatabaseService.instance.readLastModifiedDate();
       let additionalParams;
       if (savedModifiedDate) {
         additionalParams = {
           IfModifiedSince: savedModifiedDate
         }
       }
-
       await DatabaseService.instance.getDatabaseFile(additionalParams);
     }
   }
 
-  async getLastModifiedDate() {
+  async writeLastModifiedDate (lastModifiedDate) {
+    let filePathName = dbFolderPath + lmdFileName;
+    await RNFS.writeFile(
+      filePathName,
+      lastModifiedDate,
+      'utf8'
+    )
+    .then (() => {
+      console.log('Saved DB Modified Date: ' + lastModifiedDate);
+    })
+    .catch(error => {
+      alert('LastModified writing ' + filePathName + ' FAILED!');
+      console.error(error);
+    });
+  }
+
+  async readLastModifiedDate() {
     let savedModifiedDate;
     if (RNFS.exists(dbFolderPath + lmdFileName)) {
       let savedModifiedDateJSON = await RNFS.readFile(dbFolderPath + lmdFileName, 'utf8');
       savedModifiedDate = new Date (savedModifiedDateJSON);
-      console.log('Saved DB Modified Date: ' + savedModifiedDate.toJSON());
+      console.log('Last DB Modified Date: ' + savedModifiedDate.toJSON());
     }
     return savedModifiedDate;
   }
@@ -283,6 +304,10 @@ class DatabaseService {
     if (!verified) {
       return speciesId;
     }
+
+    let isAuth = await DatabaseService.instance.checkAuth();
+    if (!isAuth) return;
+
     await DatabaseService.instance.syncDatabase();
 
     let db = await DatabaseService.instance.getDB();
@@ -338,6 +363,9 @@ class DatabaseService {
 
   async deleteSpecies(id) {
     Alert.alert('Double Confirm Deletion', 'Are you very sure you want to delete species id: ' + id + '?', [{text: 'Yes', onPress: async () => {
+      let isAuth = await DatabaseService.instance.checkAuth();
+      if (!isAuth) return;
+
       await DatabaseService.instance.syncDatabase();
       let db = await DatabaseService.instance.getDB();
       await db.transaction( async tx => {
