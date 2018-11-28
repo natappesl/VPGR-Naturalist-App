@@ -4,7 +4,7 @@ import RNFS from 'react-native-fs';
 import {Platform} from 'react-native';
 
 const imagesPath = RNFS.DocumentDirectoryPath + '/images/';
-
+const lmdFileName = 'LastModifiedDate';
 //TODO: Does 'file://' work for ios uri ?
 
 class MediaService {
@@ -26,27 +26,52 @@ class MediaService {
     let objectList = listResponse.Contents;
 
     for (const item of objectList) {
+      // name of image file with type suffix (.png or .jpg)
       let fileName = item.Key.slice(6, item.Key.length);
       let filePath = imagesPath + fileName;
-      let fileExists = await RNFS.exists(filePath);
+      // name of image file WITHOUT type suffix
+      let imageName = fileName.slice(0, fileName.indexOf('.'));
+      // path to LastModifiedDate file
+      let modifiedFilePathName = imagesPath + imageName + lmdFileName;
 
-      if (fileExists) {
+      // ignore files/ directory
+      if (fileName == '') {
         continue;
       }
 
       try {
-        let response = await S3.getObject({ Bucket: "natappdata", Key: item.Key }).promise();
-        if (response.ContentType == 'image/png' || response.ContentType == 'image/jpeg' ){
-          console.log(fileName);
-          let write = RNFS.writeFile(filePath, response.Body.toString('base64'), 'base64');
+        let params = {
+          Bucket: "natappdata",
+          Key: item.Key
         }
+
+        // Check for a last modified date
+        if (RNFS.exists(modifiedFilePathName)) {
+          let savedModifiedDate = await DatabaseService.readLastModifiedDate(modifiedFilePathName);
+          if (savedModifiedDate) {
+            // Add parameter condition to only
+            // download if there is a newer version
+            params.IfModifiedSince = savedModifiedDate;
+          }
+        }
+
+        await S3.getObject(params).promise()
+        .then (response => {
+          if (response.ContentType == 'image/png' || response.ContentType == 'image/jpeg') {
+            let modifiedFilePathName = imagesPath + imageName + lmdFileName;
+            let write = RNFS.writeFile(filePath, response.Body.toString('base64'), 'base64');
+            DatabaseService.writeLastModifiedDate(modifiedFilePathName, response.LastModified.toJSON() )
+          }
+        })
+        .catch( error => {
+          if (!(error.code = 'NotModified')) {
+            console.debug ('Image get error: ', error);
+          }
+        });
       } catch (error) {
-        console.warn(error);
+        console.debug(error);
       }
     }
-
-
-    console.log('DONE DOWNLOADING IMAGES');
   }
 
  getImageURI (imageString) {
@@ -57,7 +82,7 @@ class MediaService {
       }
       return uri;
     } catch (error) {
-      console.warn(error);
+      console.debug(error);
     }
   }
 }
