@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import Background from './background';
 import { Image, Text, View, Alert, TouchableWithoutFeedback} from "react-native";
+import { Icon } from 'react-native-elements';
 import { HomeTheme, BaseTheme, Colors, dimensions } from '../constants/theme';
 import { SideButton } from './buttons';
+import DatabaseService from '../services/database';
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -31,9 +33,14 @@ class HomeScreen extends Component {
         <View style={HomeTheme.logoContainerContainer}>
           <View style={[HomeTheme.logoContainer, BaseTheme.shadow]}>
             <TouchableWithoutFeedback onLongPress={() => {this.props.navigation.navigate('Login')}} delayLongPress={1000}>
-              <Image style={HomeTheme.logo} source={require('../assets/vpgr_logo.jpg')} resizeMode='contain'/>
+              <Image style={HomeTheme.logo} source={require('../assets/vpgr_logo_shadow_crop.png')} resizeMode='cover'/>
             </TouchableWithoutFeedback>
           </View>
+        </View>
+        <View style={{display: 'flex', flexDirection: 'row', flex: 1, width: '100%', justifyContent: 'flex-end',}}>
+        <SideButton right icon onPress={() => {DatabaseService.syncDatabase()}}>
+            <Icon style={{flex: 1,}} name='sync'  color={Colors.bg}/>
+          </SideButton>
         </View>
       </View>
     );

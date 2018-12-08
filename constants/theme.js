@@ -34,11 +34,9 @@ export const Colors = {
 }
 export const BackgroundTheme =  StyleSheet.create({
   main: {
-    top: 0,
-    left: 0,
     width: dimensions.w,
     height: dimensions.h,
-    alignItems:'center',
+    alignSelf:'center',
     position: 'absolute',
     backgroundColor: Colors.bg,
   },
@@ -46,17 +44,22 @@ export const BackgroundTheme =  StyleSheet.create({
 export const HomeTheme = StyleSheet.create({
   logoContainerContainer: {
     flex: 4,
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
   logoContainer: {
-    borderRadius: ButtonConst.borderRadius,
-    borderWidth: 3,
-    borderColor: Colors.secondary,
-    overflow: 'hidden',
+    flex: 1,
+    width: '100%',
+    justifyContent: 'center',
   },
   logo: {
-    resizeMode: 'contain',
+    height: 250,
+    width: 250,
+    borderRadius: 200,
+    borderWidth: 4,
+    alignSelf: 'center',
+    borderColor: Colors.secondary,
   },
   buttonContainer: {
     flex: 3,
