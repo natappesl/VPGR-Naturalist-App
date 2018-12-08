@@ -154,6 +154,7 @@ class DatabaseService {
       }
       await DatabaseService.instance.getDatabaseFile(additionalParams);
     }
+    Alert.alert('Databae Sync Complete!');
   }
 
   async writeLastModifiedDate (filePathName, lastModifiedDate) {
